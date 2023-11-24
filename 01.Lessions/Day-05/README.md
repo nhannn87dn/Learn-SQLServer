@@ -417,7 +417,73 @@ FROM Customers;
 
 Bạn có thể tận dụng tính năng này để backup một table
 
+#### 🔹 SELECT Không có FROM
+
+```sql
+-- Trả về ngày hiện tại
+SELECT GETDATE() 
+-- Lấy 3 kí tự bên trái của chuỗi
+SELECT LEFT('SQL Tutorial', 3) AS ExtractString;
+-- Chuyển chuỗi thành kí tự thường
+SELECT LOWER('SQL Tutorial is FUN!');
+```
+
+
 
 ## 💛 Session 09- Advanced Queries and Joins - Part 1
 
-Chi tiết xem link: https://documents.aptech.io/docs/aptech-mssql/A.Presentations/session-09
+### 💥 GROUP BY với WHERE
+
+Mục đích của GROUP BY là nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột. Khi kết hợp với WHERE, GROUP BY sẽ nhóm các bản ghi thỏa mãn điều kiện của WHERE.
+
+
+Ví dụ: Liệt kê danh sách giảm giá của những sản phẩm có giá trên 2000
+
+```sql
+SELECT 
+  Discount, 
+  COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
+FROM Products
+WHERE Price > 20000
+GROUP BY Discount
+ORDER BY Discount ASC
+```
+
+Câu lệnh sẽ chạy mệnh đề WHERE trước, lọc ra những sản phẩm có giá > 2000 trước khi đem đi GROUP BY
+
+
+
+### 💥 GROUP BY với NULL
+
+Khi bạn sử dụng mệnh đề GROUP BY và có giá trị NULL trong cột được nhóm, các bản ghi với giá trị NULL sẽ được gom vào một nhóm duy nhất. Điều này có nghĩa là tất cả các bản ghi có giá trị NULL trong cột được nhóm sẽ tồn tại trong một nhóm riêng biệt.
+
+Ví dụ: Lấy danh sách thành phố của khách hàng đã đặt hàng.
+
+```sql
+SELECT ShippingCity 
+FROM Orders
+GROUP BY ShippingCity
+ORDER BY ShippingCity ASC
+```
+
+Bạn sẽ thấy giá trị NULL được liệt kê ra ở đầu danh sách.
+
+
+### 💥 GROUP BY với ALL
+
+Trong SQL Server, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng, bao gồm cả các bản ghi trùng lặp. Điều này có nghĩa là tất cả các bản ghi sẽ được coi là cùng một nhóm.
+
+Dưới đây là một ví dụ để hiểu cách sử dụng mệnh đề GROUP BY ALL trong SQL Server:
+
+Giả sử bạn có một bảng "Orders" với các cột "OrderID", "CustomerID" và "TotalAmount". Bạn muốn tính tổng số lượng đơn hàng và tổng số tiền cho tất cả các đơn hàng, bao gồm cả các đơn hàng trùng lặp:
+
+```sql
+SELECT OrderID, CustomerID, SUM(TotalAmount) AS TotalAmount
+FROM Orders
+GROUP BY ALL OrderID, CustomerID;
+```
+
+Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "Orders". Kết quả trả về sẽ bao gồm tất cả các cặp OrderID và CustomerID có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp OrderID và CustomerID sẽ được tính bằng hàm SUM(TotalAmount).
+
+Lưu ý rằng mệnh đề GROUP BY ALL không phổ biến và thường không được sử dụng trong các trường hợp thông thường. Nó cung cấp một cách để xử lý các bản ghi trùng lặp trong quá trình nhóm dữ liệu.
+
