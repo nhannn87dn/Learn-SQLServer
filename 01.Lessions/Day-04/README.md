@@ -105,29 +105,28 @@ Mỗi Table trong Database có thể liên kết với một hoặc nhiều Tabl
 Tạo Table với các column, CONSTRAINT được định nghĩa ngay khi tạo mới Table
 
 ```sql
---Create table Categories
-CREATE TABLE [dbo].[Categories] (
-  [Id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [Name] NVARCHAR(50) UNIQUE NOT NULL,
-  [Description] NVARCHAR(500) NULL,
+--Create table categories
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [category_name] NVARCHAR(50) UNIQUE NOT NULL,
+  [description] NVARCHAR(500) NULL,
 );
 GO
---Create table  Products
-CREATE TABLE [dbo].[Products] (
-  [Id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
-  [Name] NVARCHAR(100) NOT NULL,
-  [Price] MONEY NOT NULL,
-  [Discount] DECIMAL(18,2) NOT NULL,
-  [Stock] DECIMAL(18,2) NOT NULL,
-  [Description] NVARCHAR(MAX) NULL,
-  [CategoryId] INT NOT NULL,
-  [SupplierId] INT NOT NULL
+--Create table  products
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL,
+  [discount] DECIMAL(4,2) NOT NULL,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL
 );
 GO
 
 ```
 
-Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table Categories, Suppliers trước khi tạo Products
+Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, suppliers trước khi tạo products
 
 ---
 
@@ -139,10 +138,10 @@ Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần t�
 #### 🔹 Xóa bằng dòng lệnh 
 
 ```sql
--- Xóa table Categories, Nếu table không tồn tại thì gây lỗi
-DROP TABLE [dbo].[Categories];
--- Xóa table Categories với mệnh đề IF EXISTS để check tồn tại thì mới xóa, ==> tránh lỗi
-DROP TABLE IF EXISTS [dbo].[Categories];
+-- Xóa table categories, Nếu table không tồn tại thì gây lỗi
+DROP TABLE [dbo].[categories];
+-- Xóa table categories với mệnh đề IF EXISTS để check tồn tại thì mới xóa, ==> tránh lỗi
+DROP TABLE IF EXISTS [dbo].[categories];
 ```
 ---
 
@@ -153,17 +152,17 @@ Các thao tác này bạn có thể thực hiện với giao diện đồ họa 
 #### 🔹 Thêm một Column Table
 
 ```sql
---Thêm vào table Customers một cột Email
-ALTER TABLE Customers
-ADD Email varchar(255);
+--Thêm vào table customers một cột email
+ALTER TABLE customers
+ADD email varchar(255);
 ```
 
 #### 🔹 Xóa một Column Table
 
 ```sql
---Xóa cột Email từ table Customers
-ALTER TABLE Customers
-DROP COLUMN Email;
+--Xóa cột email từ table customers
+ALTER TABLE customers
+DROP COLUMN email;
 ```
 
 #### 🔹 Thay đổi tên của Column Table
@@ -176,8 +175,8 @@ RENAME COLUMN old_name to new_name;
 #### 🔹 Thay đổi Data Type của Column Table
 
 ```sql
-ALTER TABLE Customers
-ALTER COLUMN Email nvarchar(255);
+ALTER TABLE customers
+ALTER COLUMN email nvarchar(255);
 ```
 
 ---
@@ -196,15 +195,16 @@ Là sự kết hợp giữa 2 CONSTRAINT `UNIQUE` và `NOT NULL`
 
 ```sql
 -- Định nghĩa PRIMARY KEY ngay khi tạo table
-CREATE TABLE [dbo].[Products] (
-    Id INT IDENTITY(1,1) PRIMARY KEY NOT NULL
+CREATE TABLE [dbo].[products] (
+    product_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL
 )
 -- Định nghĩa PRIMARY KEY cho table đã tồn tại
-ALTER TABLE [dbo].[Products]
-ADD PRIMARY KEY (Id);
--- Hoặc, bạn có thể đặt tên cho contraint là PK_Products
-ALTER TABLE [dbo].[Products]
-ADD CONSTRAINT [PK_Products] PRIMARY KEY ([Id]);
+ALTER TABLE [dbo].[products]
+ADD PRIMARY KEY (product_id);
+-- Hoặc, bạn có thể đặt tên cho contraint là PK_products_product_id
+--Khuyên dùng cách này để xảy ra lỗi thì dễ dàng nhận biết vì có tên
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
 ```
 
 
@@ -221,33 +221,32 @@ ADD CONSTRAINT [PK_Products] PRIMARY KEY ([Id]);
 - Ràng buộc khóa ngoại chỉ ra rằng các giá trị trong một cột hoặc một nhóm cột trong bảng con bằng với các giá trị trong một cột hoặc một nhóm cột của bảng cha.
 
 ```sql
--- Tạo khóa ngoại CategoryID, SupplierId ngay khi tạo mới Table
-CREATE TABLE [dbo].[Products] (
-  [Id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [Name] NVARCHAR(100) UNIQUE NOT NULL, --UNIQUE
-  [Price] MONEY NOT NULL,
-  [Discount] DECIMAL(18,2) NOT NULL,
-  [Stock] DECIMAL(18,2) NOT NULL,
-  [Description] NVARCHAR(MAX) NULL,
-  [CategoryId] INT NOT NULL,
-  [SupplierId] INT NOT NULL,
-  CONSTRAINT fk_Products_CategoryID FOREIGN KEY (CategoryID) 
-        REFERENCES Categories(Id), --Khóa ngoại CategoryID
-  CONSTRAINT fk_Products_SupplierId FOREIGN KEY (SupplierId) 
-        REFERENCES Suppliers(Id) --Khóa ngoại SupplierId
+-- Tạo khóa ngoại category_id, supplier_id ngay khi tạo mới Table
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL,
+  [discount] DECIMAL(4,2) NOT NULL,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
+        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
 );
 ```
 
 Hoặc bạn có thể tạo khóa ngoại cho một table đã tồn tại
 
 ```sql
---Tạo khóa ngoại  FOREIGN KEY (CategoryId) tham chiếu đến khóa chính Categories(Id)
-ALTER TABLE [dbo].[Products]
-ADD CONSTRAINT [FK_Products_Categories] FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Categories] ([Id]);
+--Tạo khóa ngoại  FOREIGN KEY (category_id) tham chiếu đến khóa chính categories(Id)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [FK_products_categories] FOREIGN KEY ([category_id]) REFERENCES [dbo].[categories] ([category_id]);
 GO
---Tạo khóa ngoại FOREIGN KEY (SupplierId) tham chiếu đến khóa chính Suppliers(Id)
-ALTER TABLE [dbo].[Products]
-ADD CONSTRAINT [FK_Products_Suppliers] FOREIGN KEY ([SupplierId]) REFERENCES [dbo].[Suppliers] ([Id]);
+--Tạo khóa ngoại FOREIGN KEY (supplier_id) tham chiếu đến khóa chính suppliers(supplier_id)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [FK_products_suppliers] FOREIGN KEY ([supplier_id]) REFERENCES [dbo].[suppliers] ([supplier_id]);
 ```
 
 #### 🔹 UNIQUE
@@ -258,10 +257,10 @@ Khi có ràng buộc UNIQUE, mỗi khi bạn chèn một hàng mới, nó sẽ k
 
 ```sql
 --Tạo UNIQUE ngay khi tạo mới table
-CREATE TABLE [dbo].[Categories] (
-  [Id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [Name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
-  [Description] NVARCHAR(500) NULL,
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [description] NVARCHAR(500) NULL,
 );
 GO
 ```
@@ -269,8 +268,8 @@ GO
 Bạn cũng có thể tạo UNIQUE cho một table đã tồn tại
 
 ```sql
-ALTER TABLE [dbo].[Categories]
-ADD CONSTRAINT [UQ_Categories_Name] UNIQUE ([Name]); --UQ_Categories_Name là tên bạn đặt cho CONTRAINT
+ALTER TABLE [dbo].[categories]
+ADD CONSTRAINT [UQ_categories_name] UNIQUE ([name]); --UQ_categories_Name là tên bạn đặt cho CONTRAINT
 GO
 ```
 
@@ -285,18 +284,18 @@ NULL rất đặc biệt. Nó không bằng bất cứ thứ gì, kể cả chí
 Định nghĩa NOT NULL ngay khi tạo mới table
 
 ```sql
-CREATE TABLE [dbo].[Categories] (
-  [Id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [Name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
-  [Description] NVARCHAR(500) NULL,
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [description] NVARCHAR(500),
 );
 GO
 ```
 Hoặc cho table đã tồn tại
 
 ```sql
-ALTER TABLE [dbo].[Categories]
-ALTER COLUMN [Name] NVARCHAR(50) UNIQUE NOT NULL;
+ALTER TABLE [dbo].[categories]
+ALTER COLUMN [name] NVARCHAR(50) UNIQUE NOT NULL;
 ```
 
 
@@ -306,22 +305,21 @@ DEFAULT là một thuộc tính được sử dụng trong cơ sở dữ liệu 
 
 Định nghĩa `DEFAULT CONTRAINT` ngay khi tạo mới Table
 
-Price, Discount, Stock mặc định = 0
+price, discount, Stock mặc định = 0
 
 ```sql
-CREATE TABLE [dbo].[Products] (
-  [Id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [Name] NVARCHAR(100) UNIQUE NOT NULL,
-  [Price] MONEY NOT NULL DEFAULT 0,
-  [Discount] DECIMAL(18,2) DEFAULT 0 NOT NULL,
-  [Stock] DECIMAL(18,2) DEFAULT 0 NOT NULL,
-  [Description] NVARCHAR(MAX) NULL,
-  [CategoryId] INT NOT NULL,
-  [SupplierId] INT NOT NULL,
-  CONSTRAINT fk_Products_CategoryID FOREIGN KEY (CategoryID) 
-        REFERENCES Categories(Id), --Khóa ngoại CategoryID
-  CONSTRAINT fk_Products_SupplierId FOREIGN KEY (SupplierId) 
-        REFERENCES Suppliers(Id) --Khóa ngoại SupplierId
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL,
+  [discount] DECIMAL(4,2) NOT NULL,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
+        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
 
 );
 GO
@@ -335,22 +333,21 @@ Check Contraint là một loại ràng buộc cho phép bạn chỉ định xem 
 Nếu các giá trị vượt qua quá trình kiểm tra, PostgreSQL sẽ chèn hoặc cập nhật các giá trị này vào cột. Nếu không, PostgreSQL sẽ từ chối các thay đổi và đưa ra lỗi vi phạm ràng buộc.
 
 
-Tạo table  Products FULL Các CONTRAINT, ngay khi tạo mới
+Tạo table  products FULL Các CONTRAINT, ngay khi tạo mới
 
 ```sql
-CREATE TABLE [dbo].[Products] (
-  [Id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [Name] NVARCHAR(100) UNIQUE NOT NULL,
-  [Price] MONEY NOT NULL DEFAULT 0 CHECK (Price >=0),
-  [Discount] DECIMAL(18,2) DEFAULT 0 NOT NULL CHECK (Discount >=0 AND Discount <= 80),
-  [Stock] DECIMAL(18,2) DEFAULT 0 NOT NULL CHECK (Stock >=0),
-  [Description] NVARCHAR(MAX) NULL,
-  [CategoryId] INT NOT NULL,
-  [SupplierId] INT NOT NULL,
-  CONSTRAINT fk_Products_CategoryID FOREIGN KEY (CategoryID) 
-        REFERENCES Categories(Id), --Khóa ngoại CategoryID
-  CONSTRAINT fk_Products_SupplierId FOREIGN KEY (SupplierId) 
-        REFERENCES Suppliers(Id) --Khóa ngoại SupplierId
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) DEFAULT 0 CHECK (price >=0),
+  [discount] DECIMAL(4,2) DEFAULT 0 NOT NULL CHECK (discount >=0 AND discount <= 70),
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
+        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
 
 );
 GO
@@ -361,19 +358,16 @@ Bạn cũng có thể tạo CONTRAINT CHECK cho table đã tồn tại
 
 
 ```sql
--- Create CHECK (Price > 0)
-ALTER TABLE [dbo].[Products]
-ADD CONSTRAINT [CK_Products_Price] CHECK ([Price] > 0);
+-- Create CHECK (price > 0)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [CK_products_price] CHECK ([price] > 0);
 GO
 
---Create CHECK (Discount >= 0 AND Discount <= 90)
-ALTER TABLE [dbo].[Products]
-ADD CONSTRAINT [CK_Products_Discount] CHECK ([Discount] >= 0 AND [Discount] <= 90);
+--Create CHECK (discount >= 0 AND discount <= 90)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [CK_products_discount] CHECK ([discount] >= 0 AND [discount] <= 90);
 GO
---Create CHECK (Stock >= 0)
-ALTER TABLE [dbo].[Products]
-ADD CONSTRAINT [CK_Products_Stock] CHECK ([Stock] >= 0);
-GO
+
 ```
 
 

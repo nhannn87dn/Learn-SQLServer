@@ -83,22 +83,11 @@ KIỂU DỮ LIỆU – DATA TYPE là một quy trình về cấu trúc, miền g
  datetimeoffset | Lưu trữ một thời điểm cụ thể kèm theo thông tin về độ lệch múi giờ                                                                                                                                                                       | 8-10 bytes |
 | timestamp      | Lưu trữ một số duy nhất được cập nhật mỗi khi một hàng được tạo hoặc sửa đổi. Giá trị dấu thời gian dựa trên đồng hồ bên trong và không tương ứng với thời gian thực. Mỗi bảng chỉ có thể có một biến dấu thời gian |            |
 
-    # Check if the current character is a closing bracket
-    if char in closing_brackets:
-        # If the stack is empty, return False
-        if len(stack) == 0:
-            return False
-        # Pop the top element from the stack
-        top = stack.pop()
-        # Check if the popped element is the corresponding opening bracket
-        if char != closing_brackets[top]:
-            return False
-    # If the current character is not a closing bracket, it must be an opening bracket
-    else:
-        # Push the current character onto the stack
-        stack.append(char)
-# If the stack is empty, all brackets have been matched and the string is balanced
-# Otherwise, there are unmatched brackets and the string is not balanced
+### Tại sao phải dùng các kiểu dữ liệu riêng?
+
+Tại sao không thể dùng chung một kiểu dữ liệu cho tất cả các Column (Trường thuộc tính) trong một Table hoặc một Database?
+
+Nếu việc lưu trữ các dữ liệu cùng một kiểu, bạn không thể phân loại đâu là ngày tháng, đâu là chuỗi, đâu là số…. Vì vậy việc thực hiện các toán tử, tìm kiếm cũng trở nên rất khó khăn trong quá trình truy vấn dữ liệu.
 
 Mặt khác, đặt ra một bài toán thực tế: Khi bạn thiết kế một CSDL thương mại, việc cài đặt Database lưu trữ rất quan trọng. Ta có một ví dụ nhỏ như sau, giả sử:
 

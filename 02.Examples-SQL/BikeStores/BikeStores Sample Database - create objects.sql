@@ -7,36 +7,37 @@ Link   : http://www.sqlservertutorial.net/load-sample-database/
 Version: 1.0
 --------------------------------------------------------------------
 */
--- create schemas
-CREATE SCHEMA production;
-go
 
-CREATE SCHEMA sales;
-go
+CREATE DATABASE [BikeStores];
+GO
+
+USE [BikeStores];
+GO
+
 
 -- create tables
-CREATE TABLE production.categories (
+CREATE TABLE  dbo.categories (
 	category_id INT IDENTITY (1, 1) PRIMARY KEY,
 	category_name VARCHAR (255) NOT NULL
 );
 
-CREATE TABLE production.brands (
+CREATE TABLE  dbo.brands (
 	brand_id INT IDENTITY (1, 1) PRIMARY KEY,
 	brand_name VARCHAR (255) NOT NULL
 );
 
-CREATE TABLE production.products (
+CREATE TABLE  dbo.products (
 	product_id INT IDENTITY (1, 1) PRIMARY KEY,
 	product_name VARCHAR (255) NOT NULL,
 	brand_id INT NOT NULL,
 	category_id INT NOT NULL,
 	model_year SMALLINT NOT NULL,
-	list_price DECIMAL (10, 2) NOT NULL,
-	FOREIGN KEY (category_id) REFERENCES production.categories (category_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (brand_id) REFERENCES production.brands (brand_id) ON DELETE CASCADE ON UPDATE CASCADE
+	price DECIMAL (10, 2) NOT NULL,
+	FOREIGN KEY (category_id) REFERENCES  dbo.categories (category_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (brand_id) REFERENCES  dbo.brands (brand_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE sales.customers (
+CREATE TABLE  dbo.customers (
 	customer_id INT IDENTITY (1, 1) PRIMARY KEY,
 	first_name VARCHAR (255) NOT NULL,
 	last_name VARCHAR (255) NOT NULL,
@@ -48,7 +49,7 @@ CREATE TABLE sales.customers (
 	zip_code VARCHAR (5)
 );
 
-CREATE TABLE sales.stores (
+CREATE TABLE  dbo.stores (
 	store_id INT IDENTITY (1, 1) PRIMARY KEY,
 	store_name VARCHAR (255) NOT NULL,
 	phone VARCHAR (25),
@@ -59,7 +60,7 @@ CREATE TABLE sales.stores (
 	zip_code VARCHAR (5)
 );
 
-CREATE TABLE sales.staffs (
+CREATE TABLE  dbo.staffs (
 	staff_id INT IDENTITY (1, 1) PRIMARY KEY,
 	first_name VARCHAR (50) NOT NULL,
 	last_name VARCHAR (50) NOT NULL,
@@ -68,11 +69,11 @@ CREATE TABLE sales.staffs (
 	active tinyint NOT NULL,
 	store_id INT NOT NULL,
 	manager_id INT,
-	FOREIGN KEY (store_id) REFERENCES sales.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (manager_id) REFERENCES sales.staffs (staff_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+	FOREIGN KEY (store_id) REFERENCES  dbo.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (manager_id) REFERENCES  dbo.staffs (staff_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
-CREATE TABLE sales.orders (
+CREATE TABLE  dbo.orders (
 	order_id INT IDENTITY (1, 1) PRIMARY KEY,
 	customer_id INT,
 	order_status tinyint NOT NULL,
@@ -82,28 +83,28 @@ CREATE TABLE sales.orders (
 	shipped_date DATE,
 	store_id INT NOT NULL,
 	staff_id INT NOT NULL,
-	FOREIGN KEY (customer_id) REFERENCES sales.customers (customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (store_id) REFERENCES sales.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (staff_id) REFERENCES sales.staffs (staff_id) ON DELETE NO ACTION ON UPDATE NO ACTION
+	FOREIGN KEY (customer_id) REFERENCES  dbo.customers (customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (store_id) REFERENCES  dbo.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (staff_id) REFERENCES  dbo.staffs (staff_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
-CREATE TABLE sales.order_items (
+CREATE TABLE  dbo.order_items (
 	order_id INT,
 	item_id INT,
 	product_id INT NOT NULL,
 	quantity INT NOT NULL,
-	list_price DECIMAL (10, 2) NOT NULL,
+	price DECIMAL (10, 2) NOT NULL,
 	discount DECIMAL (4, 2) NOT NULL DEFAULT 0,
 	PRIMARY KEY (order_id, item_id),
-	FOREIGN KEY (order_id) REFERENCES sales.orders (order_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES production.products (product_id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (order_id) REFERENCES  dbo.orders (order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (product_id) REFERENCES  dbo.products (product_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE production.stocks (
+CREATE TABLE  dbo.stocks (
 	store_id INT,
 	product_id INT,
 	quantity INT,
 	PRIMARY KEY (store_id, product_id),
-	FOREIGN KEY (store_id) REFERENCES sales.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (product_id) REFERENCES production.products (product_id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (store_id) REFERENCES  dbo.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (product_id) REFERENCES  dbo.products (product_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
