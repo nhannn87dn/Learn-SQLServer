@@ -614,13 +614,140 @@ Một số lợi ích của Stored Procedures trong SQL Server bao gồm:
 
 #### 🔹 Tạo STORE
 
+Cách tạo khá giống với VIEW
+
+Ví dụ: Lấy danh sách sản phẩm
+
+```sql
+--Sử dụng từ khóa CREATE PROCEDURE
+CREATE PROCEDURE usp_ProductList -- đặt tên với prefix usp_
+AS
+BEGIN
+    SELECT 
+        product_name, 
+        price
+    FROM 
+        dbo.products
+    ORDER BY 
+        product_name;
+END;
+```
+Sau khi tạo xong bạn có thể thấy store được lưu ở `Programmability > Stored Procedures`
+
+
+#### 🔹 Tạo Store có tham số OUTPUT
+
+Ví dụ: Lấy danh sách đơn hàng bán ra từ ngày đến ngày.
+
+```sql
+@FromDate DATETIME,
+@ToDate DATETIME,
+@Total INT OUTPUT
+AS
+BEGIN
+  SELECT @Total = COUNT(*) FROM orders WHERE order_date BETWEEN @FromDate AND @ToDate
+END;
+```
+
 #### 🔹 Sử dụng STORE
+
+```sql
+EXECUTE usp_ProductList
+--Hoặc
+EXEC usp_ProductList
+
+--Chạy một Store có tham số
+
+DECLARE @Total INT
+EXEC usp_GetOrders '2021-01-01', '2021-01-31', @Total OUTPUT
+SELECT @Total
+```
 
 #### 🔹 Sửa STORE
 
+```sql
+--Sử dụng từ khóa CREATE PROCEDURE
+ALTER PROCEDURE usp_ProductList -- đặt tên với prefix usp_
+AS
+BEGIN
+    SELECT 
+        product_id, --thêm mới
+        product_name, --thêm mới
+        price,
+        discount
+    FROM 
+        dbo.products
+    ORDER BY 
+        product_id;
+END;
+```
+
 #### 🔹 Xóa STORE
 
----
+```sql
+DROP PROCEDURE usp_ProductList;
+--Hoặc
+DROP PROC usp_ProductList;
+```
+
+#### 🔹  Các tùy chọn khi tạo stored procedure
+
+**WITH ENCRYPTION**
+
+Với việc sử dụng WITH ENCRYPTION, mã nguồn của đối tượng sẽ được mã hóa và không thể đọc hoặc truy cập trực tiếp thông qua các công cụ SQL Server Management Studio (SSMS) hoặc các công cụ khác. Khi một đối tượng được mã hóa, SQL Server sẽ chỉ thực thi đối tượng đó mà không cung cấp truy cập vào mã nguồn.
+
+```sql
+CREATE PROCEDURE usp_GetOrders
+WITH ENCRYPTION
+  @FromDate DATETIME,
+  @ToDate DATETIME
+AS
+BEGIN
+  SELECT o.*, od.product_id, od.quantity, od.price, od.discount
+  FROM orders AS o
+    INNER JOIN order_items AS od ON o.order_id = od.order_id
+  WHERE o.order_date BETWEEN @FromDate AND @ToDate
+END
+```
+
+**WITH RECOMPILE**
+
+Với việc sử dụng WITH RECOMPILE, stored procedure sẽ được biên dịch lại mỗi khi thực thi. Điều này sẽ giúp tăng hiệu suất thực thi của stored procedure.
+
+```sql
+CREATE PROCEDURE usp_GetOrders
+WITH RECOMPILE
+  @FromDate DATETIME,
+  @ToDate DATETIME
+AS
+BEGIN
+  SELECT o.*, od.product_id, od.quantity, od.price, od.discount
+  FROM orders AS o
+    INNER JOIN order_items AS od ON o.order_id = od.order_id
+  WHERE o.order_date BETWEEN @FromDate AND @ToDate
+END
+```
+
+**WITH EXECUTE AS**
+
+Với việc sử dụng WITH EXECUTE AS, stored procedure sẽ được thực thi với quyền của người dùng được chỉ định.
+
+Tạo stored procedure và thực thi với quyền của người dùng được chỉ định
+
+```sql
+CREATE PROCEDURE usp_GetOrders
+WITH EXECUTE AS 'dbo'
+  @FromDate DATETIME,
+  @ToDate DATETIME
+AS
+BEGIN
+  SELECT o.*, od.product_id, od.quantity, od.price, od.discount
+  FROM orders AS o
+    INNER JOIN order_items AS od ON o.order_id = od.order_id
+  WHERE o.order_date BETWEEN @FromDate AND @ToDate
+END
+```
+
 
 ### 💥 Querying Metadata
 
