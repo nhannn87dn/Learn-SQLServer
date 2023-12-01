@@ -2,6 +2,8 @@
 💥 🔹
 ## 💛 Session 11 - Indexes
 
+Xem thêm bài viết: https://www.sqlservertutorial.net/sql-server-indexes/
+
 Trong SQL Server, indexs (chỉ mục) là cấu trúc dữ liệu được sử dụng để tăng tốc độ truy vấn và tìm kiếm dữ liệu trong cơ sở dữ liệu. Chúng giúp tối ưu hóa hiệu suất truy vấn bằng cách tạo ra một cấu trúc dữ liệu phụ bên cạnh bảng gốc, có thể được sắp xếp và tìm kiếm nhanh hơn.
 
 Các loại indexs mà SQL Server hỗ trợ: https://learn.microsoft.com/en-us/sql/relational-databases/indexes/indexes?view=sql-server-ver16
@@ -70,8 +72,20 @@ Ví dụ
 ```sql
 --Tạo unique index
 CREATE UNIQUE INDEX IX_PersonID
-ON Persons (Email);
+ON dbo.persons (email);
 ```
+
+Ví dụ
+
+```sql
+CREATE UNIQUE INDEX ix_cust_email_inc
+ON dbo.customers(email)
+INCLUDE(first_name,last_name);
+
+```
+
+- `first_name,last_name` là danh sách các cột khác (không phải các cột chỉ mục) mà bạn muốn bao gồm trong chỉ mục để cung cấp các dữ liệu bổ sung cho truy vấn. Các cột này không được sắp xếp và không tham gia vào việc tìm kiếm theo.
+- việc sử dụng `INCLUDE` cho phép thêm các cột bổ sung vào chỉ mục, mà không ảnh hưởng đến việc sắp xếp hoặc tìm kiếm. Điều này giúp tránh việc phải truy xuất dữ liệu từ bảng gốc khi chỉ cần truy vấn dữ liệu từ chỉ mục, cải thiện hiệu suất truy vấn.
 
 ### 💥  Full-text
 
@@ -108,6 +122,15 @@ Columnstore index thường được sử dụng trong các hệ thống quản 
 Filtered index trong SQL Server là một loại chỉ mục có điều kiện, chỉ lưu trữ và xử lý dữ liệu cho một phần nhỏ của các hàng trong một bảng dựa trên một điều kiện được xác định trước. Nó cho phép bạn tạo chỉ mục trên một tập hợp con của dữ liệu trong bảng thay vì toàn bộ dữ liệu.
 
 Khi tạo filtered index, bạn chỉ định một điều kiện WHERE để chỉ định các hàng nào sẽ được lưu trữ trong chỉ mục. Chỉ các hàng thỏa mãn điều kiện này mới được lưu trữ trong filtered index, trong khi các hàng không thỏa mãn điều kiện sẽ không được đưa vào chỉ mục.
+
+Ví dụ
+
+```sql
+CREATE INDEX ix_cust_phone
+ON dbo.customers(phone)
+INCLUDE (first_name, last_name)
+WHERE phone IS NOT NULL;
+```
 
 Lợi ích chính của filtered index bao gồm:
 
@@ -208,6 +231,53 @@ XML index được sử dụng trong các ứng dụng liên quan đến dữ li
      ```
 
 Lưu ý: Trước khi thực hiện các thay đổi trên index, hãy đảm bảo rằng bạn có quyền thực hiện các câu lệnh CREATE, ALTER và DROP trên cơ sở dữ liệu và bảng tương ứng. Hãy cẩn thận khi xóa hoặc đổi tên index, vì nó có thể ảnh hưởng đến hiệu suất và tính khả dụng của cơ sở dữ liệu.
+
+
+Trong SQL Server, bạn có thể sử dụng các câu lệnh và chức năng để kiểm tra thời gian thực hiện của một truy vấn ==> Để lựa chọn xem cách nào cho hiệu suất TỐI ƯU HƠN.
+
+
+Dưới đây là một số phương pháp phổ biến để làm điều này:
+
+1. Sử dụng câu lệnh SET STATISTICS TIME ON/OFF:
+   - Để bật tính năng thống kê thời gian, sử dụng câu lệnh sau trước khi thực thi truy vấn:
+     ```sql
+     SET STATISTICS TIME ON;
+     ```
+   - Sau khi chạy truy vấn, trong kết quả, bạn sẽ thấy thông tin về thời gian thực hiện truy vấn, bao gồm thời gian CPU và thời gian thực tế.
+   - Để tắt tính năng thống kê thời gian, sử dụng câu lệnh sau:
+     ```sql
+     SET STATISTICS TIME OFF;
+     ```
+
+2. Sử dụng hàm GETDATE():
+   - Trước khi thực thi truy vấn, ghi lại thời điểm bắt đầu bằng cách sử dụng hàm GETDATE():
+     ```sql
+     DECLARE @StartTime DATETIME;
+     SET @StartTime = GETDATE();
+     ```
+   - Sau khi thực thi truy vấn, ghi lại thời điểm kết thúc:
+     ```sql
+     DECLARE @EndTime DATETIME;
+     SET @EndTime = GETDATE();
+     ```
+   - Để tính thời gian thực hiện, sử dụng phép tính:
+     ```sql
+     DECLARE @ExecutionTime FLOAT;
+     SET @ExecutionTime = DATEDIFF(MILLISECOND, @StartTime, @EndTime) / 1000.0;
+     PRINT 'Execution Time: ' + CAST(@ExecutionTime AS NVARCHAR(20)) + ' seconds';
+     ```
+
+3. Sử dụng Dynamic Management Views (DMV):
+   - DMV là các bảng hệ thống trong SQL Server cung cấp thông tin về hệ thống và các hoạt động diễn ra trong nó.
+   - Bạn có thể sử dụng DMV sys.dm_exec_requests để kiểm tra thời gian thực hiện của một truy vấn:
+     ```sql
+     SELECT start_time, total_elapsed_time
+     FROM sys.dm_exec_requests
+     WHERE session_id = @@SPID;
+     ```
+   - Trong kết quả, cột start_time là thời điểm bắt đầu thực hiện truy vấn và cột total_elapsed_time là tổng thời gian đã trôi qua tính bằng mili giây.
+
+Lưu ý rằng cách thức và chi tiết cụ thể để kiểm tra thời gian thực hiện có thể thay đổi tùy thuộc vào phiên bản SQL Server và cấu hình hệ thống. Vì vậy, hãy kiểm tra tài liệu và tài nguyên thích hợp của Microsoft hoặc phiên bản SQL Server bạn đang sử dụng để biết thêm chi tiết.
 
 
 

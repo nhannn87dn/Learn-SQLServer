@@ -946,4 +946,106 @@ WHERE customer_id IN (
 )
 ```
 
+Ví dụ: Lấy thông tin đơn hàng của tất cả khách hàng ở `New York`
+
+```sql
+SELECT
+    order_id,
+    order_date,
+    customer_id
+FROM
+    dbo.orders
+WHERE
+    customer_id IN (
+        SELECT
+            customer_id
+        FROM
+            dbo.customers
+        WHERE
+            city = 'New York'
+    )
+ORDER BY
+    order_date DESC;
+```
+
+Để có hiệu suất truy vấn cao hơn, khuyến nghị nên chuyển subquery thành JOIN trong các trường hợp nhất định. Lý do là các hệ quản lý cơ sở dữ liệu thường tối ưu hóa truy vấn JOIN và có thể sử dụng các chỉ mục và kỹ thuật tham gia để tìm kiếm và kết hợp dữ liệu hiệu quả.
+
+#### 🔹 Sub Query and ANY
+
+Cú pháp
+
+```sql
+scalar_expression comparison_operator ANY (subquery)
+```
+
+- scalar_expression: biểu thức giá trị đơn
+- comparison_operator: toán tử so sánh
+- subquery: trả về một danh sách (v1, v2, … vn). `ANY` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với MỘT TRONG các giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
+
+Ví dụ
+
+```sql
+SELECT
+    product_name,
+    price
+FROM
+    dbo.products
+WHERE
+    -- Nếu price >= với bất kì giá trị nào
+    -- trong kết quả SELECT thì WHERE thực thi
+    price >= ANY (
+        SELECT
+            AVG (price)
+        FROM
+            production.products
+        GROUP BY
+            brand_id
+    )
+```
+
+
+#### 🔹 Sub Query and ALL
+
+ALL có cách dùng tương tự nhưng khác một chỗ là khi dùng `ALL` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với TẤT CẢ giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
+
+
+#### 🔹 Sub Query and EXISTS, NOT EXISTS 
+
+Cú pháp
+
+```sql
+WHERE [NOT] EXISTS (subquery)
+```
+EXISTS trả về `TRUE` nếu `subquery` trả về kết quả; ngược lại trả về `FALSE`.
+
+NOT EXISTS phủ định của EXISTS
+
+Ví dụ: Lấy thông tin khách hàng, có đơn hàng mua vào năm 2017.
+
+```sql
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    city
+FROM
+    dbo.customers c
+WHERE
+    EXISTS (
+        -- Đi tìm những khách hàng mua hàng năm 2017
+        SELECT
+            customer_id
+        FROM
+            dbo.orders o
+        WHERE
+            o.customer_id = c.customer_id
+        AND YEAR (order_date) = 2017
+    )
+ORDER BY
+    first_name,
+    last_name;
+```
+
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-subquery/
+
 ---> Còn tiếp ở Day-06
