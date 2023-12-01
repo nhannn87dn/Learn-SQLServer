@@ -424,3 +424,192 @@ SELECT * FROM dbo.udtf_PromotionProducts()
 ## 💛 Session 14 - Transactions
 
 
+### 💥 Transaction là gì?
+
+Transaction là một tập hợp các hoạt động được thực hiện như một đơn vị không thể chia rời. Mục tiêu chính của transaction là đảm bảo tính toàn vẹn và nhất quán của dữ liệu trong cơ sở dữ liệu trong quá trình thực hiện các hoạt động.
+
+Transaction được sử dụng để thực hiện các thay đổi dữ liệu trong cơ sở dữ liệu, bao gồm cả việc chèn, cập nhật và xóa dữ liệu. Một transaction bao gồm ít nhất hai hoặc nhiều hơn các hoạt động dữ liệu và được xem là một đơn vị làm việc hoàn chỉnh. 
+
+Nếu một hoặc nhiều hoạt động trong transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ được phục hồi về trạng thái ban đầu.
+
+Transaction được xác định bằng ba tính chất ACID:
+
+1. Atomicity (Toàn vẹn): Transaction được coi là một đơn vị toàn vẹn không thể chia rời. Nếu một phần của transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ trở về trạng thái ban đầu.
+
+2. Consistency (Nhất quán): Một transaction phải đảm bảo rằng dữ liệu sẽ được đưa về trạng thái nhất quán sau khi hoàn thành. Nếu dữ liệu không tuân thủ các ràng buộc hoặc quy tắc, transaction sẽ bị hủy.
+
+3. Isolation (Cô lập): Mỗi transaction phải thực hiện một cách cô lập và không bị tác động bởi các transaction khác đang thực hiện đồng thời. Điều này đảm bảo tính nhất quán của dữ liệu và tránh xảy ra xung đột.
+
+4. Durability (Bền vững): Một khi một transaction đã được hoàn thành thành công, các thay đổi dữ liệu phải được lưu trữ vĩnh viễn và không bị mất trong trường hợp xảy ra sự cố hệ thống.
+
+Trong SQL Server hoạt động theo các chế độ giao dịch sau:
+
+- Transaction tự động xác nhận (Autocommit transactions)
+- Mỗi câu lệnh riêng lẻ được coi là một giao dịch.
+
+Các ứng dụng của transaction:
+
+- Transaction được sử dụng để đảm bảo tính toàn vẹn của dữ liệu trong các ứng dụng doanh nghiệp.
+- Transaction có thể được sử dụng để thực hiện các thao tác như: chuyển tiền, thanh toán hóa đơn, đặt hàng, ...
+
+
+### 💥  Các lệnh quản lý transaction
+
+- **BEGIN TRANSACTION** : Dùng để bắt đầu một transaction.
+
+- **COMMIT TRANSACTION** : Dùng để xác nhận toàn bộ một transaction.
+
+- **COMMIT WORK** : Dùng để đánh đấu kết thúc của transaction.
+
+- **SAVE TRANSACTION** : Dùng để tạo một savepoint trong transaction.
+
+- **ROLLBACK WORK** : Dùng để hủy bỏ một transaction.
+
+- **ROLLBACK TRANSACTION** : Dùng để hủy bỏ toàn bộ một transaction.
+
+- **ROLLBACK TRANSACTION [SavepointName]** : Dùng để hủy bỏ một savepoint trong transaction
+
+### 💥 Cách sử dụng transaction
+
+Để bắt đầu một transaction bạn sử dụng từ khóa `BEGIN TRANSACTION` hoặc `BEGIN TRAN`
+
+```sql
+-- Bước 1:  start a transaction
+BEGIN TRANSACTION; -- or BEGIN TRAN
+
+-- Bước 2:  Các câu lênh truy vấn bắt đầu ở đây INSERT, UPDATE, and DELETE
+
+-- =====================
+-- Chạy xong các câu lệnh trên thì bạn kết thúc TRANSACTION với 1 trong 2 hình thức.
+-- =====================
+
+-- Bước 3 -  1. commit the transaction
+-- Để xác nhận thay đổi dữ liệu
+COMMIT;
+
+-- Bước 3 - 2. rollback -- Hồi lại những thay đổi trong những câu lệnh truy vấn ở trên. (Hủy ko thực hiện nữa, trả lại trạng thái ban đầu lúc chưa chạy)
+ROLLBACK;
+```
+
+Về bản chất các câu lệnh truy vấn trên nó chưa được ghi nhận thay đổi vào dữ liệu thật mà nó tạo ra dữ liệu tạm trước.
+
+Sau đó dựa vào Bước 3, chờ bạn quyết định như thế nào với dữ liệu tạm đó, thì nó mới chính thức đi cập nhật thay đổi với dữ liệu thật.
+
+
+Ví dụ: Tạo 2 bảng mới `invoices ` và `invoice_items`
+
+```sql
+-- Hóa đơn
+CREATE TABLE invoices (
+  id int IDENTITY(1,1) PRIMARY KEY,
+  customer_id int NOT NULL,
+  total decimal(10, 2) NOT NULL DEFAULT 0 CHECK (total >= 0),
+  FOREIGN KEY (customer_id) REFERENCES customers (customer_id)
+);
+-- Chi tiết các mục ghi vào hóa đơn
+CREATE TABLE invoice_items (
+  id int IDENTITY(1,1),
+  invoice_id int NOT NULL,
+  item_name varchar(100) NOT NULL,
+  amount decimal(18, 2) NOT NULL CHECK (amount >= 0),
+  tax decimal(4, 2) NOT NULL CHECK (tax >= 0),
+  PRIMARY KEY (id, invoice_id),
+  FOREIGN KEY (invoice_id) REFERENCES invoices (id)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
+);
+```
+
+Bây giờ chúng ta tạo một `TRANSACTION` thực hiện thêm mới dữ liệu vào cho 2 table cùng lúc:
+
+
+```sql
+-- Bước 1
+BEGIN TRANSACTION; -- or BEGIN TRAN
+-- Bước 2
+-- Thêm vào invoices
+INSERT INTO dbo.invoices (customer_id, total)
+VALUES (100, 0);
+-- Thêm vào invoice_items
+ INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Keyboard', 70, 0.08),
+       (1, 'Mouse', 50, 0.08);
+-- Thay đổi dữ liệu cho record đã chèn vào invoices
+UPDATE dbo.invoices
+SET total = (SELECT
+  SUM(amount * (1 + tax))
+FROM invoice_items
+WHERE invoice_id = 1);
+
+--Bước 3: xác nhận cho phép thay đổi dữ liệu
+COMMIT TRANSACTION; -- or COMMIT
+```
+
+Kết quả của một tập hợp các câu lệnh truy vấn trên:
+
+- Nếu 1 trong 3 câu lệnh THẤT BẠI ==> Tất cả sẽ đều THẤT BẠI, trả lại trạng thái ban đầu.
+- Nếu cả 3 THÀNH CÔNG ==> TRANSACTION thành công, dữ liệu được cập nhật.
+
+
+>Bạn có thể TEST trường hợp thất bại với câu lệnh UPDATE, bằng cách cho WHERE invoice_id = id không tồn tại
+
+
+Ví dụ 2: 
+
+
+```sql
+-- Bước 1
+BEGIN TRANSACTION;
+-- Bước 2
+-- Thêm vào invoice_items
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Headphone', 80, 0.08),
+       (1, 'Mainboard', 30, 0.08);
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'TochPad', 20, 0.08),
+       (1, 'Camera', 90, 0.08);
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Wifi', 120, 0.08),
+       (1, 'Bluetooth', 20, 0.08);
+
+--Bước 3: xác nhận HỦY thay đổi dữ liệu
+ROLLBACK TRANSACTION;
+```
+
+- Các câu lệnh ở Bước 2: vẫn chạy, và đưa vào dữ liệu tạm
+- Đến Bước 3, gặp câu lệnh `ROLLBACK` thì dữ liệu tạm bị HỦY, việc INSERT dữ liệu không được ghi nhận.
+
+
+Ví dụ 3:
+
+
+```sql
+-- Bước 1
+BEGIN TRANSACTION;
+-- Bước 2
+-- Thêm vào invoice_items
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Headphone', 80, 0.08),
+       (1, 'Mainboard', 30, 0.08);
+
+SAVE TRANSACTION Savepoint1
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'TochPad', 20, 0.08),
+       (1, 'Camera', 90, 0.08);
+
+ROLLBACK TRANSACTION Savepoint1
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Wifi', 120, 0.08),
+       (1, 'Bluetooth', 20, 0.08);
+
+--Bước 3: xác nhận cho phép thay đổi dữ liệu
+COMMIT TRANSACTION
+```
+
+`SAVE TRANSACTION` - Nó cho phép lưu lại trạng thái hiện tại của transaction và tiếp tục thực hiện các hoạt động trong transaction. Nếu sau đó có lỗi xảy ra, bạn có thể sử dụng lệnh ROLLBACK để hủy bỏ toàn bộ transaction hoặc sử dụng lệnh ROLLBACK TRANSACTION để hủy bỏ đến điểm đã được lưu trữ bởi SAVE TRANSACTION.
