@@ -66,6 +66,18 @@ Trong đó database_name là tên Database bạn muốn xóa
 
 ### 💥 Backup và Restore Một Database
 
+- Backup và restore từ file .bak
+- Gen ra thành SQL Scrtip để thực thi: Bao gồm cấu trúc Schema và Data
+
+### 💥 Database Snapshot
+
+Database snapshot là một bản sao tĩnh (read-only) của một cơ sở dữ liệu tại một thời điểm cụ thể. Nó lưu trữ dữ liệu nhưng không cho phép thay đổi dữ liệu trong snapshot. Database snapshot thường được sử dụng để tạo ra các bản sao lưu (backup) của cơ sở dữ liệu hoặc để tạo ra một điểm khôi phục (restore point) để phục hồi cơ sở dữ liệu sau khi có sự cố xảy ra.
+
+Khi tạo một snapshot, hệ thống sao chép các dữ liệu hiện có trong cơ sở dữ liệu và lưu trữ chúng trong một không gian lưu trữ riêng. Từ đó, các truy vấn đọc có thể được thực hiện trên snapshot mà không ảnh hưởng đến dữ liệu trong cơ sở dữ liệu gốc. Mỗi khi có một thay đổi dữ liệu trong cơ sở dữ liệu gốc, snapshot không bị ảnh hưởng, vẫn giữ nguyên dữ liệu lúc tạo snapshot.
+
+Snapshot có thể được sử dụng để phục hồi cơ sở dữ liệu trong trường hợp có sự cố xảy ra, ví dụ như mất dữ liệu, lỗi trong quá trình cập nhật dữ liệu, hoặc muốn phục hồi dữ liệu về một thời điểm cụ thể. Bằng cách khôi phục cơ sở dữ liệu từ snapshot, ta có thể đảm bảo rằng dữ liệu được phục hồi trở về trạng thái tương ứng với thời điểm tạo snapshot.
+
+Tuy nhiên, cần lưu ý rằng snapshot không phải là một phương án sao lưu hoàn chỉnh cho cơ sở dữ liệu. Nó chỉ lưu trữ dữ liệu hiện tại tại một thời điểm cụ thể và không bao gồm lịch sử thay đổi dữ liệu hoặc log giao dịch. Nếu muốn có một bản sao lưu đầy đủ và có khả năng khôi phục toàn bộ dữ liệu, cần sử dụng các phương pháp sao lưu khác như sao lưu toàn bộ cơ sở dữ liệu hoặc sao lưu theo log giao dịch.
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -342,6 +354,18 @@ Nếu bạn không thiết lập `IDENTITY_INSERT` bạn sẽ gặp lỗi:
 ```bash
 Cannot insert explicit value for identity column in table 'promotions' when IDENTITY_INSERT is set to OFF.
 ```
+
+
+**INSERT Với giá trị Unicode**
+
+Để hỗ trợ lưu trữ và hiển thị các giá trị là chuỗi Unicode bạn cần:8
+
+```sql
+INSERT INTO table_name (column1, column2) VALUES (N'Xin Chào', N'SQL Server khá dễ học');
+```
+
+Trong đó, tiền tố "N" trước chuỗi ký tự đảm bảo rằng chuỗi được coi là một chuỗi Unicode.
+
 
 **INSERT INTO SELECT statement**
 

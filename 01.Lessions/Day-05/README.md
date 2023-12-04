@@ -392,10 +392,10 @@ SELECT TOP 10 *
 FROM products
 ```
 
-Ví dụ lấy 5% số lượng bản ghi đầu tiên từ table products
+Ví dụ lấy 5% số lượng bản từ table products
 
 ```sql
---- Mang tính tương đối
+--- Ngẩu nhiên --> Mang tính tương đối
 SELECT TOP 5 PERCENT * 
 FROM products
 ```

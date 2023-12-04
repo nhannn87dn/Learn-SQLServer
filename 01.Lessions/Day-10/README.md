@@ -3,9 +3,56 @@
 
 ## 💛 Session 16 - Enhancements in SQL Server 2019
 
-Những cải tiến SQL Server 2019
-
 Xem link: https://learn.microsoft.com/en-us/sql/sql-server/what-s-new-in-sql-server-2019?view=sql-server-ver16
+
+### 💥 Verbose Truncation Warnings
+
+Khái niệm "Verbose Truncation Warnings" có thể được hiểu là một cách thức hoạt động hoặc một tính năng trong việc cắt giảm (truncation) thông báo dài hay chi tiết (verbose warnings) trong lập trình hoặc các ngôn ngữ lập trình.
+
+```sql
+CREATE TABLE [dbo].[tbl_Color](
+    [Color ID] [int] IDENTITY(1,1) NOT NULL,
+    [Color Name] [varchar](3) NULL
+) ON [PRIMARY]
+GO
+ 
+INSERT INTO [dbo].[tbl_Color]
+           ([Color Name])
+     VALUES
+           ('Red'),
+           ('Blue'), -- Vượt quá độ dài đã khai báo
+           ('Green') --
+GO
+```
+
+==> Khi chạy lênh trên bạn sẽ SQL Server 2019 báo lỗi cánh báo độ dài dữ liệu vượt quá cấu trúc dữ liệu đã khai báo.
+
+
+
+### 💥 Verbose Truncation Warnings
+
+Vulnerability Assessment (đánh giá lỗ hổng) là quá trình xác định, đánh giá và đo lường các lỗ hổng bảo mật trong hệ thống, mạng, ứng dụng hoặc công nghệ thông tin. Mục tiêu của Vulnerability Assessment là tìm ra các điểm yếu và lỗ hổng trong hệ thống và đưa ra các khuyến nghị về biện pháp bảo mật để giảm thiểu nguy cơ xâm nhập hoặc tấn công.
+
+
+Click phải lên `Database` của bạn, sau đó chọn `Tasks` --> `Chọn Vulnerability assessment` =>  `Scan for Vulnerabilities`...
+
+
+![](https://learn.microsoft.com/en-us/sql/relational-databases/security/media/sql-vulnerability-assessment/1-ssmsgetstarted.png?view=sql-server-ver16)
+
+Quét xong bạn sẽ nhận được một báo cáo
+
+![ds](https://learn.microsoft.com/en-us/sql/relational-databases/security/media/sql-vulnerability-assessment/3-ssmsscanresults.png?view=sql-server-ver16)
+
+Chi tiết xem: https://learn.microsoft.com/en-us/sql/relational-databases/security/sql-vulnerability-assessment?view=sql-server-ver16
+
+### 💥 Big Data Clusters
+
+Big Data Clusters trong SQL Server là một tính năng mới được giới thiệu từ phiên bản SQL Server 2019. Nó cung cấp khả năng tích hợp và quản lý dữ liệu lớn (big data) từ nhiều nguồn khác nhau trong một môi trường SQL Server duy nhất.
+
+Big Data Clusters cho phép người dùng lưu trữ và truy vấn dữ liệu từ các nguồn bên ngoài, chẳng hạn như dữ liệu Hadoop, Apache Spark, và dữ liệu có cấu trúc khác. Nó cung cấp một lớp trừu tượng trên dữ liệu Big Data, cho phép người dùng truy vấn và xử lý dữ liệu lớn bằng cách sử dụng ngôn ngữ truy vấn SQL quen thuộc.
+
+Big Data Clusters trong SQL Server cũng cung cấp tính năng Scale-Out, cho phép mở rộng ngang dữ liệu và công việc xử lý trên nhiều nút (nodes) trong một cụm (cluster). Điều này giúp tăng khả năng xử lý và hiệu suất khi làm việc với dữ liệu lớn.
+
 
 ### 💥 JSON Data
 

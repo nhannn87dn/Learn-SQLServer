@@ -14,3 +14,20 @@
 
 - https://www.sqlservertutorial.net
 - https://www.w3schools.com/sql/default.asp
+
+## Tips
+
+
+Tạo số ngẫu nhiên 1-4
+
+```sql
+ABS(CHECKSUM(NEWID())) % 4 + 1
+```
+
+Tạo ngày ngẩu nhiên từ 1970-01-01 
+
+```sql
+UPDATE customers
+SET birthday = DATEADD(DAY, ABS(CHECKSUM(NEWID())) % DATEDIFF(DAY, '1970-01-01', GETDATE()), '1970-01-01')
+```
+

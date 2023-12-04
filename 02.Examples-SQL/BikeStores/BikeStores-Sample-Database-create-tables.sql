@@ -1,8 +1,3 @@
---create Database Name
-CREATE DATABASE [BikeStores];
-GO
-
-USE [BikeStores];
 
 -- create tables
 CREATE TABLE dbo.categories (
@@ -19,7 +14,7 @@ CREATE TABLE dbo.brands (
 	[brand_name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](500) NULL,
 	-- CONSTRAINTs
-	CONSTRAINT [pk_categories_brands] PRIMARY KEY([brands]),
+	CONSTRAINT [pk_categories_brands] PRIMARY KEY([brand_id]),
 	CONSTRAINT [uq_brands] UNIQUE([brand_name])
 );
 
@@ -33,7 +28,7 @@ CREATE TABLE dbo.products (
 	[discount] [decimal](4, 2) NOT NULL DEFAULT 0,
 	[description] [nvarchar](max) NULL,
 	-- CONSTRAINTs
-	CONSTRAINT pk_products_product_id PRIMARY KEY(product_id)
+	CONSTRAINT pk_products_product_id PRIMARY KEY(product_id),
 	CONSTRAINT fk_products_category_id FOREIGN KEY (category_id) REFERENCES dbo.categories (category_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT fk_products_brand_id FOREIGN KEY (brand_id) REFERENCES dbo.brands (brand_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT uq_products_product_name UNIQUE(product_name),
@@ -46,7 +41,8 @@ CREATE TABLE dbo.customers (
 	[first_name] [nvarchar](255) NOT NULL,
 	[last_name] [nvarchar](255) NOT NULL,
 	[phone] [varchar](25) NOT NULL,
-	[email] [varchar](255) NOT NULL,
+	[email] [varchar](150) NOT NULL,
+	[birthday] [date] NULL,
 	[street] [nvarchar](255) NOT NULL,
 	[city] [nvarchar](50) NOT NULL,
 	[state] [nvarchar](50) NOT NULL,
@@ -81,13 +77,14 @@ CREATE TABLE dbo.staffs (
 	-- CONSTRAINTs
 	CONSTRAINT pk_staffs_staff_id PRIMARY KEY(staff_id),
 	CONSTRAINT uq_staffs_email UNIQUE(email),
+	CONSTRAINT uq_staffs_phone UNIQUE(phone),
 	CONSTRAINT fk_staffs_store_id FOREIGN KEY (store_id) REFERENCES dbo.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT fk_staffs_manager_id FOREIGN KEY (manager_id) REFERENCES dbo.staffs (staff_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 );
 
 CREATE TABLE [dbo].[orders] (
 	[order_id] [int] IDENTITY(1,1) NOT NULL,
-	[customer_id] [int] NULL,
+	[customer_id] [int] NOT NULL,
 	[order_status] [tinyint] NOT NULL,
 	-- Order status: 1 = Pending; 2 = Processing; 3 = Rejected; 4 = Completed
 	[order_date] [date] NOT NULL,
@@ -104,9 +101,9 @@ CREATE TABLE [dbo].[orders] (
 
 	-- CONSTRAINTs
 	CONSTRAINT [pk_orders_order_id] PRIMARY KEY([order_id]),
-	CONSTRAINT [fk_orders_customer_id] FOREIGN KEY ([customer_id]) REFERENCES [dbo.customers] ([customer_id]) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [fk_orders_store_id] FOREIGN KEY ([store_id]) REFERENCES [dbo.stores] ([store_id]) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT [fk_orders_staff_id] FOREIGN KEY ([staff_id]) REFERENCES [dbo.staffs] ([staff_id]) ON DELETE NO ACTION ON UPDATE NO ACTION,
+	CONSTRAINT [fk_orders_customer_id] FOREIGN KEY ([customer_id]) REFERENCES dbo.customers([customer_id]) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT [fk_orders_store_id] FOREIGN KEY ([store_id]) REFERENCES dbo.stores([store_id]) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT [fk_orders_staff_id] FOREIGN KEY ([staff_id]) REFERENCES dbo.staffs([staff_id]) ON DELETE NO ACTION ON UPDATE NO ACTION,
 	CONSTRAINT [ck_orders_order_status] CHECK([order_status] IN (1,2,3,4)),
 	CONSTRAINT [ck_orders_payment_type] CHECK([payment_type] IN (1,2,3,4)),
 );
