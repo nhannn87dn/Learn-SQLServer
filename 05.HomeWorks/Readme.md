@@ -111,8 +111,8 @@
 | --- | ------------ | -------------- | -------- | ---------- | ----------- | ----------- | ------------ | ---------------------------------- | ----- |
 | 1   | product_id   | INT            |          |            | Primary Key |             |              | IDENTITY(1, 1)                     |       |
 | 2   | product_name | NVARCHAR       | 50       |            |             |             |              |                                    |       |
-| 3   | price        | DECIMAL(18, 2) |          |            |             |             | 0            | Check: Price >= 0                  |       |
-| 4   | discount     | DECIMAL(18, 2) |          |            |             |             | 0            | Check: Discount BETWEEN 0 AND 70   |       |
+| 3   | price        | DECIMAL(18, 2) |          |            |             |             | 0            | Check: price >= 0                  |       |
+| 4   | discount     | DECIMAL(18, 2) |          |            |             |             | 0            | Check: discount BETWEEN 0 AND 70   |       |
 | 5   | category_id  | INT            |          |            |             | Foreign Key |              | Reference categories (category_id) |       |
 | 6   | brand_id     | INT            |          |            |             | Foreign Key |              | Reference brands (brand_id)        |       |
 | 7   | description  | NVARCHAR       | MAX      | Yes        |             |             |              |                                    |       |
@@ -225,9 +225,9 @@
 | 1   | order_id   | INT            |          |            | Primary Key | Foreign Key |              | Reference orders (order_id)      |
 | 2   | item_id    | INT            |          |            | Primary Key |             |              |                                  |
 | 3   | product_id | INT            |          |            |             | Foreign Key |              | Reference products (product_id)  |
-| 3   | quantity   | INIT           |          |            |             |             | 0            | Check: Quantity >= 0             |
-| 4   | price      | DECIMAL(18, 2) |          |            |             |             | 0            | Check: Price >= 0                |
-| 5   | discount   | DECIMAL(18, 2) |          |            |             |             | 0            | Check: Discount BETWEEN 0 AND 70 |
+| 3   | quantity   | INIT           |          |            |             |             | 0            | Check: quantity >= 0             |
+| 4   | price      | DECIMAL(18, 2) |          |            |             |             | 0            | Check: price >= 0                |
+| 5   | discount   | DECIMAL(18, 2) |          |            |             |             | 0            | Check: discount BETWEEN 0 AND 70 |
 
 
 
@@ -236,51 +236,57 @@
 
 2. Tạo mỗi bảng từ 5-10 records: Sử dụng câu lệnh INSERT, thứ tự nhập dữ liệu cho các tables:
 
-- Categories
-- Suppliers
-- Customers
-- Employees
-- Products
-- Orders
-- OrderDetails
+- categories
+- brands
+- customers
+- staffs
+- products
+- stores
+- stocks
+- orders
+- order_items
+
 
 ---
 
-## 💛  Phần B: Câu lệnh INSERT, UPDATE, DELETE
+## 💛  Phần B: Câu lệnh  UPDATE, DELETE
 
-1. 1. Viết câu lệnh UPDATE để cập nhật Price với điều kiện: Các mặt hàng có Price <= 100000 thì tăng thêm 10%
-1. 1. Viết câu lệnh UPDATE để cập nhật DISCOUNT với điều kiện: Các mặt hàng có Discount <= 10% thì tăng thêm 5%
-1. 1. Viết câu lệnh XOÁ tất cả các mặt hàng có Stock là 0
+1. Viết câu lệnh UPDATE để cập nhật price với điều kiện: Các mặt hàng có price <= 100 thì tăng thêm 10%
+1. Viết câu lệnh UPDATE để cập nhật DISCOUNT với điều kiện: Các mặt hàng có discount <= 10% thì tăng thêm 5%
+1. Viết câu lệnh XOÁ tất cả các mặt hàng có quanlity là 0
+1. Chèn vào table brands thêm 3 thương hiệu nữa rồi sau đó viết câu lệnh XÓA 3 thương hiệu vừa thêm
+1. Viết câu lệnh UPDATE để cập nhật ngày thay đổi `updated_at` của table taxes bằng ngày hiện tại
+1. Viết câu lệnh UPDATE để cập nhật `max_local_tax_rate` tăng 2% và `avg_local_tax_rate ` tăng 1% của table taxes cho những quận nào có `max_local_tax_rate`  1%
+1. Viết câu lệnh UPDATE để cập nhật tiền hoa hồng cho tất cả nhân viên ở bảng `commissions`
+
 
 ## 💛  Phần C: Truy vấn cơ bản
 
 1. Hiển thị tất cả các mặt hàng có giảm giá <= 10%
 1. Hiện thị tất cả các mặt hàng không có giảm giá
 1. Hiển thị tất cả các mặt hàng có số lượng tồn kho <= 5
-1. Hiển thị tất cả các mặt hàng có Giá bán sau khi đã giảm giá <= 100.000
-1. Hiện thị tất cả các mặt hàng thuộc danh mục CPU, RAM
-1. Hiển thị tất cả các khách hàng có địa chỉ ở Quận Hải Châu
-1. Hiển thị tất cả các khách hàng có địa chỉ ở Quận Hải Châu hoặc Quận Thanh Khê
+1. Hiển thị tất cả các mặt hàng có Giá bán sau khi đã giảm giá <= 100
+1. Hiện thị tất cả các mặt hàng thuộc danh mục A AND B và A OR B
+1. Hiển thị tất cả các khách hàng có địa chỉ ở `city = 'New York'`
+1. Hiển thị tất cả các khách hàng có địa chỉ ở `city = 'New York'` hoặc `city = 'Victoria'`
 1. Hiển thị tất cả các khách hàng có năm sinh 1990.
 1. Hiển thị tất cả các khách hàng có tuổi trên 60.
 1. Hiển thị tất cả các khách hàng có tuổi từ 20 đến 30.
 1. Hiển thị tất cả các khách hàng có sinh nhật là hôm nay. Gợi ý: dùng hàm GETDATE(), MONTH(), DAY()
-1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED
-1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED trong ngày hôm nay
+1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4)
+1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong ngày hôm nay
 1. Hiển thị tất cả các đơn hàng chưa hoàn thành trong tháng này
-1. Hiển thị tất cả các đơn hàng có trạng thái là CANCELED
-1. Hiển thị tất cả các đơn hàng có trạng thái là CANCELED trong ngày hôm nay
-1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED trong tháng này
-1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED trong tháng 1 năm 2021
-1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED trong năm 2021
-1. Hiển thị tất cả các đơn hàng có hình thức thanh toán là CASH
-1. Hiển thị tất cả các đơn hàng có hình thức thanh toán là CREADIT CARD
-1. Hiển thị tất cả các đơn hàng có địa chỉ giao hàng là Hà Nội
+1. Hiển thị tất cả các đơn hàng có trạng thái là CANCELED (order_status = 3)
+1. Hiển thị tất cả các đơn hàng có trạng thái là CANCELED (order_status = 3) trong ngày hôm nay
+1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong tháng này
+1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong tháng 1 năm 2021
+1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong năm 2021
+1. Hiển thị tất cả các đơn hàng có hình thức thanh toán là CASH (payment_type = 4)
+1. Hiển thị tất cả các đơn hàng có hình thức thanh toán là CREADIT CARD (payment_type = 2)
+1. Hiển thị tất cả các đơn hàng có địa chỉ giao hàng ở thành phố `Houton`
 1. Hiển thị tất cả các nhân viên có sinh nhật là tháng này
-1. Hiển thị tất cả các nhà cung cấp có tên là: (SONY, SAMSUNG, TOSHIBA, APPLE)
-1. Hiển thị tất cả các nhà cung cấp không có tên là: (SAMSUNG, APPLE)
-1. Hiển thị tất cả các nhà cung cấp có địa chỉ ở Quận Hải Châu và Quận Thanh Khê.
-1. Hiển thị tất cả các nhà cung cấp có địa chỉ ở Quận Hải Châu hoặc Quận Thanh Khê.
+1. Hiển thị tất cả các thương hiệu (brands) có tên là: (Electra, Haro, Heller, Trek)
+1. Hiển thị tất cả các thương hiệu (brands) không có tên là: (Heller, Trek)
 1. Hiển thị tất cả các khách hàng có sinh nhật là ngày hôm nay.
 1. Hiển thị xem có bao nhiêu mức giảm giá khác nhau.
 1. Hiển thị xem có bao nhiêu mức giảm giá khác nhau và số lượng mặt hàng có mức giảm giá đó.
@@ -295,46 +301,43 @@
 
 ## 💛  Phần D: Truy vấn nâng cao
 
-1. Hiển thị tất cả các mặt hàng cùng với CategoryName.
-SELECT ProductName, CategoryName
-FROM Products
-INNER JOIN Categories ON Products.CategoryId = Categories.Id
+1. Hiển thị tất cả các mặt hàng cùng với category_name.
+1. Hiển thị tất cả các mặt hàng cùng với brand_name.
 
-1. Hiển thị tất cả các mặt hàng cùng với SupplierName.
-SELECT ProductName, SupplierName
-FROM Products
-INNER JOIN Suppliers ON Products.SupplierId = Suppliers.Id
-
-1. Hiển thị tất cả các mặt hàng cùng với thông tin chi tiết của Category và Supplier.
-SELECT ProductName, CategoryName, SupplierName
-FROM Products
-INNER JOIN Categories ON Products.CategoryId = Categories.Id
-INNER JOIN Suppliers ON Products.SupplierId = Suppliers.Id
+1. Hiển thị tất cả các mặt hàng cùng với thông tin chi tiết của categories và brands
 
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer.
-1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết nhân viên Employee.
-1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer và nhân viên Employee.
+1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết nhân viên Staff.
+1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer và nhân viên Staff.
 1. Hiển thị tất cả danh mục (Categories) với số lượng hàng hóa trong mỗi danh mục
-Dùng INNER JOIN + GROUP BY với lệnh COUNT
-Dùng SubQuery với lệnh COUNT
-1. Hiển thị tất cả nhà cung cấp (Suppliers) với số lượng hàng hóa mỗi nhà cung cấp
-Dùng INNER JOIN + GROUP BY với lệnh COUNT
-Dùng SubQuery với lệnh COUNT
+
+- Dùng INNER JOIN + GROUP BY với lệnh COUNT
+- Dùng SubQuery với lệnh COUNT
+
+1. Hiển thị tất cả thương hiệu (brands) với số lượng hàng hóa mỗi thương hiệu (brands)
+
+- Dùng INNER JOIN + GROUP BY với lệnh COUNT
+- Dùng SubQuery với lệnh COUNT
+
 1. Hiển thị tất cả các mặt hàng được bán trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả các khách hàng mua hàng trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả các khách hàng mua hàng (với tổng số tiền) trong khoảng từ ngày, đến ngày
-Dùng INNER JOIN + GROUP BY với lệnh SUM
-Dùng SubQuery với lệnh SUM
+
+- Dùng INNER JOIN + GROUP BY với lệnh SUM
+- Dùng SubQuery với lệnh SUM
+
 1. Hiển thị tất cả đơn hàng với tổng số tiền của đơn hàng đó
 1. Hiển thị tất cả các nhân viên bán hàng với tổng số tiền bán được
 1. Hiển thị tất cả các mặt hàng không bán được
-1. Hiển thị tất cả các nhà cung cấp không bán được trong khoảng từ ngày, đến ngày
+1. Hiển thị tất cả các thương hiệu (brands) không bán được trong khoảng từ ngày, đến ngày
 1. Hiển thị top 3 các nhân viên bán hàng với tổng số tiền bán được từ cao đến thấp trong khoảng từ ngày, đến ngày
 1. Hiển thị top 5 các khách hàng mua hàng với tổng số tiền mua được từ cao đến thấp trong khoảng từ ngày, đến ngày
 1. Hiển thị danh sách các mức giảm giá của cửa hàng
 1. Hiển thị tất cả danh mục (Categories) với tổng số tiền bán được trong mỗi danh mục
-Dùng INNER JOIN + GROUP BY với lệnh SUM
-Dùng SubQuery với lệnh SUM
+
+- Dùng INNER JOIN + GROUP BY với lệnh SUM
+- Dùng SubQuery với lệnh SUM
+
 1. Hiển thị tất cả đơn hàng với tổng số tiền mà đã được giao hàng thành công trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả đơn hàng có tổng số tiền bán hàng nhiều nhất trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả đơn hàng có tổng số tiền bán hàng ít nhất trong khoảng từ ngày, đến ngày
@@ -344,35 +347,39 @@ Dùng SubQuery với lệnh SUM
 
 ## 💛  Phần E: Views
 
-1. Hiển thị danh sách các mức giảm giá của cửa hàng cùng với số lượng mặt hàng được giảm giá đó, gồm các fields: Discount, NumberOfProducts, Total.
-1. Hiển thị tất cả các mặt hàng cùng với thông tin chi tiết của Category và Supplier gồm các fields: Id, Name, Price, Discount, CategoryId, CategoryName, SupplierId, SupplierName.
-1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer và Employee gồm các fields: Id, OrderDate, Status, CustomerId, CustomerName, CustomerAddress, CustomerPhone, EmployeeId, EmployeeName, EmployeeAddress, EmployeePhone, Total.
-1. Hiển thị tất cả danh mục (Categories) với số lượng hàng hóa trong mỗi danh mục, gồm các fields: Id, Name, Description, NumberOfProducts.
-Dùng INNER JOIN + GROUP BY với lệnh COUNT
-Dùng SubQuery với lệnh COUNT
-1. Hiển thị tất cả nhà cung cấp (Suppliers) với số lượng hàng hóa mỗi nhà cung cấp, gồm các fields: Id, Name, Address, PhoneNumber, NumberOfProducts.
-Dùng INNER JOIN + GROUP BY với lệnh COUNT
-Dùng SubQuery với lệnh COUNT
-1. Hiển thị tất cả các khách hàng mua hàng với tổng số tiền mua hàng, gồm các fields: Id, Name, Address, PhoneNumber, Total.
+1. Hiển thị danh sách các mức giảm giá của cửa hàng cùng với số lượng mặt hàng được giảm giá đó, gồm các fields: discount, NumberOfProducts, Total.
+1. Hiển thị tất cả các mặt hàng cùng với thông tin chi tiết của Category và Brand gồm các fields: product_id, product_name, price, discount, category_id, category_name, brand_id, brand_name.
+1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer và Staff gồm các fields: order_id, order_date, order_status, customer_id, customer_name, street, phone, staff_id, staff_name, staff_address, phone, total.
+1. Hiển thị tất cả danh mục (Categories) với số lượng hàng hóa trong mỗi danh mục, gồm các fields: category_id, category_name, description, NumberOfProducts.
+
+- Dùng INNER JOIN + GROUP BY với lệnh COUNT
+- Dùng SubQuery với lệnh COUNT
+
+1. Hiển thị tất cả thương hiệu (brands) (Brands) với số lượng hàng hóa mỗi thương hiệu (brands), gồm các fields: brand_id, brand_name, NumberOfProducts.
+
+- Dùng INNER JOIN + GROUP BY với lệnh COUNT
+- Dùng SubQuery với lệnh COUNT
+
+1. Hiển thị tất cả các khách hàng mua hàng với tổng số tiền mua hàng, gồm các fields: customer_id, customer_name, address (street + city, state), phone, total.
 
 - Dùng INNER JOIN + GROUP BY với lệnh SUM
 - Dùng SubQuery với lệnh SUM
 
-Dùng Sub Query
 
+1. Hiển thị tất cả các nhân viên bán hàng với tổng số tiền bán được, gồm các fields: staff_id, staff_name,  phone, total.
 
-1. Hiển thị tất cả các nhân viên bán hàng với tổng số tiền bán được, gồm các fields: Id, Name, Address, PhoneNumber, Total.
-Dùng INNER JOIN + GROUP BY với lệnh SUM
-Dùng SubQuery với lệnh SUM
-1. Hiển thị tất cả các mặt hàng không bán được, gồm các fields: Id, Name, Price, Discount, CategoryId, CategoryName, SupplierId, SupplierName.
+- Dùng INNER JOIN + GROUP BY với lệnh SUM
+- Dùng SubQuery với lệnh SUM
 
-1. Hiển thị tất cả các nhà cung cấp không bán được, gồm các fields: Id, Name, Address, PhoneNumber.
-1. Hiển thị tất cả các nhân viên không bán được hàng, gồm các fields: Id, Name, Address, PhoneNumber.
+1. Hiển thị tất cả các mặt hàng không bán được, gồm các fields: product_id, product_name, price, discount, category_id, category_name, brand_id, brand_name.
+
+1. Hiển thị tất cả các thương hiệu (brands) không bán được, gồm các fields: brand_id, brand_name
+1. Hiển thị tất cả các nhân viên không bán được hàng, gồm các fields: staff_id, staff_name,  phone
 
 
 ## 💛  Phần F: Stored Procedures
 
-1. Hiển thị tất cả các mặt hàng có giảm giá <= @MinDiscount
+1. Hiển thị tất cả các mặt hàng có giảm giá <= @Mindiscount
 1. Hiển thị tất cả các mặt hàng có số lượng tồn kho <= @MinStock
 1. Hiển thị tất cả các mặt hàng có Giá bán sau khi đã giảm giá <= @Total
 1. Hiển thị tất cả các khách hàng có địa chỉ ở @Address
@@ -385,17 +392,17 @@ Dùng SubQuery với lệnh SUM
 1. Hiển thị tất cả đơn hàng theo trạng thái @Status với tổng số tiền của đơn hàng đó trong khoảng từ ngày @FromDate, đến ngày @ToDate
 1. Hiển thị tất cả các nhân viên bán hàng theo trạng thái @Status với tổng số tiền bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
 1. Hiển thị tất cả các mặt hàng không bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
-1. Hiển thị tất cả các nhà cung cấp không bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
+1. Hiển thị tất cả các thương hiệu (brands) không bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
 1. Hiển thị tất cả các khách hàng mua hàng với tổng số tiền trong khoảng từ ngày @FromDate, đến ngày @ToDate
 
 ## 💛  Phần G: Functions
 
 1. Viết 1 scalar function ghép FirstName @FirstName và LastName @LastName, tên function là udf_GetFullName
-1. Viết 1 scalar funtion tính total price (@Price, @Discount, @Quantity), tên function là udf_Product_GetTotalPrice
-1. Viết 1 scalar function tính total price của 1 Order (@OrderID), tên function là udf_Order_GetTotalPrice
-1. Viết table function trả về table gồm các fields: OrderId, ProductId, ProductName, CategoryId, CategoryName, Quantity, Price, Discount, Total với tham số @OrderId, tên function là udf_Order_GetOrderDetails
-1. Viết table function trả về các mức giá của 1 danh mục loại sản phẩm, với tham số @CategoryId, tên function là udf_Category_GetCategoryPrices
-1. Viết table function trả về các mức giảm giá của 1 danh mục loại sản phẩm, với tham số @CategoryId, tên function là udf_Category_GetCategoryDiscounts
+1. Viết 1 scalar funtion tính total price (@price, @discount, @quantity), tên function là udf_Product_GetTotalprice
+1. Viết 1 scalar function tính total price của 1 Order (@OrderID), tên function là udf_Order_GetTotalprice
+1. Viết table function trả về table gồm các fields: order_id, product_id, product_name, category_id, category_name, quantity, price, discount, total với tham số @OrderId, tên function là udf_Order_Getorder_items
+1. Viết table function trả về các mức giá của 1 danh mục loại sản phẩm, với tham số @category_id, tên function là udf_Category_GetCategoryprices
+1. Viết table function trả về các mức giảm giá của 1 danh mục loại sản phẩm, với tham số @category_id, tên function là udf_Category_GetCategorydiscounts
 1. Viết scalar function nhập vào năm sinh, trả về số tuổi, tên function là udf_CalculateAge
 1. Viết scalar function chuyển đổi UNICODE có dấu sang không dấu, tên function là udf_ConvertUnicodeToNonUnicode, ví dụ: udf_ConvertUnicodeToNonUnicode(N'Ngô Thanh Tùng') -> 'Ngo Thanh Tung'.
 
@@ -405,17 +412,18 @@ Dùng SubQuery với lệnh SUM
 
 ## 💛  H: Triggers
 
-1. Tạo 1 trigger trên bảng Orders: chặn update bảng Orders khi các Orders có Status = 'COMPLETED' hoặc 'CANCELLED'.
-1. Tạo 1 trigger trên bảng Orders: chặn delete bảng Orders khi các Orders có Status = 'COMPLETED' hoặc 'CANCELLED'.
-1. Tạo 1 trigger trên bảng OrderDetails: chặn update bảng OrderDetails khi các Orders có Status = 'COMPLETED' hoặc 'CANCELLED'.
-1. Tạo 1 trigger trên bảng OrderDetails: chặn delete bảng OrderDetails khi các Orders có Status = 'COMPLETED' hoặc 'CANCELLED'.
-1. Tạo 1 trigger trên bảng Orders: cập nhật tồn kho (Stock), trừ đi số lượng đã bán (Quantity) khi Orders có Status = 'WAITING', cộng lại số lượng đã bán (Quantity) khi Orders có Status = 'CANCELED'.
-1. Tạo 1 trigger trên bảng Orders: ghi nhật ký khi Orders được giao hàng thành công (Status = 'COMPLETED'), Ghi vào bảng OrderLogs (Id, OrderId, Status, CreatedDate, EmployeeId, CustomerId)
+1. Tạo 1 trigger trên bảng Orders: chặn update bảng Orders khi các Orders có order_status =  'COMPLETED (order_status = 4)' hoặc 'CANCELED (order_status = 3)'.
+1. Tạo 1 trigger trên bảng Orders: chặn delete bảng Orders khi các Orders có order_status =  'COMPLETED (order_status = 4)' hoặc 'CANCELED (order_status = 3)'.
+1. Tạo 1 trigger trên bảng order_items: chặn update bảng order_items khi các Orders có order_status =  'COMPLETED (order_status = 4)' hoặc 'CANCELED (order_status = 3)'.
+1. Tạo 1 trigger trên bảng order_items: chặn delete bảng order_items khi các Orders có order_status =  'COMPLETED (order_status = 4)' hoặc 'CANCELED (order_status = 3)'.
+1. Tạo 1 trigger trên bảng Orders: cập nhật tồn kho (quanlity), trừ đi số lượng đã bán (quantity) khi Orders có order_status =  'PENDING (order_status = 1)', cộng lại số lượng đã bán (quantity) khi Orders có order_status =  'CANCELED (order_status = 3)'.
+1. Tạo 1 trigger trên bảng Orders: ghi nhật ký khi Orders được giao hàng thành công (order_status =  'COMPLETED (order_status = 4)'), Ghi vào bảng OrderLogs (Id, OrderId, Status, CreatedDate, staff_id, customer_id)
 
 ## 💛  Phần I: Transactions
 
-1. Tạo store procedure với 1 transaction để thêm 1 Order mới, với các OrderDetails, và cập nhật tồn kho (Stock) của các mặt hàng, gồm các bước:
-Kiểm tra tồn kho (Stock) của mặt hàng có ProductId = @ProductId, nếu Stock < @Quantity thì rollback transaction, và trả về lỗi 'Số lượng tồn kho không đủ'
-1. Tạo 1 Order mới, với Status = 'WAITING', CreatedDate = GETDATE(), EmployeeId = @EmployeeId, CustomerId = @CustomerId
-1. Tạo 1 OrderDetail mới, với OrderId = OrderId vừa tạo, ProductId = @ProductId, Quantity = @Quantity, Price = Product.Price, Discount = Product.Discount
-1. Cập nhật tồn kho (Stock) của mặt hàng có ProductId = @ProductId, trừ đi @Quantity.
+1. Tạo store procedure với 1 transaction để thêm 1 Order mới, với các order_items, và cập nhật tồn kho (quanlity) của các mặt hàng, gồm các bước:
+
+- Kiểm tra tồn kho (quanlity) của mặt hàng có product_id = @product_id, nếu quanlity < @quantity thì rollback transaction, và trả về lỗi 'Số lượng tồn kho không đủ'
+- Tạo 1 Order mới, với order_status = 1, order-date = GETDATE(), staff_id = @staff_id, customer_id = @customer_id
+- Tạo 1 order_items mới, với order_id = order_id vừa tạo, product_id = @product_id, quantity = @quantity, price = products.price, discount = products.discount
+- Cập nhật tồn kho (quanlity) của mặt hàng có product_id = @product_id, trừ đi @quantity.

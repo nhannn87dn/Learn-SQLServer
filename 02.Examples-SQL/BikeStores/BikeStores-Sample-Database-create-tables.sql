@@ -86,7 +86,7 @@ CREATE TABLE [dbo].[orders] (
 	[order_id] [int] IDENTITY(1,1) NOT NULL,
 	[customer_id] [int] NOT NULL,
 	[order_status] [tinyint] NOT NULL,
-	-- Order status: 1 = Pending; 2 = Processing; 3 = Rejected; 4 = Completed
+	-- Order status: 1 = Pending; 2 = Processing; 3 = cancel; 4 = Completed
 	[order_date] [date] NOT NULL,
 	[required_date] [date] NOT NULL,
 	[shipped_date] [date] NULL,
@@ -131,4 +131,35 @@ CREATE TABLE [dbo].[stocks] (
 	CONSTRAINT fk_stocks_store_id FOREIGN KEY (store_id) REFERENCES dbo.stores (store_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT fk_stocks_product_id FOREIGN KEY (product_id) REFERENCES dbo.products (product_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT ck_stocks_quantity CHECK(quantity >= 0)
+);
+
+
+CREATE TABLE dbo.taxes (
+	tax_id INT IDENTITY (1, 1),
+	state VARCHAR (50) NOT NULL UNIQUE,
+	state_tax_rate DEC (3, 2),
+	avg_local_tax_rate DEC (3, 2),
+	combined_rate AS state_tax_rate + avg_local_tax_rate,
+	max_local_tax_rate DEC (3, 2),
+	updated_at datetime,
+	CONSTRAINT [pk_taxes_tax_id] PRIMARY KEY(tax_id),
+	CONSTRAINT uq_taxes_state UNIQUE(state)
+);
+
+CREATE TABLE dbo.targets
+(
+    target_id INT IDENTITY (1, 1), 
+    percentage DECIMAL(4, 2) NOT NULL DEFAULT 0,
+	CONSTRAINT [pk_targets_target_id] PRIMARY KEY(target_id)
+);
+
+CREATE TABLE dbo.commissions
+(
+    staff_id  INT, 
+    target_id  INT, 
+    base_amount DECIMAL(10, 2) NOT NULL DEFAULT 0, 
+    commission  DECIMAL(10, 2) NOT NULL DEFAULT 0,
+	CONSTRAINT [pk_commissions_staff_id] PRIMARY KEY(staff_id),
+    CONSTRAINT [fk_commissions_target_id] FOREIGN KEY (target_id) REFERENCES dbo.targets(target_id), 
+    CONSTRAINT [fk_commissions_staff_id] FOREIGN KEY (staff_id) REFERENCES dbo.staffs(staff_id);
 );

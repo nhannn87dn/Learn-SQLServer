@@ -53,9 +53,9 @@ Mô hình bán hàng thương mại điển tử phổ biến
 Chúng ta bắt gặp rất nhiều mối quan hệ giữa các table từ mô hình trên
 
 - Cagegories - Products: Xảy ra mối quan hệ 1 - NHIỀU. Tức là 1 danh mục có thể chứa 1 hoặc nhiều sản phẩm.
-- Suppliers - Products: Xảy ra mối quan hệ 1 - NHIỀU
+- Brands - Products: Xảy ra mối quan hệ 1 - NHIỀU
 - Customers - Orders: Xảy ra mối quan hệ 1 - NHIỀU
-- Employees - Orders: Xảy ra mối quan hệ 1 - NHIỀU
+- Staffs - Orders: Xảy ra mối quan hệ 1 - NHIỀU
 
 ### 💥 Một số thuật ngữ liên quan đến RDBMS
 
@@ -137,7 +137,4 @@ Normalization ==> Day 02
 
 ## 💛 Homeworks Guides
 
-Bài tập vẻ sở đồ E-R Diagram để thể hiện mối quan hệ giữa các thực thể
-
-
-## 💛 Download Software SQL Server 2019 and Tools
+- Download Software SQL Server 2019 and Tools
