@@ -46,7 +46,7 @@ Ngoài ba mô hình trên, còn có các mô hình khác như mô hình cơ sở
 
 Chúng ta sẽ tập trung chính vào mô hình **Relational Model**
 
-![relation](img/relation-model.png)
+![relation](../../02.Examples-SQL/BikeStores/SQL-Server-Sample-Database.png)
 
 Mô hình bán hàng thương mại điển tử phổ biến
 
