@@ -71,17 +71,23 @@ Bảng trên bao gồm các điểm dị thường sau:
 
 ### 💥 First Normal Form (1NF)
 
-*   Để đạt được 3NF, bảng cần thỏa mãn các điều kiện sau:
+*   Để đảm bảo tính nhất quán và chuẩn hóa dữ liệu trong cơ sở dữ liệu, các điểm dị thường INSERTION, DELETION và UPDATION cần được xử lý một cách thích hợp. Để làm được điều này, bảng cần được chuyển đổi thành First Normal Form (1NF).
     
-    *   Cần đạt được 2NF.
-    *   Tất cả các thuộc tính không khóa trong 3NF được yêu cầu là phải phụ thuộc trực tiếp vào mỗi khóa của quan hệ
+*   Để đạt được 1NF, bảng cần thỏa mãn các điều kiện sau:
+    
+    *   Các giá trị trong mỗi cột phải là giá trị đơn (Atomic value).
+    *   Các giá trị trong mỗi cột cùng một kiểu dữ liệu (Data type).
+    *   Xác định khóa cho mỗi hàng.
 *   Cách làm như sau:
     
-    *   Tạo bảng Grade với các cột: Grade và Salary.
-    *   Trong bảng Grade, cột Grade sẽ là khóa chính (primary key) để định danh mỗi hàng một cách duy nhất.
-    *   Xóa cột Salary trong bảng Employees.
-    *   Tạo mối quan hệ giữa bảng Employees và bảng Grade thông qua cột Grade.
-
+    *   Tách bảng thành hai bảng riêng biệt: một bảng cho thông tin về nhân viên (Employees) và một bảng cho thông tin về dự án (Projects).
+    *   Bảng Employees:
+        *   Các cột trong bảng Employees sẽ bao gồm: EmployeeId, EmployeeName, Grade và Salary, ProjectId.
+        *   Trong bảng Employees, EmployeeId và ProjectId sẽ là khóa chính (primary key) để định danh mỗi nhân viên một cách duy nhất.
+    *   Bảng Projects:
+        *   Các cột trong bảng Projects sẽ bao gồm: ProjectId và ProjectName.
+        *   Trong bảng Projects, ProjectId sẽ là khóa chính (primary key) để định danh mỗi dự án một cách duy nhất.
+        
 **📰 Bảng Employees**
 
 | EmployeeId | ProjectId | EmployeeName | Grade | Salary |
