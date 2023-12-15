@@ -1,132 +1,55 @@
---GROUPING SETS
-
-SELECT
-    b.brand_name AS brand,
-    c.category_name AS category,
-    p.model_year,
-    round(
-        SUM (
-            quantity * i.list_price * (1 - discount)
-        ),
-        0
-    ) sales INTO sales.sales_summary
-FROM
-    sales.order_items i
-INNER JOIN production.products p ON p.product_id = i.product_id
-INNER JOIN production.brands b ON b.brand_id = p.brand_id
-INNER JOIN production.categories c ON c.category_id = p.category_id
-GROUP BY
-    b.brand_name,
-    c.category_name,
-    p.model_year
-ORDER BY
-    b.brand_name,
-    c.category_name,
-    p.model_year;
-
--- Group by brand, category
-
-SELECT
-    brand,
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand,
-    category
-ORDER BY
-    brand,
-    category;
-
--- Group by brand
-
-SELECT
-    brand,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand
-ORDER BY
-    brand;
-
--- Group by category
-
-
-SELECT
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    category
-ORDER BY
-    category;
-
-
-SELECT
-    SUM (sales) sales
-FROM
-    sales.sales_summary;
-
--- MERGE results
-
-SELECT
-    brand,
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand,
-    category
-UNION ALL
-SELECT
-    brand,
-    NULL,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand
-UNION ALL
-SELECT
-    NULL,
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    category
-UNION ALL
-SELECT
-    NULL,
-    NULL,
-    SUM (sales)
-FROM
-    sales.sales_summary
-ORDER BY brand, category;
+--SELECT
+SELECT *
+FROM orders
+WHERE order_date BETWEEN '2016-01-01' AND '2016-03-01';
 
 
 
---Thay vì thế chúng ta gom lại chỉ với 1 câu truy vấn
+
+--GROUP BY
+
+SELECT discount
+FROM products
+ORDER BY discount ASC
+
+SELECT discount
+FROM products
+GROUP BY discount
+ORDER BY discount ASC
 
 
-SELECT
-	brand,
-	category,
-	SUM (sales) sales
-FROM
-	sales.sales_summary
-GROUP BY
-    -- Phân theo từng nhóm, trong 1 câu truy vấn
-	GROUPING SETS (
-		(brand, category),
-		(brand),
-		(category),
-		()
-	)
-ORDER BY
-	brand,
-	category;
+SELECT 
+  discount, 
+  COUNT(product_id) AS Total 
+GROUP BY discount
+ORDER BY discount ASC
+
+
+SELECT 
+  customer_id, 
+  SUM(order_amount) AS Total
+FROM orders
+GROUP BY customer_id
+ORDER BY customer_id ASC
+
+
+SELECT 
+  c.first_name || ' ' || c.last_name AS full_name, 
+  SUM(o.order_amount) AS total
+FROM orders AS o
+INNER JOIN customers AS c USING (customer_id)
+GROUP BY full_name
+ORDER BY total ASC
+
+
+
+SELECT 
+  c.first_name || ' ' || c.last_name AS full_name, 
+  SUM(o.order_amount) AS total
+FROM orders AS o
+INNER JOIN customers AS c USING (customer_id)
+GROUP BY full_name
+HAVING SUM(o.order_amount) > 30000
+ORDER BY total ASC
+
+

@@ -508,7 +508,7 @@ Ví dụ: Liệt kê danh sách giảm giá của những sản phẩm có giá 
 ```sql
 SELECT 
   discount, 
-  COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
+  COUNT(product_id) AS Total --- Đếm dựa vào ID và đặt tên là Total
 FROM products
 WHERE price > 20000
 GROUP BY discount
@@ -774,7 +774,7 @@ GROUP BY
         ()
      );
 ```
-Rất dài dòng, thay về thì dùng ngay `CUBE`
+Rất dài dòng, thay vì thế dùng ngay `CUBE`
 
 ```sql
 SELECT
@@ -788,7 +788,7 @@ GROUP BY
     CUBE (d1, d2, d3); -- Rút gọn lại còn 1 dòng
 ```
 
-Từ ví dụ trên có thể rút gọn lại, cho kết quả giống nhay
+Từ ví dụ trên có thể rút gọn lại, cho kết quả giống nhau
 
 ```sql
 SELECT
