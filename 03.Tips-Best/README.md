@@ -3,6 +3,7 @@
 NHỮNG YẾU TỐ NÀO ẢNH HƯỞNG ĐẾN HIỆU SUẤT DATABASE ?
 
 - SQL Server Performance Essentials – Full Course: https://www.youtube.com/watch?v=HvxmF0FUwrM
+- https://github.com/iCodeMechanic/Essentials-of-Sql-Server-Performance-for-Every-Developer/tree/master
 
 - https://learn.microsoft.com/en-us/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store?view=sql-server-ver16
 
