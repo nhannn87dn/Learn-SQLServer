@@ -144,12 +144,12 @@ WHERE first_name = 'Softech'
 SELECT * FROM customers_test WHERE first_name = 'Aptech'
 
 -- CHECK
-SELECT UseCounts, TEXT, query_plan
-FROM sys.dm_exec_cached_plans cp
-CROSS APPLY sys.dm_exec_sql_text(plan_handle) AS sqltext
-CROSS APPLY sys.dm_exec_query_plan(plan_handle) AS sqlplan
-WHERE text LIKE '%from customer%'
-AND text NOT LIKE '%SELECT UseCounts%'
+SELECT usecounts, TEXT, query_plan
+FROM sys.dm_exec_cached_plans 
+CROSS APPLY sys.dm_exec_sql_text(plan_handle)  sqltext
+CROSS APPLY sys.dm_exec_query_plan(plan_handle)  queryplan
+WHERE text LIKE '%FROM customer_index%'
+AND text NOT LIKE '%SELECT usecounts%'
 
 -----
 -- Table có Non-Clustered index trên cột first_name
@@ -165,11 +165,56 @@ on customers_test(first_name)
 DBCC FREEPROCCACHE;
 
 -- Chạy lại các câu lệnh sau khi có index
+
+
+-- Xóa All index
+-- Tạo index kết hợp first_name và email
+-- Thử tạo với 2 TH: (first_name, email) | ( email, first_name)
 ```
 
 
+Để xem chiến lược thực thi (execution plan) của một truy vấn trong SQL Server, bạn có thể sử dụng lệnh sau:
 
+```sql
+SET SHOWPLAN_TEXT ON;
+GO
+-- Đặt truy vấn của bạn ở đây
+GO
+SET SHOWPLAN_TEXT OFF;
+```
 
+Trong lệnh trên, bạn cần thay thế phần "-- Đặt truy vấn của bạn ở đây" bằng truy vấn mà bạn muốn xem chiến lược thực thi của nó.
+
+Khi thực thi lệnh trên, SQL Server sẽ hiển thị kết quả dưới dạng văn bản, cho thấy chi tiết về cách truy vấn sẽ được thực hiện và các phép toán được sử dụng trong quá trình thực thi. Kết quả này giúp bạn hiểu cách truy vấn được xử lý và có thể giúp trong việc tối ưu hóa và cải thiện hiệu suất của truy vấn.
+
+Dưới đây là một ví dụ về việc sử dụng lệnh "SET STATISTICS ON" để xem thông tin thống kê về thực thi của một truy vấn:
+
+```sql
+-- Bật thu thập thông tin thống kê
+SET STATISTICS IO ON;
+SET STATISTICS TIME ON;
+
+-- Thực thi truy vấn
+SELECT * FROM Customers WHERE Country = 'USA';
+
+-- Tắt thu thập thông tin thống kê
+SET STATISTICS IO OFF;
+SET STATISTICS TIME OFF;
+```
+
+Trong ví dụ trên, chúng ta bật thu thập thông tin thống kê bằng cách sử dụng lệnh "SET STATISTICS IO ON" và "SET STATISTICS TIME ON". Sau đó, chúng ta thực thi một truy vấn đơn giản để lấy tất cả các khách hàng từ nước Mỹ. Cuối cùng, chúng ta tắt thu thập thông tin thống kê bằng cách sử dụng lệnh "SET STATISTICS IO OFF" và "SET STATISTICS TIME OFF".
+
+Khi chạy truy vấn và thu thập thông tin thống kê, kết quả sẽ hiển thị trong cửa sổ kết quả. Ví dụ:
+
+```
+Table 'Customers'. Scan count 1, logical reads 10, physical reads 0, read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob read-ahead reads 0.
+SQL Server Execution Times:
+   CPU time = 0 ms,  elapsed time = 5 ms.
+```
+
+Trong kết quả trên, "logical reads" cho biết số lần đọc trang logic từ bộ nhớ, "physical reads" cho biết số lần đọc trang vật lý từ đĩa, "CPU time" cho biết thời gian CPU mà truy vấn đã sử dụng, và "elapsed time" cho biết thời gian thực tế mà truy vấn đã mất để hoàn thành.
+
+Thông tin thu thập từ "SET STATISTICS ON" có thể giúp bạn đánh giá hiệu suất của truy vấn, tìm hiểu về tải I/O và thời gian thực thi, và từ đó tối ưu hóa truy vấn hoặc cấu trúc cơ sở dữ liệu nếu cần thiết.
 
 
 ## 💛 Giám sát hiệu năng CSD
