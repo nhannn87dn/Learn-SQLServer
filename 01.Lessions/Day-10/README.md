@@ -161,6 +161,100 @@ Các khái niệm quan trọng trong Query Store bao gồm:
 
 Tóm lại, Query Store là một tính năng quan trọng trong SQL Server, giúp quản lý và tối ưu hóa hiệu suất các truy vấn. Nó thu thập thông tin về các truy vấn và cung cấp cơ sở dữ liệu, cấu hình, báo cáo và giao diện để phân tích và giám sát hiệu suất truy vấn.
 
+#### Kích hoạt bằng giao diện đồ họa
+
+Trong SQL Server Management Studio, bạn có thể kích hoạt Query Store bằng click phải lên `Database` của bạn, sau đó chọn `Properties` --> `Query Store`.
+
+Sau đó tại dòng `Operation Mode (Requested)` --> chọn `Read Write`
+
+![query-store](img/query-store.png)
+
+
+**Operation Mode**
+
+Giá trị hợp lệ bao gồm OFF, READ_ONLY và READ_WRITE. OFF tắt Query Store. Trong chế độ READ_WRITE, Query Store thu thập và lưu trữ thông tin về kế hoạch truy vấn và thống kê thực thi thời gian chạy. Trong chế độ READ_ONLY, thông tin có thể được đọc từ Query Store, nhưng thông tin mới không được thêm vào. Nếu không gian cấp phát tối đa của Query Store đã được sử dụng hết, chế độ hoạt động của Query Store sẽ chuyển sang chế độ READ_ONLY.
+
+**Operation Mode (Actual)**
+
+Lấy chế độ hoạt động thực tế của Query Store.
+
+**Operation Mode (Requested)**
+
+Lấy và đặt chế độ hoạt động mong muốn của Query Store.
+
+**Data Flush Interval (Minutes)**
+
+Xác định tần suất mà dữ liệu được ghi vào Query Store được lưu trữ xuống đĩa. Để tối ưu hóa hiệu suất, dữ liệu được thu thập bởi Query Store được ghi bất đồng bộ xuống đĩa. Tần suất mà việc truyền này bất đồng bộ xảy ra được cấu hình.
+
+**Statistics Collection Interval (Minutes)**
+Lấy và đặt giá trị khoảng thời gian thu thập thống kê.
+
+**Max Size (MB)**
+
+Lấy và đặt tổng không gian được cấp phát cho Query Store.
+
+**Query Store Capture Mode**
+
+- None: không thu thập các truy vấn mới.
+
+- All: thu thập tất cả các truy vấn.
+
+- Auto: thu thập các truy vấn dựa trên sử dụng tài nguyên.
+- Custom: chế độ tùy chỉnh hơn
+
+
+
+**Stale Query Threshold (Days)**
+
+Lấy và đặt ngưỡng truy vấn đã lỗi thời. Cấu hình đối số STALE_QUERY_THRESHOLD_DAYS để chỉ định số ngày giữ lại dữ liệu trong Query Store.
+
+**Purge Query Data**
+
+Xóa nội dung của Query Store.
+
+Xem thêm: 
+
+- [https://learn.microsoft.com/en-us/sql/relational-databases/performance/manage-the-query-store?view=sql-server-ver16&tabs=tsql](https://learn.microsoft.com/en-us/sql/relational-databases/performance/manage-the-query-store?view=sql-server-ver16&tabs=tsql)
+
+- [https://www.sqlshack.com/sql-server-query-store-overview/](https://www.sqlshack.com/sql-server-query-store-overview/)
+---
+
+#### Kích hoạt bằng T-SQL
+
+
+```sql
+ALTER DATABASE [QueryStoreDB]
+SET QUERY_STORE = ON
+    (
+      OPERATION_MODE = READ_WRITE,
+      CLEANUP_POLICY = ( STALE_QUERY_THRESHOLD_DAYS = 90 ),
+      DATA_FLUSH_INTERVAL_SECONDS = 900,
+      MAX_STORAGE_SIZE_MB = 1000,
+      INTERVAL_LENGTH_MINUTES = 60,
+      SIZE_BASED_CLEANUP_MODE = AUTO,
+      QUERY_CAPTURE_MODE = CUSTOM,
+      QUERY_CAPTURE_POLICY = (
+        STALE_CAPTURE_POLICY_THRESHOLD = 24 HOURS,
+        EXECUTION_COUNT = 30,
+        TOTAL_COMPILE_CPU_TIME_MS = 1000,
+        TOTAL_EXECUTION_CPU_TIME_MS = 100
+      )
+    );
+```
+
+Trong đó:
+
+| Cấu hình                 | Mô tả                                                                                                          | Giá trị mặc định                                    | Ghi chú                           |
+|-------------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------|----------------------------------|
+| MAX_STORAGE_SIZE_MB     | Xác định giới hạn dung lượng dữ liệu mà Query Store có thể sử dụng trong cơ sở dữ liệu khách hàng                | 100 trước SQL Server 2019 (15.x)<br>1000 từ SQL Server 2019 (15.x) | Áp dụng cho cơ sở dữ liệu mới |
+| INTERVAL_LENGTH_MINUTES | Xác định thời gian mỗi khoảng thời gian trong đó thống kê thời gian chạy của các kế hoạch truy vấn được tổng hợp và lưu trữ. Mỗi kế hoạch truy vấn hoạt động có tối đa một hàng cho một khoảng thời gian được xác định bằng cấu hình này | 60                                                 | Áp dụng cho cơ sở dữ liệu mới |
+| STALE_QUERY_THRESHOLD_DAYS | Chính sách dựa trên thời gian điều khiển thời gian lưu giữ của thống kê thời gian chạy và các truy vấn không hoạt động | 30                                                 | Áp dụng cho cơ sở dữ liệu mới và cơ sở dữ liệu có cài đặt mặc định trước đó (367) |
+| SIZE_BASED_CLEANUP_MODE | Xác định liệu việc làm sạch dữ liệu tự động diễn ra khi kích thước dữ liệu Query Store tiến gần đến giới hạn | AUTO                                               | Áp dụng cho tất cả cơ sở dữ liệu |
+| QUERY_CAPTURE_MODE | Xác định liệu tất cả các truy vấn hay chỉ một phần truy vấn được theo dõi | AUTO                                               | Áp dụng cho tất cả cơ sở dữ liệu |
+| DATA_FLUSH_INTERVAL_SECONDS | Xác định khoảng thời gian tối đa mà các thống kê thời gian chạy đã được ghi nhớ trong bộ nhớ trước khi lưu xuống đĩa | 900                                                | Áp dụng cho cơ sở dữ liệu mới |
+
+Lưu ý rằng các cấu hình này có thể khác nhau tùy thuộc vào phiên bản và cài đặt cụ thể của SQL Server.
+
 ---
 
 ### 💥 Stretch Database

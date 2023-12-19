@@ -31,3 +31,8 @@ UPDATE customers
 SET birthday = DATEADD(DAY, ABS(CHECKSUM(NEWID())) % DATEDIFF(DAY, '1970-01-01', GETDATE()), '1970-01-01')
 ```
 
+## Tips Performance
+
+- https://quantricsdulieu.com/tim-hieu-index-trong-sql-server-phan-1/
+- https://quantricsdulieu.com/tim-hieu-index-trong-sql-server-phan-2/
+- https://quantricsdulieu.com/hanh-trinh-dem-sao-4-do-luong-hieu-suat-truy-van-t-sql/
