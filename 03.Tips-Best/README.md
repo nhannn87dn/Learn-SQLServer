@@ -16,3 +16,5 @@ NHỮNG YẾU TỐ NÀO ẢNH HƯỞNG ĐẾN HIỆU SUẤT DATABASE ?
 - https://www.sqlshack.com/filtered-indexes-performance-analysis-and-hidden-costs/
 
 - https://www.sqlshack.com/sql-server-query-store-overview/
+
+- https://use-the-index-luke.com/sql/anatomy/the-tree

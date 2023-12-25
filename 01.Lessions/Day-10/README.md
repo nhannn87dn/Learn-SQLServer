@@ -8,6 +8,78 @@ Trong SQL Server, indexs (chỉ mục) là cấu trúc dữ liệu được sử
 
 Các loại indexs mà SQL Server hỗ trợ: https://learn.microsoft.com/en-us/sql/relational-databases/indexes/indexes?view=sql-server-ver16
 
+Trước khi đi vào từng loại index hãy tạo một table để như sau:
+
+```sql
+-- Tạo cấu trúc bảng customers_test
+CREATE TABLE dbo.customers_test (
+	[customer_id] [int]  NOT NULL,
+	[first_name] [nvarchar](255) NOT NULL,
+	[last_name] [nvarchar](255) NOT NULL,
+	[phone] [varchar](25) NOT NULL,
+	[email] [varchar](150) NOT NULL,
+	[birthday] [date] NULL,
+	[street] [nvarchar](255) NOT NULL,
+	[city] [nvarchar](50) NOT NULL,
+	[state] [nvarchar](50) NOT NULL,
+	[zip_code] [varchar](5) NULL,
+);
+-- Xõa dữ liệu nếu có
+DELETE FROM dbo.customer_index
+-- Đổ dữ liệu từ table customers, sắp xếp theo birthday
+INSERT INTO dbo.customer_index
+SELECT [customer_id], [first_name], [last_name], [phone], [email],
+       CONVERT(date, [birthday], 103), [street], [city], [state], [zip_code]
+FROM dbo.customers ORDER BY [birthday],[first_name];
+--Check xem có index không
+EXEC sp_helpindex 'customer_index';
+-- Xem dữ liệu hiện tại
+SELECT * FROM dbo.customer_index
+```
+
+
+### 💥  Cấu trúc B-TREE
+
+Là một cấu trúc dữ liệu được sử dụng để lưu trữ dữ liệu trong cơ sở dữ liệu. 
+
+![b-tree](img/be-tree.png)
+
+Các đặc điểm của B-Tree Index:
+
+- Dữ liệu index được tổ chức và lưu trữ theo dạng tree, tức là có root, branch, leaf.
+- Giá trị của các node được tổ chức tăng dần từ trái qua phải.
+- B-Tree index được sử dụng trong các biểu thức so sánh dạng: =, >, >=, <, <=, BETWEEN và LIKE. ⇒ Có thể tối ưu tốt cho câu lệnh ORDER BY
+-  Khi truy vấn dữ liệu thì CSDL sẽ không scan dữ liệu trên toàn bộ bảng để tìm dữ liệu, việc tìm kiếm trong B-Tree là 1 quá trình đệ quy, bắt đầu từ root node và tìm kiếm tới branch và leaf, đến khi tìm được tất cả dữ liệu – thỏa mãn với điều kiện truy vấn thì mới dùng lại.
+
+
+
+### 💥 Heap Structures
+
+- Heap là một cấu trúc bảng không có `Clustered index`
+- Các dòng không được sắp xếp theo thứ tự nào cả
+
+
+==> Dữ liệu mẫu `customers_test` trên chính là cấu trúc Heap. Tập dữ liệu không có thứ tự.
+
+![heap](img/customer-index.png)
+
+Nhìn vào bảng dữ liệu trong hình dưới đây và bạn hãy trả lời truy vấn "tìm nhân viên có customer_id bằng 5". Bạn sẽ làm thế nào?
+- Bạn sẽ phải tìm trong bảng dữ liệu trên: duyệt qua từng dòng và tìm customer_id = 5.
+- Nếu dòng dữ liệu của customer_id = 5 nằm ở vị trí thứ 2 - 3 thì nhanh chóng tìm thấy nó.
+- Nhưng nếu nó nằm ở cuối cùng của bảng dữ liệu thì sao ? Bạn sẽ phải mất một ít thời gian, `chi phí thực hiện` việc tìm kiếm đó.
+
+Test một câu lệnh truy vấn
+
+```sql
+SELECT * FROM dbo.customers_index WHERE customer_id = 5
+```
+
+Xem chiến lược thực thi và phân tích bạn sẽ thấy:
+
+- Table Scan: Hành động --> quét toàn bộ table
+- Estimated Opertator Cost: Chi phí thực thi (100%) 
+- ...Rows to be Read: 1445 dòng
+
 ### 💥 Clustered index
 
 https://learn.microsoft.com/en-us/sql/relational-databases/indexes/clustered-and-nonclustered-indexes-described?view=sql-server-ver16
@@ -22,20 +94,44 @@ Tuy nhiên, việc thay đổi dữ liệu trong một bảng có clustered inde
 
 Clustered index thường được sử dụng trong các truy vấn phân trang, truy vấn dựa trên phạm vi giá trị và các truy vấn sắp xếp dữ liệu.
 
-### 💥  Cấu trúc B-TREE
-
-Là một cấu trúc dữ liệu được sử dụng để lưu trữ dữ liệu trong cơ sở dữ liệu. Cấu trúc này được sử dụng trong các hệ quản trị cơ sở dữ liệu quan hệ như SQL Server, Oracle, MySQL, PostgreSQL, SQLite, v.v. để lưu trữ dữ liệu trong các bảng. Cấu trúc B-Tree được sử dụng để lưu trữ các chỉ mục trong các hệ quản trị cơ sở dữ liệu này.
-
-Vễ sơ đồ B-TREE bằng mermaid
 
 
 Ví dụ
 
 ```sql
 --Tạo clustered index
-CREATE CLUSTERED INDEX IX_Persons_Name
-ON Persons (LastName, FirstName);
+CREATE CLUSTERED INDEX CIX_customers_index_id
+ON customers_index (customer_id ASC);
 ```
+
+Quay trở lại với vụ dụ trên. Bây giờ bạn đánh `clustered index` trên trường customer_id.
+
+- Bạn sẽ có được một bảng dữ liệu được đánh số thứ tự rõ ràng.
+- Những dòng dữ liệu trong bảng được gom nhóm lại với nhau tạo thành page, một page có kích thước 8KB và tùy thuộc vào kích thước của mỗi dòng mà chứa được số lượng tương ứng. Giả dụ bảng NhanVien trên có kích thước 2000 bytes cho mỗi dòng, nên mỗi page sẽ chứa được 4 dòng như hình bên dưới.
+
+![index](img/b-tree-index.png)
+
+- Do vậy để tìm kiếm customer_id = 5. hệ thống sẽ dễ đang dự đoán được `5` ở vị trí nào.
+
+Test một câu lệnh truy vấn trên:
+
+```sql
+SELECT * FROM dbo.customers_index WHERE customer_id = 5
+```
+
+Xem chiến lược thực thi và phân tích bạn sẽ thấy:
+
+- Clustered Index seek: Hành động --> quét chỉ mục
+- Estimated Opertator Cost: Chi phí thực thi (0.003283)  
+- ...Rows to be Read: 1 dòng duy nhất
+
+Tóm lại clustered index trong SQL Server có các đặc điểm sau:
+
+- Dữ liệu của bảng sẽ được sắp xếp theo thứ tự clustered key
+- Sử dụng cấu trúc B-Tree để tạo ra các cấp độ lưu trữ key hỗ trợ tìm kiếm
+- Index có level càng cao thì việc tìm kiếm càng tốn thời gian hơn
+- Level của index phụ thuộc vào độ lớn dữ liệu trong bảng và kích thước của index key
+
 
 ### 💥  Nonclustered index
 
@@ -49,13 +145,51 @@ Một bảng có thể có nhiều nonclustered index được tạo ra trên c�
 
 Nonclustered index thường được sử dụng trong các truy vấn tìm kiếm, phân trang và sắp xếp dữ liệu.
 
-Ví dụ
+Cũng Quay lại với vị dụ trên.
+
+Bây giờ, nếu câu truy vấn muốn tìm khách hàng theo `phone` thì thế nào? liệu index ở phần trước có giúp được không?
 
 ```sql
---Tạo nonclustered index
-CREATE NONCLUSTERED INDEX IX_Persons_Name
-ON persons (LastName, FirstName);
+SELECT customer_id, phone FROM dbo.customers_index WHERE phone = '0968411372'
 ```
+
+Xem chiến lược thực thi:
+
+- Clustered Index seek: Hành động --> quét chỉ mục
+- Estimated Opertator Cost: Chi phí thực thi (0.0256122) 
+- ...Rows to be Read: 1445 dòng
+
+Qua đó thấy chí phí cao hơn, và nó phải tìm tất cả các dòng.
+
+Vậy thử hỏi bạn có thể tạo thêm một `clustered index` cho cột `phone` như đã tạo với `customer_id` không ? Hiển nhiên là không vì SQL Server không cho phép bạn tạo hơn 1 clustered index trên một table.
+
+Bạn có thể tối ưu bằng cách tạo `non-clustered index`
+
+- Để có thể sắp xếp `phone`  mà không làm mất đi thứ tự tập dữ liệu theo `customer_id`. SQL Server nhân bản dữ liệu của bảng  thành một tập khác rồi tổ chức sắp xếp index theo `phone` ==> Dung lượng Database sẽ phìn to lên.
+- Việc nhân bản này chỉ thực hiện trên các cột được chỉ định trong câu lệnh tạo `non-clustered index`
+
+```sql
+CREATE UNIQUE NONCLUSTERED INDEX UIX_customer_index_phone ON customers_index (phone)
+```
+
+Sau đó chạy lại truy vấn
+
+```sql
+SELECT customer_id, phone FROM dbo.customers_index WHERE phone = '0968411372'
+```
+
+Phân tích chiến lược thực thi bạn sẽ thấy sự khác biệt
+
+![plan](img/query-plan.png)
+
+- Đâu tiên: Bạn cần lấy `customer_id`, `phone`. SQL Server sẽ truy cập đến `nonclustered index để` để lấy dữ liệu, nhưng không có cột phone.
+- Tiếp theo: Lúc này nó dùng `customer_id`  để quay về `clustered index ` lấy thêm cột `phone` của dòng tương ứng. Hành động này gọi là key lookup và nó tốn chi phí để thực hiện nên tổng chi phí chung của câu truy vấn sẽ tăng lên.
+
+Bạn có thể rê chuột lên `Nested Loops` xem kết quản chung sau khi gộp 2 hành đồng lại.
+
+- Estimated Opertator Cost: Chi phí thực thi (0.00000042) 
+- ...Rows to be Read: 1 dòng
+
 
 ### 💥   Unique index
 
@@ -317,3 +451,72 @@ Vì vậy, khi sử dụng chỉ mục, cần cân nhắc kỹ lưỡng và thi�
 - Thu hẹp các khóa index bất cứ khi nào có thể: Liên tục thu hẹp index, chỉ một số cột nếu có thể. Những khóa số chính xác là những khóa index SQL hiệu quả nhất. Những khóa này cần ít dung lượng lưu trữ và chi phí bảo trì hơn.
 - Dùng index được nhóm trên các cột duy nhất - Xem xét các cột là duy nhất hay chứa nhiều giá trị riêng và tránh dùng chúng trên những cột thay đổi thường xuyên.
 - Index không theo nhóm trên cột được tìm kiếm thường xuyên.
+
+
+## 💛 Session 07- Azure SQL
+
+
+### 💥 Giới thiệu SQL Azure
+
+SQL Azure là một dịch vụ cơ sở dữ liệu quan hệ dựa trên đám mây, thúc đẩy các công nghệ SQL Server hiện có. Microsoft SQL Azure mở rộng chức năng của Microsoft SQL Server để phát triển các ứng dụng dựa trên web, có khả năng mở rộng và được phân phối. SQL Azure cho phép người dùng thực hiện các truy vấn quan hệ, hoạt động tìm kiếm và đồng bộ hóa dữ liệu với người dùng di động và các office từ xa. SQL Azure có thể lưu trữ và lấy cả dữ liệu có cấu trúc và phi cấu trúc.
+
+
+Quy trình hoạt động của SQL Azure được giải thích trong mô hình như được trình bày bên dưới:
+
+![](https://images.viblo.asia/63d95cfa-351a-44a6-a537-fa8976f1929c.png)
+
+### 💥  Mô hình hoạt động của SQL Azure
+
+Ba đối tượng cốt lõi trong mô hình hoạt động của SQL Azure như sau:
+
+1. Tài khoản
+
+Đầu tiên phải tạo một tài khoản SQL Azure. Tài khoản này được tạo ra cho mục đích thanh toán. Thuê bao tài khoản được ghi lại và đo lường, được tính tiền theo lượng sử dụng. Sau khi tài khoản người dùng được tạo ra, các yêu cầu cần phải được cung cấp cho cơ sở dữ liệu SQL Azure, bao gồm số lượng cơ sở dữ liệu cần thiết, kích thước cơ sở dữ liệu, v.v...
+
+2. Server
+
+Máy chủ SQL Azure là đối tượng giúp tương tác giữa tài khoản và cơ sở dữ liệu. Sau khi tài khoản được đăng ký, cơ sở dữ liệu được cấu hình sử dụng máy chủ SQL Azure. Các thiết lập khác như thiết lập tường lửa và gán tên miền (DNS) cũng được cấu hình trong máy chủ SQL Azure.
+
+3. Database
+
+Cơ sở dữ liệu SQL Azure lưu trữ tất cả dữ liệu theo cách tương tự như bất kỳ cơ sở dữ liệu SQL Server tại chỗ. Mặc dù lưu trữ bằng công nghệ đám mây, cơ sở dữ liệu SQL Azure có tất cả các chức năng của một RDBMS bình thường như table, view, query, function, thiết lập bảo mật, v.v...
+
+Ngoài những đối tượng cốt lõi thì còn một đối tượng bổ sung trong SQL Azure. Đối tượng này là công nghệ Đồng bộ dữ liệu SQL Azure. Công nghệ Đồng bộ dữ liệu SQL Azure được xây dựng trên Microsoft Sync Framework và cơ sở dữ liệu SQL Azure.
+
+SQL Azure Data Sync giúp đồng bộ hóa dữ liệu trên SQL Server cục bộ với các dữ liệu trên SQL Azure như được trình bày trong hình dưới:
+
+Data Sync còn có khả năng quản lý dữ liệu giúp chia sẻ dữ liệu dễ dàng giữa các cơ sở dữ liệu SQL khác nhau. Data Sync không chỉ được sử dụng để đồng bộ hóa tại chỗ với SQL Azure, mà còn để đồng bộ hóa một tài khoản SQL Azure với tài khoản khác.
+
+### 💥  Các lợi ích của SQL Azure
+
+1. Chi phí thấp hơn
+
+SQL Azure cung cấp một số hàm tương tự như trên SQL Server tại chỗ với chi phí thấp hơn so với SQL Server tại chỗ. Ngoài ra, khi SQL Azure trên nền tảng đám mây, nó có thể được truy cập từ bất kỳ vị trí nào. Do đó, không có thêm chi phí cần thiết để phát triển một cơ sở hạ tầng CNTT chuyên dụng và phòng ban để quản lý cơ sở dữ liệu.
+
+2. Sử dụng TDS
+
+TDS được sử dụng trong các cơ sở dữ liệu SQL Server tại chỗ cho các thư viện máy khách. Do đó, hầu hết các nhà phát triển đã quen thuộc với TDS và cách sử dụng tiện ích này. Cùng một loại giao diện TDS được sử dụng trong SQL Azure để xây dựng các thư viện máy khách. Do đó, các nhà phát triển làm việc trên SQL Azure dễ dàng hơn
+
+3. Biện pháp chuyển đổi dự phòng tự động
+
+SQL Azure lưu trữ nhiều bản sao dữ liệu trên các vị trí vật lý khác nhau. Thậm chí khi có lỗi phần cứng do sử dụng nhiều hoặc tải quá mức, SQL Azure giúp duy trì các hoạt động kinh doanh bằng cách cung cấp khả năng sẵn sàng của dữ liệu thông qua các địa điểm vật lý khác.
+
+4. Tính linh hoạt trong việc sử dụng dịch vụ
+
+Ngay cả các tổ chức nhỏ cũng có thể sử dụng SQL Azure bởi mô hình định giá cho SQL Azure được dựa trên khả năng lưu trữ được tổ chức sử dụng. Nếu tổ chức cần lưu trữ nhiều hơn, giá có thể thay đổi cho phù hợp với nhu cầu. Điều này giúp các tổ chức có được sự linh hoạt trong việc đầu tư tùy thuộc vào việc sử dụng dịch vụ.
+
+5. Hỗ trợ Transact-SQL
+
+Do SQL Azure hoàn toàn dựa trên mô hình cơ sở dữ liệu quan hệ, nó cũng hỗ trợ các hoạt động và truy vấn Transact-SQL. Khái niệm này cũng tương tự như hoạt động của các SQL Server tại chỗ. Do đó, các quản trị viên không cần bất kỳ đào tạo hoặc hỗ trợ bổ sung nào để sử dụng SQL Azure
+
+### 💥  Sự khác biệt giữa SQL Azure và SQL Server
+
+Một số khác biệt quan trọng khác giữa SQL Azure và SQL Server phía khách hàng như sau:
+
+- Các công cụ – SQL Server phía khách hàng cung cấp một số công cụ để theo dõi và quản lý. Tất cả những công cụ này có thể không được hỗ trợ bởi SQL Azure bởi có một số tập hợp công cụ hạn chế có sẵn trong phiên bản này
+- Sao lưu – Sao lưu và phục hồi chức năng phải được hỗ trợ trong SQL Server phía khách hàng để khắc phục thảm họa. Đối với SQL Azure, do tất cả các dữ liệu là trên nền tảng điện toán đám mây, sao lưu và phục hồi là không cần thiết
+- Câu lệnh USE – Câu lệnh USE không được SQL Azure hỗ trợ. Do đó, người dùng không thể chuyển đổi giữa các cơ sở dữ liệu trong SQL Azure so với SQL Server phía khách hàng.
+- Xác thực – SQL Azure chỉ hỗ trợ xác thực SQL Server và SQL Server phía khách hàng hỗ trợ cả xác thực SQL Server và xác thực của Windows
+Hỗ trợ Transact-SQL – Không phải tất cả các chức năng - Transact-SQL đều được SQL Azure hỗ trợ
+Tài khoản và đăng nhập – Trong SQL Azure, các tài khoản quản trị được tạo ra trong cổng thông tin quản lý Azure. Do đó, không có thông tin đăng nhập người dùng mức thể hiện cấp riêng biệt
+- Tường lửa – Các thiết lập tường lửa cho các cổng và địa chỉ IP cho phép có thể được quản lý trên máy chủ vật lý cho SQL Server phía khách hàng. Bởi cơ sở dữ liệu SQL Azure có mặt trên điện toán đám mây, xác thực thông qua các thông tin đăng nhập là phương pháp duy nhất để xác minh người dùng
