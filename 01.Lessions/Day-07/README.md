@@ -480,6 +480,144 @@ Ngoài ra SQL Server  còn hỗ trợ các loại funtions:
 
 Chi tiết xem tại: https://www.sqlservertutorial.net/sql-server-functions/
 
+### 💥 Expressions
+
+#### Mệnh đề CASE
+
+**simple CASE expression**
+
+Cú pháp:
+
+```sql
+CASE input   
+    WHEN e1 THEN r1
+    WHEN e2 THEN r2
+    ...
+    WHEN en THEN rn
+    [ ELSE re ]   
+END
+```
+
+Ví dụ:
+
+```sql
+SELECT    
+    CASE order_status
+        WHEN 1 THEN 'Pending'
+        WHEN 2 THEN 'Processing'
+        WHEN 3 THEN 'Rejected'
+        WHEN 4 THEN 'Completed'
+    END AS order_status, 
+    COUNT(order_id) order_count
+FROM    
+    sales.orders
+WHERE 
+    YEAR(order_date) = 2018
+GROUP BY 
+    order_status;
+```
+
+Kết quả:
+
+![case simple](img/SQL-Server-CASE-Expression-Using-Simple-CASE-in-SELECT-clause.png)
+
+
+**searched CASE expression**
+
+Cú pháp:
+
+```sql
+CASE  
+    WHEN e1 THEN r1
+    WHEN e2 THEN r2
+    ...
+    WHEN en THEN rn
+    [ ELSE re ]   
+END 
+```
+
+Ví dụ:
+
+```sql
+SELECT    
+    o.order_id, 
+    SUM(quantity * price) order_value,
+    CASE
+        WHEN SUM(quantity * price) <= 500 
+            THEN 'Very Low'
+        WHEN SUM(quantity * price) > 500 AND 
+            SUM(quantity * price) <= 1000 
+            THEN 'Low'
+        WHEN SUM(quantity * price) > 1000 AND 
+            SUM(quantity * price) <= 5000 
+            THEN 'Medium'
+        WHEN SUM(quantity * price) > 5000 AND 
+            SUM(quantity * price) <= 10000 
+            THEN 'High'
+        WHEN SUM(quantity * price) > 10000 
+            THEN 'Very High'
+    END order_priority
+FROM    
+    dbo.orders o
+INNER JOIN sales.order_items i ON i.order_id = o.order_id
+WHERE 
+    YEAR(order_date) = 2018
+GROUP BY 
+    o.order_id;
+
+```
+
+### COALESCE
+
+COALESCE là một hàm dùng để trả về giá trị đầu tiên không null từ danh sách các biểu thức. Nó được sử dụng để xác định một giá trị mặc định hoặc thay thế khi giá trị ban đầu là null.
+
+Ví dụ:
+
+```sql
+SELECT 
+    COALESCE(NULL, 'Hi', 'Hello', NULL) result;
+--Kết quả: Hi
+```
+
+Ví dụ thực tế:
+
+```sql
+SELECT 
+    first_name, 
+    last_name, 
+    COALESCE(phone,'N/A') phone, 
+    email
+FROM 
+    dbo.customers
+ORDER BY 
+    first_name, 
+    last_name;
+```
+
+Trường phone nếu NULL thì trả về 'N/A', còn không thì lấy chính nó.
+
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-coalesce/
+
+#### NULLIF
+
+NULLIF là một hàm được sử dụng để so sánh hai biểu thức. Nếu hai biểu thức bằng nhau, NULLIF sẽ trả về giá trị null. Nếu hai biểu thức không bằng nhau, NULLIF sẽ trả về giá trị của biểu thức đầu tiên.
+
+Cú pháp:
+
+```sql
+NULLIF(expression1, expression2)
+```
+
+Ví dụ:
+
+```sql
+SELECT NULLIF(10, 10) result; --=> NULL
+SELECT NULLIF(20, 10) result; --=> 20
+SELECT NULLIF('Hello', 'Hi') result; --=> 'Hello'
+```
+
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-nullif/
+
 
 ## 💛 Session 15 - Error Handing
 

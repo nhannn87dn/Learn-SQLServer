@@ -71,13 +71,19 @@ Nhìn vào bảng dữ liệu trong hình dưới đây và bạn hãy trả l�
 Test một câu lệnh truy vấn
 
 ```sql
-SELECT * FROM dbo.customers_index WHERE customer_id = 5
+SELECT customer_id FROM dbo.customers_index WHERE customer_id = 5
 ```
 
 Xem chiến lược thực thi và phân tích bạn sẽ thấy:
 
+![plan query](img/SQL-Server-Display-Estimated-Execution-Plan.png)
+
+Kết quả:
+
+![pan 1](img/query-plan-1.png)
+
 - Table Scan: Hành động --> quét toàn bộ table
-- Estimated Opertator Cost: Chi phí thực thi (100%) 
+- Estimated Opertator Cost: Chi phí thực thi (0.0315382) 
 - ...Rows to be Read: 1445 dòng
 
 ### 💥 Clustered index
@@ -94,6 +100,12 @@ Tuy nhiên, việc thay đổi dữ liệu trong một bảng có clustered inde
 
 Clustered index thường được sử dụng trong các truy vấn phân trang, truy vấn dựa trên phạm vi giá trị và các truy vấn sắp xếp dữ liệu.
 
+Cú pháp:
+
+```sql
+CREATE CLUSTERED INDEX index_name
+ON schema_name.table_name (column_list);  
+```
 
 
 Ví dụ
@@ -103,6 +115,12 @@ Ví dụ
 CREATE CLUSTERED INDEX CIX_customers_index_id
 ON customers_index (customer_id ASC);
 ```
+
+Sau khi tạo xong bạn có thể nó được lưu ở tại mục indexs của chính table đó
+
+![clusred index](img/clustered-indexs.png)
+
+Lưu ý: Bạn cũng có thể tạo bằng giao diện đồ họa, bằng cách click chuột phải lên mục `indexs` --> Chọn `New Index` --> chọn loại index muốn tạo.
 
 Quay trở lại với vụ dụ trên. Bây giờ bạn đánh `clustered index` trên trường customer_id.
 
@@ -116,10 +134,12 @@ Quay trở lại với vụ dụ trên. Bây giờ bạn đánh `clustered index
 Test một câu lệnh truy vấn trên:
 
 ```sql
-SELECT * FROM dbo.customers_index WHERE customer_id = 5
+SELECT customer_id FROM dbo.customers_index WHERE customer_id = 5
 ```
 
 Xem chiến lược thực thi và phân tích bạn sẽ thấy:
+
+![plan 2](img/query-plan-2.png)
 
 - Clustered Index seek: Hành động --> quét chỉ mục
 - Estimated Opertator Cost: Chi phí thực thi (0.003283)  
@@ -145,6 +165,13 @@ Một bảng có thể có nhiều nonclustered index được tạo ra trên c�
 
 Nonclustered index thường được sử dụng trong các truy vấn tìm kiếm, phân trang và sắp xếp dữ liệu.
 
+Cú pháp:
+
+```sql
+CREATE [NONCLUSTERED] INDEX index_name
+ON table_name(column_list);
+```
+
 Cũng Quay lại với vị dụ trên.
 
 Bây giờ, nếu câu truy vấn muốn tìm khách hàng theo `phone` thì thế nào? liệu index ở phần trước có giúp được không?
@@ -153,7 +180,11 @@ Bây giờ, nếu câu truy vấn muốn tìm khách hàng theo `phone` thì th�
 SELECT customer_id, phone FROM dbo.customers_index WHERE phone = '0968411372'
 ```
 
-Xem chiến lược thực thi:
+Kế hoạch thưc thi:
+
+![plan 2](img/query-plan-2.png)
+
+Xem chi tiết chiến lược thực thi:
 
 - Clustered Index seek: Hành động --> quét chỉ mục
 - Estimated Opertator Cost: Chi phí thực thi (0.0256122) 
@@ -178,22 +209,60 @@ Sau đó chạy lại truy vấn
 SELECT customer_id, phone FROM dbo.customers_index WHERE phone = '0968411372'
 ```
 
-Phân tích chiến lược thực thi bạn sẽ thấy sự khác biệt
+Kế hoạch thưc thi đã khác, sử dụng NonClustered:
+
+![plan 4](img/query-plan-4.png)
+
+Chi tiết ra:
+
+- Estimated Opertator Cost: Chi phí thực thi (0.00032831) 
+- ...Rows to be Read: 1 dòng
+
+Ví dụ tiếp: Bạn cần lấy thêm `first_name` như sau thì sao ? Không lẻ lại đi tạo một `nonclustered index` cho trường first_name nữa ? KHÔNG NÊN !!!
+
+```sql
+SELECT customer_id, phone, first_name FROM dbo.customers_index WHERE phone = '0968411372'
+```
+
+Phân tích chiến lược thực thi khi có thêm `first_name`
 
 ![plan](img/query-plan.png)
 
-- Đâu tiên: Bạn cần lấy `customer_id`, `phone`. SQL Server sẽ truy cập đến `nonclustered index để` để lấy dữ liệu, nhưng không có cột phone.
-- Tiếp theo: Lúc này nó dùng `customer_id`  để quay về `clustered index ` lấy thêm cột `phone` của dòng tương ứng. Hành động này gọi là key lookup và nó tốn chi phí để thực hiện nên tổng chi phí chung của câu truy vấn sẽ tăng lên.
+- Đâu tiên: Bạn cần lấy `customer_id`, `phone`, `first_name`. SQL Server sẽ truy cập đến `nonclustered index để` để lấy dữ liệu, nhưng không có cột first_name.
+- Tiếp theo: Lúc này nó dùng `customer_id`  để quay về `clustered index ` lấy thêm cột `first_name` của dòng tương ứng. Hành động này gọi là key lookup và nó tốn chi phí để thực hiện nên tổng chi phí chung của câu truy vấn sẽ tăng lên.
 
 Bạn có thể rê chuột lên `Nested Loops` xem kết quản chung sau khi gộp 2 hành đồng lại.
 
-- Estimated Opertator Cost: Chi phí thực thi (0.00000042) 
+- Estimated Opertator Cost: Chi phí thực thi (0.0065704) 
 - ...Rows to be Read: 1 dòng
 
+
+Để tiết kiệm được chi phí truy vấn `key lookup` bằng cách sử dụng `covering index`.
+
+### 💥   Covering index
+
+Covering index là khi nonclustered index có thể thỏa mãn tất cả các cột cần select của một câu truy vấn.
+
+Với trường hợp trên bạn có 2 cách để nhét thêm `first_name` vào nonclustered index. Một là thêm nó vào dữ liệu ở node lá (leaf node). Hai là cho nó tham gia vào danh sách index key {phone, firt_name}
+
+Bằng cách sử dụng mệnh đề INCLUDE khi tạo nonclustered index. Chúng ta có thể chỉ định những cột nào sẽ được thêm vào index đó. Script dưới đây xóa index hiện có và tạo lại để thêm cột `first_name` vào
+
+Chạy lại truy vấn xem chiến lược thực thi
+
+![plan 5](img/query-plan-5.png)
+
+- Estimated Opertator Cost: Chi phí thực thi (0.0032831) 
+- ...Rows to be Read: 1 dòng
+
+Việc sử dụng `INCLUDE` cho phép thêm các cột bổ sung vào chỉ mục, mà không ảnh hưởng đến việc sắp xếp hoặc tìm kiếm. Điều này giúp tránh việc phải truy xuất dữ liệu từ bảng gốc khi chỉ cần truy vấn dữ liệu từ chỉ mục, cải thiện hiệu suất truy vấn.
+
+Xem thêm: https://learn.microsoft.com/en-us/sql/relational-databases/indexes/create-indexes-with-included-columns?view=sql-server-ver16
 
 ### 💥   Unique index
 
 Trong cơ sở dữ liệu, một "unique index" (chỉ mục duy nhất) là một loại chỉ mục được tạo ra để đảm bảo tính duy nhất của các giá trị trong một cột hoặc một nhóm cột trong một bảng dữ liệu. Unique index đảm bảo rằng không có hai bản ghi nào trong cơ sở dữ liệu có cùng giá trị cho cột hoặc nhóm cột được chỉ mục.
+
+Xem thêm: https://learn.microsoft.com/en-us/sql/relational-databases/indexes/create-unique-indexes?view=sql-server-ver16
 
 Mục đích chính của unique index là ngăn chặn việc xuất hiện các giá trị trùng lặp trong một cột hoặc nhóm cột quan trọng. Khi một unique index được áp dụng cho một cột, hệ quản trị cơ sở dữ liệu sẽ kiểm tra tự động mỗi khi có thay đổi dữ liệu, đảm bảo rằng không có giá trị trùng lặp nào được chèn vào cột đó.
 
@@ -201,25 +270,62 @@ Unique index cũng có thể cung cấp một cách nhanh chóng để tìm ki�
 
 Đôi khi unique index cũng được gọi là "unique constraint" (ràng buộc duy nhất), bởi vì nó tạo ra một ràng buộc trên dữ liệu đảm bảo tính duy nhất.
 
-Ví dụ
+Cú pháp:
 
 ```sql
---Tạo unique index
-CREATE UNIQUE INDEX IX_PersonID
-ON dbo.persons (email);
+CREATE UNIQUE INDEX index_name
+ON table_name(column_list);
 ```
 
-Ví dụ
+Bạn cần truy vấn
 
 ```sql
-CREATE UNIQUE INDEX ix_cust_email_inc
-ON dbo.customers(email)
-INCLUDE(first_name,last_name);
+SELECT customer_id, email FROM dbo.customers_index WHERE email = 'monika.berg@gmail.com'
+```
 
+Chạy truy vấn xem chiến lược thực thi
+
+![plan 6](img/query-plan-6.png)
+
+- Sử dụng hành động `index scan` trên chỉ mục Clustered
+- Estimated Opertator Cost: Chi phí thực thi (0.0256122) 
+- ...Rows to be Read: 1445 dòng
+
+Ta thấy nó không tận dụng được Clustered index đã đánh trên trường customer_id. Nên phải tìm tất cả các dòng.
+
+Đặc tính email là duy nhất, nên bạn có thể đánh chỉ mục `unique` cho trường email.
+
+
+```sql
+CREATE UNIQUE INDEX UIX_customers_index_email
+ON dbo.customers_index(email);
+```
+
+Chạy lại truy vấn xem chiến lược thực thi
+
+![plan 7](img/query-plan-7.png)
+
+- Sử dụng hành động `index seek` trên chỉ mục NonClustered
+- Estimated Opertator Cost: Chi phí thực thi (0.003125) 
+- ...Rows to be Read: 1 dòng
+
+
+Trường hợp bạn cần WHERE thêm các trường khác như:
+
+```sql
+SELECT customer_id, email, first_name, last_name FROM dbo.customers_index WHERE email = 'monika.berg@gmail.com' AND first_name = 'Monika' AND last_name = 'Berg'
+```
+
+Bạn có thể nhét thêm `first_name`, `last_name` và nonclureds index cùng với email như sau:
+
+```sql
+CREATE UNIQUE INDEX UIX_customers_index_email
+ON dbo.customers_index(email)
+INCLUDE(first_name,last_name);
 ```
 
 - `first_name,last_name` là danh sách các cột khác (không phải các cột chỉ mục) mà bạn muốn bao gồm trong chỉ mục để cung cấp các dữ liệu bổ sung cho truy vấn. Các cột này không được sắp xếp và không tham gia vào việc tìm kiếm theo.
-- việc sử dụng `INCLUDE` cho phép thêm các cột bổ sung vào chỉ mục, mà không ảnh hưởng đến việc sắp xếp hoặc tìm kiếm. Điều này giúp tránh việc phải truy xuất dữ liệu từ bảng gốc khi chỉ cần truy vấn dữ liệu từ chỉ mục, cải thiện hiệu suất truy vấn.
+
 
 ### 💥  Full-text
 
@@ -243,6 +349,8 @@ Full-text search được sử dụng trong các ứng dụng nhu cầu tìm ki�
 
 Columnstore index (chỉ mục cột) là một loại chỉ mục trong cơ sở dữ liệu, được thiết kế đặc biệt để tối ưu hóa truy vấn phân tích dữ liệu trong các hệ thống quản lý cơ sở dữ liệu. Columnstore index lưu trữ và quản lý dữ liệu theo cột (columnar storage) thay vì theo hàng như trong chỉ mục truyền thống.
 
+Xem thêm: https://learn.microsoft.com/en-us/sql/relational-databases/indexes/columnstore-indexes-overview?view=sql-server-ver16
+
 Với columnstore index, dữ liệu trong một bảng được tổ chức và lưu trữ theo cột, tức là các giá trị trong một cột được lưu trữ liên tiếp trong bộ nhớ hoặc đĩa. Điều này mang lại nhiều lợi ích về hiệu suất khi truy vấn dữ liệu.
 
 Một trong những lợi ích chính của columnstore index là khả năng nén dữ liệu. Do các giá trị trong một cột thường có tính chất tương tự và lặp lại, columnstore index có thể nén dữ liệu hiệu quả hơn so với chỉ mục truyền thống. Điều này giúp giảm dung lượng lưu trữ cần thiết và cải thiện hiệu suất truy vấn.
@@ -251,9 +359,47 @@ Columnstore index cũng cung cấp khả năng xử lý dữ liệu hàng loạt
 
 Columnstore index thường được sử dụng trong các hệ thống quản lý cơ sở dữ liệu dành cho phân tích dữ liệu (data analytics), nơi hiệu suất truy vấn và xử lý dữ liệu là yếu tố quan trọng. Nó thường được áp dụng trong các tình huống có khối lượng dữ liệu lớn và các truy vấn phức tạp.
 
+Ví dụ: Thông kê số lượng bán ra theo từng sản phẩm
+
+```sql
+SELECT product_id, SUM(quantity) FROM order_items
+GROUP BY product_id
+```
+
+Phân tích kế hoạch thực thi
+
+![query-plan-columnstore 1](img/query-plan-columnstore-1.png)
+
+- Sử dụng hành động `table scan` 
+- Estimated Opertator Cost: Chi phí thực thi 0.0247736
+- ...Rows to be Read: 4723 dòng
+
+Tạo index kết hợp 
+
+```sql
+CREATE COLUMNSTORE INDEX IX_order_items_productID_quantity_ColumnStore
+ON order_items (product_id,quantity);
+```
+
+Chạy lại truy vấn xem chiến lược thực thi
+
+![query-plan-columnstore 2](img/query-plan-columnstore-2.png)
+
+- Sử dụng hành động `columnstore index scan` 
+- Estimated Opertator Cost: Chi phí thực thi 0.0036602
+- ...Rows to be Read: 4723 dòng
+
+```code
+Chênh lệch = |(0.0036602 - 0.0247736) / 0.0247736| * 100
+Chênh lệch ≈ 85.23% 
+==> Tăng tốc được  ≈ 85.23%
+```
+
 ### 💥   Filtered index
 
 Filtered index trong SQL Server là một loại chỉ mục có điều kiện, chỉ lưu trữ và xử lý dữ liệu cho một phần nhỏ của các hàng trong một bảng dựa trên một điều kiện được xác định trước. Nó cho phép bạn tạo chỉ mục trên một tập hợp con của dữ liệu trong bảng thay vì toàn bộ dữ liệu.
+
+Xem thêm: https://learn.microsoft.com/en-us/sql/relational-databases/indexes/create-filtered-indexes?view=sql-server-ver16
 
 Khi tạo filtered index, bạn chỉ định một điều kiện WHERE để chỉ định các hàng nào sẽ được lưu trữ trong chỉ mục. Chỉ các hàng thỏa mãn điều kiện này mới được lưu trữ trong filtered index, trong khi các hàng không thỏa mãn điều kiện sẽ không được đưa vào chỉ mục.
 
@@ -283,6 +429,8 @@ Các bảng có kích thước lớn và tối ưu hóa hiệu suất truy vấn
 ### 💥  Spatial index
 
 Spatial index trong SQL Server là một loại chỉ mục được thiết kế đặc biệt để hỗ trợ việc lưu trữ, truy vấn và xử lý dữ liệu không gian (dữ liệu liên quan đến vị trí và hình học). Nó cho phép tối ưu hóa truy vấn dựa trên thông tin không gian, như tìm kiếm các vị trí trong phạm vi, tính toán khoảng cách, xác định tương tác giữa các đối tượng không gian, và nhiều hoạt động không gian khác.
+
+Xem thêm: https://learn.microsoft.com/en-us/sql/relational-databases/spatial/spatial-indexes-overview?view=sql-server-ver16
 
 Spatial index sử dụng các thuật toán và cấu trúc dữ liệu đặc biệt để hiệu quả trong việc lưu trữ và truy vấn dữ liệu không gian. Chỉ mục này sẽ tổ chức dữ liệu không gian thành các tầng (levels) và quadtree (một cấu trúc dữ liệu phân chia không gian), cho phép tìm kiếm nhanh chóng các đối tượng không gian.
 
@@ -373,16 +521,21 @@ Trong SQL Server, bạn có thể sử dụng các câu lệnh và chức năng 
 
 Dưới đây là một số phương pháp phổ biến để làm điều này:
 
-1. Sử dụng câu lệnh SET STATISTICS TIME ON/OFF:
-   - Để bật tính năng thống kê thời gian, sử dụng câu lệnh sau trước khi thực thi truy vấn:
+1. Kiểm tra thời gian và tài nguyên của một truy vấn:
+   
      ```sql
-     SET STATISTICS TIME ON;
+      --Để xem thời gian thực hiện truy vấn
+      SET STATISTICS TIME ON;
+      --Để xem tài nguyên thực hiện truy vấn
+      SET STATISTICS IO ON;
+      -- Truy vấn SQL của bạn ở đây
+      -- ....
+
+      --Tắt đi sau khi truy vấn thực hiện
+      SET STATISTICS TIME OFF;
+      SET STATISTICS IO OFF;
      ```
-   - Sau khi chạy truy vấn, trong kết quả, bạn sẽ thấy thông tin về thời gian thực hiện truy vấn, bao gồm thời gian CPU và thời gian thực tế.
-   - Để tắt tính năng thống kê thời gian, sử dụng câu lệnh sau:
-     ```sql
-     SET STATISTICS TIME OFF;
-     ```
+   
 
 2. Sử dụng hàm GETDATE():
    - Trước khi thực thi truy vấn, ghi lại thời điểm bắt đầu bằng cách sử dụng hàm GETDATE():
