@@ -223,3 +223,40 @@ Thông tin thu thập từ "SET STATISTICS ON" có thể giúp bạn đánh giá
 
 
 ### 💥 Giám sát lịch sử của câu lệnh hoạt động
+
+```sql
+SELECT 
+	qt.query_sql_text, 
+	q.query_id,
+	qt.query_text_id,
+	p.plan_id,
+	rs.last_execution_time
+FROM sys.query_store_query_text AS qt
+JOIN sys.query_store_query AS q
+ON qt.query_text_id = q.query_text_id
+JOIN sys.query_store_plan AS p
+ON p.query_id = p.query_id
+JOIN sys.query_store_runtime_stats AS rs
+ON p.plan_id = rs.plan_id
+ORDER BY rs.last_execution_time DESC;
+
+
+
+SELECT 
+	qt.query_sql_text, 
+	q.query_id,
+	qt.query_text_id,
+	p.plan_id,
+	rs.last_execution_time
+FROM sys.query_store_query_text AS qt
+JOIN sys.query_store_query AS q
+ON qt.query_text_id = q.query_text_id
+JOIN sys.query_store_plan AS p
+ON p.query_id = p.query_id
+JOIN sys.query_store_runtime_stats AS rs
+ON p.plan_id = rs.plan_id
+JOIN sys.query_store_runtime_stats_interval AS rsi
+ON rsi.runtime_stats_interval_id = rs.runtime_stats_interval_id
+WHERE rsi.start_time >= DATEADD(hour, -24, GETUTCDATE())
+ORDER BY rs.avg_logical_io_reads DESC;
+```
