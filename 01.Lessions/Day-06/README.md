@@ -607,3 +607,33 @@ COMMIT TRANSACTION
 ```
 
 `SAVE TRANSACTION` - Nó cho phép lưu lại trạng thái hiện tại của transaction và tiếp tục thực hiện các hoạt động trong transaction. Nếu sau đó có lỗi xảy ra, bạn có thể sử dụng lệnh ROLLBACK để hủy bỏ toàn bộ transaction hoặc sử dụng lệnh ROLLBACK TRANSACTION để hủy bỏ đến điểm đã được lưu trữ bởi SAVE TRANSACTION.
+
+### 💥 Locks
+
+Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm soát truy cập và sửa đổi dữ liệu trong quá trình thực hiện các giao dịch. Khi một giao dịch yêu cầu truy cập vào dữ liệu, SQL Server áp dụng các locks trên dữ liệu tương ứng để đảm bảo tính nhất quán và độc lập của dữ liệu trong môi trường đa người dùng.
+
+Có nhiều loại lock khác nhau trong SQL Server, bao gồm:
+
+1. Shared Lock (Shared Read Lock):
+   - Được sử dụng khi giao dịch muốn đọc (truy vấn) dữ liệu.
+   - Nhiều shared locks có thể được áp dụng trên cùng một dữ liệu.
+   - Shared locks không ngăn được các shared locks khác trên cùng một dữ liệu.
+   - Shared locks không cho phép exclusive lock được áp dụng lên dữ liệu.
+
+2. Exclusive Lock (Write Lock):
+   - Được sử dụng khi giao dịch muốn thay đổi (ghi) dữ liệu.
+   - Không thể có bất kỳ shared locks hoặc exclusive locks khác trên cùng một dữ liệu.
+   - Exclusive locks ngăn cả shared locks và exclusive locks khác.
+
+3. Update Lock:
+   - Được sử dụng trong các trường hợp cần đảm bảo rằng dữ liệu không được đọc hoặc chỉnh sửa trong quá trình thực hiện giao dịch.
+   - Update locks được nâng cấp thành exclusive lock khi giao dịch cần thực hiện các thay đổi.
+
+4. Intent Lock:
+   - Là các locks nhỏ hơn được áp dụng trên các cấu trúc dữ liệu phức tạp hơn như bảng, trang, phân vùng.
+   - Intent locks đại diện cho ý định của giao dịch để áp dụng shared locks hoặc exclusive locks trên các đối tượng con của cấu trúc dữ liệu.
+
+5. Schema Lock:
+   - Được sử dụng khi giao dịch thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
+
+SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các giao dịch đồng thời.
