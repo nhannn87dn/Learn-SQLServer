@@ -1,727 +1,983 @@
-# Day 4
-💥 🔹
-## 💛 Session 05- Creating and Managing Databases
-
-### 💥 Database (Cơ sở dữ liệu) là gì? 
-
-- Một Database là tập hợp của rất nhiều dữ liệu phản ánh thế giới thực hoặc một phần của thế giới thực.
-- Có cấu trúc, được lưu trữ tuân theo quy tắc dựa trên lý thuyết toán học.
-- Các dữ liệu trong Database có liên quan với nhau về một lĩnh vực cụ thể, được tổ chức đặc biệt cho việc lưu trữ, tìm kiếm và trích xuất dữ liệu.
-- Được các Hệ cơ sở dữ liệu khai thác xử lý, tìm kiếm, tra cứu, sửa đổi, bổ sung hay loại bỏ dữ liệu trong Database.
-
-Ở mức logic, một DATABASE gồm nhiều bảng (TABLE), mỗi bảng được xác định bằng một tên, bảng chứa dữ liệu có cấu trúc và các ràng buộc (CONSTRAINT) định nghĩa trên các bảng. Ngoài ra, Database còn có khung nhìn (VIEW), các thủ tục/ hàm….
-
-Ở mức vật lý, DATABASE của SQL Server được lưu trữ dưới 3 loại tập tin: 
-
-- Tập tin dữ liệu (Data-file): gồm 1 tập tin lưu trữ dữ liệu chính (`*.mdf`) chứa các dữ liệu khởi đầu và các tập tin dữ liệu thứ cấp (`*.ndf`) chứa dữ liệu phát sinh hoặc không lưu hết trong tập tin lưu trữ chính.
-- Tập tin nhật ký thao tác (`*.ldf`) chứa thông tin giao tác, thường dùng để khôi phục Database nếu xảy ra sự cố. 
-
----
-
-### 💥Tại sao phải tạo Database?
-
-Như việc truy xuất, đóng mở tập tin thông thường, bạn cần tạo file lưu trữ trước khi truy xuất. Tương tự vậy, bạn cần tạo một DATABASE để lưu trữ dữ liệu trong SQL Server để tiện cho việc truy vấn sau này.
-
-SQL Server sẽ giúp bạn quản lý, truy xuất những dữ liệu này một cách có cấu trúc và dễ dàng hơn.
-
----
-
-### 💥 Cách tạo Database?
-
-#### 🔹 Tạo bằng giao diện đồ họa GUI
+# Day 5
 
 
-#### 🔹 Tạo bằng dòng lệnh 
+## 💛 Session 08- Accessing Data
+
+Chi tiết xem link: https://documents.aptech.io/docs/aptech-mssql/A.Presentations/session-08
+
+
+### 💥 Câu lệnh SELECT
+
+Trong SQL SELECT là câu lệnh phức tạp nhất, bởi nó có thể kết hợp thêm nhiều mệnh đề khác để truy vấn đến kết quả cuối cùng mong muốn.
+
+Dưới đây là cú pháp đầy đủ của câu lệnh SELECT trong SQL Server:
 
 ```sql
-CREATE DATABASE  <database_name>
+SELECT [DISTINCT | ALL]
+    [TOP (expression) [PERCENT] [WITH TIES]]
+    column1, column2, ...
+FROM
+    table_name
+[WITH (table_hint [,...])]
+[WHERE condition]
+[GROUP BY grouping_column1, grouping_column2, ...]
+[HAVING search_condition]
+[ORDER BY order_column1 [ASC | DESC], order_column2 [ASC | DESC], ...]
+[OFFSET {integer_constant | offset_row_count_expression} {ROW | ROWS}]
+    [FETCH {FIRST | NEXT} {integer_constant | fetch_row_count_expression} {ROW | ROWS} ONLY]
+[OPTION (query_hint [,...])];
 ```
 
-Trong đó database_name là tên mà bạn đặt cho Database bạn muốn tạo
+Giải thích các thành phần chính của cú pháp:
 
----
+- DISTINCT: Lọc các giá trị trùng lặp trong kết quả.
+- ALL: Trả về tất cả các giá trị, bao gồm cả các giá trị trùng lặp.
+- TOP: Xác định số lượng bản ghi đầu tiên được trả về.
+- PERCENT: Xác định số phần trăm bản ghi đầu tiên được trả về.
+- WITH TIES: Bao gồm các bản ghi có giá trị cuối cùng tương đương với bản ghi cuối cùng trong phạm vi TOP.
+- column1, column2, ...: Các cột hoặc biểu thức được chọn để trả về.
+- FROM: Xác định bảng hoặc các bảng được truy vấn.
+- WHERE: Xác định điều kiện để lọc bản ghi.
+- GROUP BY: Nhóm các bản ghi dựa trên các cột được chỉ định.
+- HAVING: Xác định điều kiện cho nhóm bản ghi.
+- ORDER BY: Xác định thứ tự sắp xếp của kết quả.
+- OFFSET-FETCH: Xác định số hàng bỏ qua và số hàng trả về từ kết quả.
+- OPTION: Xác định các gợi ý thực thi cho câu lệnh.
 
-### 💥 Xóa một Database?
+Lưu ý rằng không phải tất cả các thành phần đều bắt buộc trong một câu lệnh SELECT. Bạn có thể điều chỉnh cú pháp để phù hợp với yêu cầu truy vấn cụ thể của mình.
 
-#### 🔹 Xóa bằng giao diện đồ họa GUI
+#### 🔹 SELECT * - Lấy tất cả
 
-
-#### 🔹 Xóa bằng dòng lệnh 
-
+Lấy tất cả các column từ table `categories`
 ```sql
-DROP DATABASE <database_name>
-```
-Trong đó database_name là tên Database bạn muốn xóa
-
----
-
-### 💥 Comment trong SQL Query
-
-Để tạo COMMENT trong SQL, chúng ta sử dụng cú pháp
-
-```sql
---Nội dung Comment
-```
----
-
-### 💥 Backup và Restore Một Database
-
-- Backup và restore từ file .bak
-- Gen ra thành SQL Scrtip để thực thi: Bao gồm cấu trúc Schema và Data
-
-### 💥 Database Snapshot
-
-Database snapshot là một bản sao tĩnh (read-only) của một cơ sở dữ liệu tại một thời điểm cụ thể. Nó lưu trữ dữ liệu nhưng không cho phép thay đổi dữ liệu trong snapshot. Database snapshot thường được sử dụng để tạo ra các bản sao lưu (backup) của cơ sở dữ liệu hoặc để tạo ra một điểm khôi phục (restore point) để phục hồi cơ sở dữ liệu sau khi có sự cố xảy ra.
-
-Khi tạo một snapshot, hệ thống sao chép các dữ liệu hiện có trong cơ sở dữ liệu và lưu trữ chúng trong một không gian lưu trữ riêng. Từ đó, các truy vấn đọc có thể được thực hiện trên snapshot mà không ảnh hưởng đến dữ liệu trong cơ sở dữ liệu gốc. Mỗi khi có một thay đổi dữ liệu trong cơ sở dữ liệu gốc, snapshot không bị ảnh hưởng, vẫn giữ nguyên dữ liệu lúc tạo snapshot.
-
-Snapshot có thể được sử dụng để phục hồi cơ sở dữ liệu trong trường hợp có sự cố xảy ra, ví dụ như mất dữ liệu, lỗi trong quá trình cập nhật dữ liệu, hoặc muốn phục hồi dữ liệu về một thời điểm cụ thể. Bằng cách khôi phục cơ sở dữ liệu từ snapshot, ta có thể đảm bảo rằng dữ liệu được phục hồi trở về trạng thái tương ứng với thời điểm tạo snapshot.
-
-Tuy nhiên, cần lưu ý rằng snapshot không phải là một phương án sao lưu hoàn chỉnh cho cơ sở dữ liệu. Nó chỉ lưu trữ dữ liệu hiện tại tại một thời điểm cụ thể và không bao gồm lịch sử thay đổi dữ liệu hoặc log giao dịch. Nếu muốn có một bản sao lưu đầy đủ và có khả năng khôi phục toàn bộ dữ liệu, cần sử dụng các phương pháp sao lưu khác như sao lưu toàn bộ cơ sở dữ liệu hoặc sao lưu theo log giao dịch.
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-## 💛 Session 06- Creating Tables
-
-
-### 💥 Tại sao phải tạo Table?
-
-
-Trong bài trước, chúng ta đã biết DATABASE ( Cơ sở dữ liệu) dùng để lưu trữ thông tin, truy xuất dữ liệu khi cần thiết. Vậy làm sao để lưu trữ dữ liệu trong Database? Làm sao để truy xuất dữ liệu đã lưu?
-
->Bài toán thực tế đặt ra: 
->
->Khi muốn quản lý một trường học, bạn sẽ cần quản lý những gì? Danh sách giáo viên, danh sách học sinh, điểm thi, quá trình công tác, phòng ban…. Và khi truy vấn thì cần truy vấn như thể nào với các thông tin đó?
-
-Vậy khi tất cả dữ liệu cùng nằm trong một Database thì cần có một cách tổ chức thể hiện các thông tin theo một hệ thống lưu trữ, đó chính là TABLE – Bảng.
-
-Một Database bao gồm nhiều Table, giữa các Table có mối liên hệ với nhau thể hiện qua KHÓA CHÍNH & KHÓA NGOẠI. 
-
----
-
-### 💥 Vậy Table (Bảng) là gì?
-
-Là đối tượng được Database sử dụng để tổ chức và lưu trữ dữ liệu.
-
-Mỗi Table trong Database có thể liên kết với một hoặc nhiều Table khác, ở một hoặc nhiều thuộc tính
-
----
-
-### 💥 Cách tạo Table
-
-#### 🔹 Tạo bằng giao diện đồ họa GUI
-
-
-#### 🔹 Tạo bằng dòng lệnh 
-
-Tạo Table với các column, CONSTRAINT được định nghĩa ngay khi tạo mới Table
-
-```sql
---Create table categories
-CREATE TABLE [dbo].[categories] (
-  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [category_name] NVARCHAR(50) UNIQUE NOT NULL,
-  [description] NVARCHAR(500) NULL,
-);
-GO
---Create table  products
-CREATE TABLE [dbo].[products] (
-  [product_id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
-  [price] DECIMAL(18,2) NOT NULL,
-  [discount] DECIMAL(4,2) NOT NULL,
-  [description] NVARCHAR(MAX) NULL,
-  [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL
-);
-GO
-
+SELECT * FROM [dbo].[categories]
 ```
 
-Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, suppliers trước khi tạo products
-
----
-
-### 💥 Cách Xóa Table
-
-#### 🔹 Xóa bằng giao diện đồ họa GUI
+Lưu ý: Khi chạy thực tế, hạn chế dùng cách này vì nó có thể dẫn đến lổ hỏng bảo mật: https://www.w3schools.com/sql/sql_injection.asp
 
 
-#### 🔹 Xóa bằng dòng lệnh 
+#### 🔹 SELECT cụ thể columns cần lấy
+
+Ví dụ: Lấy Column Id, first_name, last_name từ table `customers`
 
 ```sql
--- Xóa table categories, Nếu table không tồn tại thì gây lỗi
-DROP TABLE [dbo].[categories];
--- Xóa table categories với mệnh đề IF EXISTS để check tồn tại thì mới xóa, ==> tránh lỗi
-DROP TABLE IF EXISTS [dbo].[categories];
-```
----
-
-
-### 💥 Alert Table
-
-Các thao tác này bạn có thể thực hiện với giao diện đồ họa GUI
-
-#### 🔹 Thêm một Column Table
-
-```sql
---Thêm vào table customers một cột email
-ALTER TABLE customers
-ADD email varchar(255);
+SELECT [customer_id], [first_name], [last_name] FROM [dbo].[customers]
 ```
 
-#### 🔹 Xóa một Column Table
+#### 🔹 SELECT với một biểu thức
+
+Ví dụ: Dựa vào first_name, last_name hãy tạo một cột FullName khi lấy.
 
 ```sql
---Xóa cột email từ table customers
-ALTER TABLE customers
-DROP COLUMN email;
+SELECT [customer_id], [first_name], [last_name], [first_name] + ' ' + [last_name] AS FullName FROM [dbo].[categories]
 ```
 
-#### 🔹 Thay đổi tên của Column Table
+- Nối 2 cột bằng toán tử +
+- Dùng mệnh đề AS để đặt tên / Đổi tên cho một Cột
+
+
+#### 🔹 SELECT với mệnh đề WHERE
+
+- Dùng khi bạn muốn truy vấn muốn nhận kết quả dựa vào điều kiện nào đó.
+- Thông thường kết hợp cùng các toán tử
+
+**Các phép toán lô-gíc (logical)**
+
+*   AND: dùng để kết hợp các mệnh đề với nhau, trả về TRUE nếu tất cả các mệnh đề đều đúng.
+*   OR: dùng để kết hợp các mệnh đề với nhau, trả về TRUE nếu một trong các mệnh đề đúng.
+*   NOT: dùng để phủ định kết quả của mệnh đề.
+*   LIKE: dùng để so sánh một giá trị với một chuỗi ký tự.
+*   IN: dùng để kiểm tra xem một giá trị có nằm trong một danh sách các giá trị hay không.
+*   BETWEEN: value1 AND value2 dùng để kiểm tra xem một giá trị có nằm trong một khoảng giá trị hay không.
+*   EXISTS: dùng để kiểm tra sự tồn tại của một bản ghi trong một bảng con.
+*   ANY: dùng để so sánh với một danh sách các giá trị và trả về TRUE nếu bất kỳ giá trị nào trong danh sách đó khớp với giá trị được so sánh.
+*   SOME: cũng tương tự như ANY, nó cũng dùng để so sánh với một danh sách các giá trị và trả về TRUE nếu bất kỳ giá trị nào trong danh sách đó khớp với giá trị được so sánh.
+*   ALL: dùng để so sánh với một danh sách các giá trị và trả về TRUE nếu tất cả các giá trị trong danh sách đó khớp với giá trị được so sánh.
+
+**Các phép toán so sánh (comparison)**
+
+`=` `<>` `!=` `>` `>=` `<` `<=`
+
+
+Ví dụ: Tìm những sản phẩm có giá bán >= 50.000
 
 ```sql
-ALTER TABLE table_name
-RENAME COLUMN old_name to new_name;
+SELECT * FROM products WHERE price >= 500000
+```
+Ví dụ: Tìm những sản phẩm có giá bán >= 20.000 và <= 50.000
+
+```sql
+SELECT * FROM products WHERE price >= 200000 AND price <= 500000
 ```
 
-#### 🔹 Thay đổi Data Type của Column Table
+Ví dụ: Tìm những sản phẩm có discount = 10 hoặc 20
 
 ```sql
-ALTER TABLE customers
-ALTER COLUMN email nvarchar(255);
-```
----
-
-### 💥 TRUNCATE
-
-Xóa dữ liệu của một table và dữ lại cấu trúc
-
-TRUNCATE TABLE [schema_name].[table_name]
-
-Temporary Tables (Bảng tạm thời) là các bảng được tạo ra trong cơ sở dữ liệu để lưu trữ tạm thời dữ liệu trong quá trình thực thi của một phiên làm việc. Chúng tồn tại trong bộ nhớ hoặc trên đĩa trong một thời gian ngắn và được xóa tự động sau khi phiên làm việc kết thúc hoặc sau khi chúng không còn cần thiết.
-
-Bạn có thể tìm thấy bảng tạm ở: `System Databases > tempdb > Temporary Tables`
-
-#### 🔹 Tạo bảng tạm
-
-```sql
-CREATE TABLE #tmp_products  -- bắt đầu với kí tự #
-(
-    product_name VARCHAR(MAX),
-    list_price DEC(10,2)
-);
+SELECT * FROM products WHERE discount = 10 OR discount = 20
 ```
 
-Sau khi tạo xong bạn có thể chèn dữ liệu vào
+Ví dụ: Tìm những sản phẩm được nhập mô tả Description (Tức khác NULL)
 
 ```sql
-INSERT INTO #tmp_products
+SELECT * FROM products WHERE Description IS NOT NULL
+```
+
+Ví dụ: Tìm những sản phẩm thuộc danh mục có ID 2 hoặc 3
+
+```sql
+SELECT * FROM products WHERE category_id IN (2,3)
+--Câu lệnh trên tương đương với toán tử OR
+SELECT * FROM products WHERE category_id = 2 OR category_id = 3
+```
+
+Ví dụ: Tìm những đơn đặt hàng từ 2016-01-01 - 2016-05-01
+
+
+```sql
+SELECT *
+FROM orders
+WHERE order_date BETWEEN '2016-01-01' AND '2016-03-01';
+
+
+--- Chuyển đổi chuỗi sang kiểu ngày
+SELECT *
+FROM orders
+WHERE order_date BETWEEN CONVERT(DATE, '2016-01-01') AND CONVERT(DATE, '2016-03-01');
+
+
+--- Ép kiểu: chuỗi --> Date
+SELECT *
+FROM orders
+WHERE order_date BETWEEN CAST('2016-01-01' AS DATE) AND CAST('2016-03-01' AS DATE);
+```
+
+Ví dụ: Tìm tên khách hàng có số điện thoại đuôi 678
+
+```sql
+SELECT *
+FROM customers
+WHERE phone LIKE '%478'
+```
+
+Dưới đây là một bảng giải thích các ký tự đại diện (wildcard) phổ biến được sử dụng với LIKE:
+
+| Ký tự đại diện (Wildcard) | Mô tả                                                                                     |
+|-------------------------|------------------------------------------------------------------------------------------|
+| %                       | Đại diện cho bất kỳ chuỗi ký tự nào (bao gồm cả chuỗi rỗng)                               |
+| _                       | Đại diện cho bất kỳ ký tự đơn lẻ nào                                                          |
+| [character_list]        | Đại diện cho bất kỳ ký tự nào trong danh sách các ký tự được chỉ định                            |
+| [^character_list]       | Đại diện cho bất kỳ ký tự nào không nằm trong danh sách các ký tự được chỉ định                 |
+| [range_of_characters]   | Đại diện cho bất kỳ ký tự nào nằm trong một khoảng các ký tự được chỉ định                       |
+
+Ví dụ về việc sử dụng wildcard trong mệnh đề LIKE:
+
+- `WHERE column_name LIKE 'A%'`: Tìm tất cả các giá trị trong cột "column_name" bắt đầu bằng "A".
+- `WHERE column_name LIKE '%B'`: Tìm tất cả các giá trị trong cột "column_name" kết thúc bằng "B".
+- `WHERE column_name LIKE '%C%'`: Tìm tất cả các giá trị trong cột "column_name" chứa "C" ở bất kỳ vị trí nào.
+- `WHERE column_name LIKE '_D%'`: Tìm tất cả các giá trị trong cột "column_name" có chữ cái đầu tiên là bất kỳ ký tự nào, sau đó là "D".
+- `WHERE column_name LIKE '[ABC]%'`: Tìm tất cả các giá trị trong cột "column_name" bắt đầu bằng "A", "B" hoặc "C".
+- `WHERE column_name LIKE '[^XYZ]%'`: Tìm tất cả các giá trị trong cột "column_name" không bắt đầu bằng "X", "Y" hoặc "Z".
+- `WHERE column_name LIKE '[A-Z]%'`: Tìm tất cả các giá trị trong cột "column_name" bắt đầu bằng một ký tự trong khoảng từ "A" đến "Z".
+
+Lưu ý rằng mệnh đề LIKE được sử dụng trong câu lệnh SELECT của SQL để tìm kiếm các giá trị phù hợp với mẫu chuỗi được chỉ định.
+
+
+
+#### 🔹 SELECT với mệnh đề ORDER BY
+
+- Dùng để sắp xếp kết quả truy vấn theo một hoặc nhiều cột.
+- Mặc định sắp xếp theo thứ tự tăng dần (ASC), nhưng bạn cũng có thể chỉ định thứ tự giảm dần (DESC).
+
+Ví dụ: Sắp xếp tất cả các khách hàng theo `first_name` tăng dần:
+
+```sql
+SELECT
+    first_name,
+    last_name
+FROM
+    customers
+ORDER BY
+    first_name; --Mặc định không set thì là ASC
+```
+
+Ví dụ: Sắp xếp tất cả các khách hàng theo `first_name` giảm dần:
+
+```sql
+SELECT
+    first_name,
+    last_name
+FROM
+    customers
+ORDER BY
+    first_name DESC;
+```
+
+
+Ví dụ: Sắp xếp theo thành phố, first_name, last_name
+
+```sql
+-- Sắp xếp theo nhiều column
+SELECT
+    city,
+    first_name,
+    last_name
+FROM
+   customers
+ORDER BY
+    city,
+    first_name;
+```
+
+#### 🔹 SELECT với mệnh đề OFFSET-FETCH
+
+- Dùng để phân trang kết quả truy vấn.
+- Mệnh đề OFFSET xác định số hàng bỏ qua từ kết quả `bắt đầu` trả về.
+- Mệnh đề FETCH xác định số hàng trả về từ kết quả.
+
+Cú pháp:
+
+```sql
+ORDER BY column_list [ASC |DESC]
+OFFSET offset_row_count {ROW | ROWS}
+FETCH {FIRST | NEXT} fetch_row_count {ROW | ROWS} ONLY
+```
+
+![ftech](img/SQL-Server-OFFSET-FETCH.png)
+
+Ví dụ: Truy vấn tất cả các sản phẩm và bỏ qua 10 hàng đầu tiên:
+
+```sql
 SELECT
     product_name,
-    list_price
-FROM 
+    price
+FROM
     dbo.products
-WHERE
-    brand_id = 2;
+ORDER BY
+    price,
+    product_name 
+OFFSET 10 ROWS;
 ```
-
-Truy vấn từ bảng tạm
-
+Ví dụ: bỏ qua 10 hàng đầu tiên, và lấy 10 dòng tiếp theo:
 
 ```sql
-SELECT * FROM #tmp_products
+SELECT
+    product_name,
+    price
+FROM
+    dbo.products
+ORDER BY
+    price,
+    product_name 
+OFFSET 10 ROWS 
+FETCH NEXT 10 ROWS ONLY;
 ```
 
-- Lưu ý: các câu lệnh trên thực hiện liên tiếp nhau vì bảng tạm chỉ tồn tại trong phiên truy vấn. Dữ liệu sẽ mất khi kết thúc truy vấn.
+Lưu ý: Mệnh đề OFFSET-FETCH chỉ được hỗ trợ từ SQL Server 2012 (bao gồm cả SQL Server 2012) trở đi.
 
-- Tuy nhiên bạn có thể tạo một bảng tạm với cấp độ toàn cục (Global), bạn có thể truy vấn tại bất kỳ một phiên truy vấn nào.
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-offset-fetch/
+
+
+#### 🔹 SELECT với mệnh đề DISTINCT
+
+Dùng để loại bỏ các giá trị trùng lặp trong kết quả truy vấn.
 
 ```sql
-CREATE TABLE ##heller_products -- Sử dụng 2 dấu ## ở trước tên
-(
-    product_name VARCHAR(MAX),
-    list_price DEC(10,2)
-);
-```
-
+--- Lấy danh sách city từ Table customers
+SELECT city
+FROM customers
+ORDER BY city ASC
+---
+--- Kết quả trùng lặp các giá trị và bạn muốn khử trùng lặp thì dùng DISTINCT
 ---
 
-### 💥 Modifying data
-
-#### 🔹 INSERT
-
-Câu lệnh INSERT cho phép bạn thêm một hoặc nhiều bản ghi mới vào bảng dữ liệu.
-
-Cú pháp:
-
-```sql
-INSERT INTO table_name (column1, column2, column3, ...)
-VALUES (value1, value2, value3, ...);
-```
-
-Nếu bạn muốn chèn nhiều bản ghi cùng một lúc, bạn có thể sử dụng cú pháp sau:
-
-```sql
-INSERT INTO table_name (column1, column2, column3, ...)
-VALUES (value1, value2, value3, ...),
-       (value1, value2, value3, ...),
-       (value1, value2, value3, ...);
-```
-
-Ví dụ: Tạo table `promotion` cho demo
-
-```sql
-CREATE TABLE dbo.promotions (
-    promotion_id INT PRIMARY KEY IDENTITY (1, 1),
-    promotion_name VARCHAR (255) NOT NULL,
-    discount DECIMAL (4, 2) DEFAULT 0,
-    start_date DATE NOT NULL,
-    expired_date DATE NOT NULL
-); 
-```
-
-Thêm 1 record vào `promotion`
-
-```sql
-INSERT INTO dbo.promotions (
-    promotion_name,
-    discount,
-    start_date,
-    expired_date
-)
-VALUES
-    (
-      '2018 Summer Promotion',
-      0.15,
-      '20180601',
-      '20180901'
-    );
--- Lưu ý: không cần đưa promotion_id vào vì nó sẽ tự tăng
-```
-
-Thêm nhiều record vào `promotion` trong một câu truy vấn
-
-```sql
-INSERT INTO dbo.promotions (
-    promotion_name,
-    discount,
-    start_date,
-    expired_date
-)
-VALUES
-    (
-      '2018 Summer Promotion',
-      0.15,
-      '20180601',
-      '20180901'
-    ),
-     (
-      '2018 Chrismats Promotion',
-      2,
-      '20181201',
-      '20181230'
-    );
-```
-
-Bạn không thể chèn giá trị vào cột được khai báo là `IDENTITY` bởi vì nó sẽ được tạo tự động. Tuy nhiên bạn vẫn muốn làm thì SQL Server có hỗ trợ:
-
-```sql
---Bước 1: Để câu này trước câu lệnh INSERT
-SET IDENTITY_INSERT dbo.promotions ON; 
---Bước 2: Các câu lệnh INSERT
-INSERT INTO dbo.promotions (
-    promotion_id, --có đưa thêm trường IDENTITY
-    promotion_name,
-    discount,
-    start_date,
-    expired_date
-)
-VALUES
-    (
-      5, --Điền trước một giá trị đúng kiểu dữ liệu đã khai báo
-      '2018 Winter Promotion',
-      0.2,
-      '20180701',
-      '20181001'
-    );
---Bước 3: Tắt tính năng tự động sinh giá trị IDENTITY 
-SET IDENTITY_INSERT dbo.promotions OFF; 
-```
-
-Nếu bạn không thiết lập `IDENTITY_INSERT` bạn sẽ gặp lỗi:
-
-```bash
-Cannot insert explicit value for identity column in table 'promotions' when IDENTITY_INSERT is set to OFF.
+SELECT DISTINCT city
+FROM customers
+ORDER BY city ASC
 ```
 
 
-**INSERT Với giá trị Unicode**
-
-Để hỗ trợ lưu trữ và hiển thị các giá trị là chuỗi Unicode bạn cần:8
+Nếu bạn chỉ định nhiều cột, mệnh đề DISTINCT sẽ đánh giá sự trùng lặp dựa trên sự kết hợp các giá trị của các cột này.
 
 ```sql
-INSERT INTO table_name (column1, column2) VALUES (N'Xin Chào', N'SQL Server khá dễ học');
-```
-
-Trong đó, tiền tố "N" trước chuỗi ký tự đảm bảo rằng chuỗi được coi là một chuỗi Unicode.
-
-
-**INSERT INTO SELECT statement**
-
-Để chèn dữ liệu từ table đến table khác bạn có thể sử dụng mệnh đề `INSERT INTO SELECT`
-
-Cú pháp:
-
-```sql
-INSERT  [ TOP ( expression ) [ PERCENT ] ] 
-INTO target_table (column_list)
-query;
-```
-
-Ví dụ:
-
-```sql
--- Tạo cấu trúc bảng regions
-CREATE TABLE dbo.regions (
-    address_id INT IDENTITY PRIMARY KEY,
-    street VARCHAR (255) NOT NULL,
-    city VARCHAR (50),
-    state VARCHAR (25),
-    zip_code VARCHAR (5)
-); 
--- Lấy dữ liệu từ table customer đổ qua cho regions
-INSERT INTO dbo.regions (street, city, state, zip_code) 
-SELECT
-    street,
-    city,
-    state,
-    zip_code
-FROM
-    dbo.customers
+SELECT 
+	city, 
+	state, 
+	zip_code
+FROM 
+	customers
+GROUP BY 
+	city, state, zip_code
 ORDER BY
-    first_name,
-    last_name; 
+	city, state, zip_code;
+```
+
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-select-distinct/
+
+#### 🔹 SELECT với mệnh đề TOP & TOP PERCENT
+
+Mệnh đề SELECT TOP được sử dụng để chỉ định số lượng bản ghi cần trả về.
+
+Ví dụ: Lấy 10 bản ghi đầu tiên trong kết quả trả về table products
+
+```sql
+SELECT TOP 10 * 
+FROM products
+```
+
+Ví dụ lấy 5% số lượng bản từ table products
+
+```sql
+--- Ngẩu nhiên --> Mang tính tương đối
+SELECT TOP 5 PERCENT * 
+FROM products
+```
+
+#### 🔹 SELECT với mệnh đề WITH TIES
+
+Mệnh đề WITH TIES được sử dụng trong câu lệnh ORDER BY của SQL để bao gồm các hàng có giá trị "ràng buộc" (ties) trong kết quả sắp xếp. Một "ràng buộc" xảy ra khi hai hoặc nhiều hàng có giá trị sắp xếp bằng nhau theo cùng một tiêu chí.
+
+Khi sử dụng WITH TIES, các hàng có giá trị "ràng buộc" sẽ được bao gồm trong kết quả cuối cùng của câu lệnh ORDER BY, chứ không chỉ có các hàng có giá trị duy nhất.
+
+```sql
+SELECT TOP 10 WITH TIES product_id, name, price 
+FROM products
+ORDER BY price DESC
+```
+
+
+#### 🔹 SELECT với mệnh đề GROUP BY,GROUP BY với HAVING
+
+Mệnh đề GROUP BY dùng để nhóm các hàng dữ liệu thành các nhóm dựa trên giá trị của một hoặc nhiều cột. Nó cho phép bạn thực hiện các phép tính tổng hợp (aggregate) trên các nhóm dữ liệu này.
+
+Khi sử dụng GROUP BY, dữ liệu sẽ được phân chia thành các nhóm dựa trên giá trị của cột được chỉ định trong mệnh đề GROUP BY. Các bản ghi có giá trị giống nhau trong cột này sẽ thuộc cùng một nhóm.
+
+Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần.
+
+```sql
+SELECT discount
+FROM products
+GROUP BY discount
+ORDER BY discount ASC
+--- Câu lệnh này tương đương bạn dùng DISTINCT
+```
+
+Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó.
+
+
+```sql
+SELECT 
+  discount, 
+  COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
+FROM products
+GROUP BY discount
+ORDER BY discount ASC
+```
+
+Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó. Chỉ lấy những mức discount >= 5
+
+```sql
+SELECT 
+  discount, 
+  COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
+FROM products
+GROUP BY discount
+HAVING discount >= 5 --- Lọc sau khi nhóm xong
+ORDER BY discount ASC
+```
+
+Ví dụ: Thống kê số lượng đơn hàng khách hàng đã mua theo năm.
+
+```sql
+SELECT
+    customer_id,
+    YEAR (order_date),
+    COUNT (order_id) order_count
+FROM
+    orders
+GROUP BY
+    customer_id,
+    YEAR (order_date)
+HAVING
+    COUNT (order_id) >= 2
+ORDER BY
+    customer_id;
+```
+
+
+#### 🔹 SELECT với mệnh đề INTO
+
+Dùng để tạo bảng mới từ kết quả truy vấn
+
+```sql
+SELECT * INTO customersBackup2019
+FROM customers;
+```
+
+Bạn có thể tận dụng tính năng này để backup một table
+
+#### 🔹 SELECT Không có FROM
+
+```sql
+-- Trả về ngày hiện tại
+SELECT GETDATE() 
+-- Lấy 3 kí tự bên trái của chuỗi
+SELECT LEFT('SQL Tutorial', 3) AS ExtractString;
+-- Chuyển chuỗi thành kí tự thường
+SELECT LOWER('SQL Tutorial is FUN!');
 ```
 
 
 
-#### 🔹 UPDATE
+## 💛 Session 09- Advanced Queries and Joins - Part 1
 
-Mệnh đề UPDATE dùng để thay đổi dữ liệu trong table
+### 💥 GROUP BY với WHERE
+
+Mục đích của GROUP BY là nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột. Khi kết hợp với WHERE, GROUP BY sẽ nhóm các bản ghi thỏa mãn điều kiện của WHERE.
+
+
+Ví dụ: Liệt kê danh sách giảm giá của những sản phẩm có giá trên 2000
+
+```sql
+SELECT 
+  discount, 
+  COUNT(product_id) AS Total --- Đếm dựa vào ID và đặt tên là Total
+FROM products
+WHERE price > 20000
+GROUP BY discount
+ORDER BY discount ASC
+```
+
+Câu lệnh sẽ chạy mệnh đề WHERE trước, lọc ra những sản phẩm có giá > 2000 trước khi đem đi GROUP BY
+
+
+
+### 💥 GROUP BY với NULL
+
+Khi bạn sử dụng mệnh đề GROUP BY và có giá trị NULL trong cột được nhóm, các bản ghi với giá trị NULL sẽ được gom vào một nhóm duy nhất. Điều này có nghĩa là tất cả các bản ghi có giá trị NULL trong cột được nhóm sẽ tồn tại trong một nhóm riêng biệt.
+
+Ví dụ: Lấy danh sách thành phố của khách hàng đã đặt hàng.
+
+```sql
+SELECT shipping_city
+FROM orders
+GROUP BY shipping_city
+ORDER BY shipping_city
+```
+
+Bạn sẽ thấy giá trị NULL được liệt kê ra ở đầu danh sách.
+
+
+### 💥 GROUP BY với ALL
+
+Trong SQL Server, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng, bao gồm cả các bản ghi trùng lặp. Điều này có nghĩa là tất cả các bản ghi sẽ được coi là cùng một nhóm.
+
+Dưới đây là một ví dụ để hiểu cách sử dụng mệnh đề GROUP BY ALL trong SQL Server:
+
+Giả sử bạn có một bảng "Orders" với các cột "order_id", "customer_id" và "order_amount". Bạn muốn tính tổng số lượng đơn hàng và tổng số tiền cho tất cả các đơn hàng, bao gồm cả các đơn hàng trùng lặp:
+
+```sql
+SELECT order_id, customer_id, SUM(order_amount) AS TotalAmount
+FROM orders
+GROUP BY ALL order_id, customer_id;
+```
+
+Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "orders". Kết quả trả về sẽ bao gồm tất cả các cặp order_id và customer_id có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp order_id và customer_id sẽ được tính bằng hàm SUM(TotalAmount).
+
+Lưu ý rằng mệnh đề GROUP BY ALL không phổ biến và thường không được sử dụng trong các trường hợp thông thường. Nó cung cấp một cách để xử lý các bản ghi trùng lặp trong quá trình nhóm dữ liệu.
+
+### 💥 GROUPING SETS
+
+là một cú pháp mở rộng của mệnh đề GROUP BY để cho phép bạn `nhóm dữ liệu theo nhiều tập hợp khác nhau trong một câu truy vấn duy nhất`. Nó cho phép bạn tạo các kết quả tổng hợp từ các nhóm dữ liệu khác nhau một cách thuận tiện.
+
+Với GROUPING SETS, bạn có thể chỉ định một danh sách các cột hoặc biểu thức nhóm để tạo các tập hợp nhóm khác nhau. Cú pháp của GROUPING SETS như sau:
+
+```sql
+SELECT 
+    column1, column2, ..., aggregate_function(column)
+FROM table
+GROUP BY 
+    GROUPING SETS (column1, column2, ..., ())
+```
+
+Tìm hiểu qua ví dụ
+
+Tạo một table mới `dbo.sales_summary`
+
+```sql
+SELECT
+    b.brand_name AS brand,
+    c.category_name AS category,
+    p.model_year,
+    round(
+        SUM (
+            i.quantity * i.price * (1 - i.discount)
+        ),
+        0
+    ) sales INTO dbo.sales_summary
+FROM
+    dbo.order_items i
+INNER JOIN dbo.products p ON p.product_id = i.product_id
+INNER JOIN dbo.brands b ON b.brand_id = p.brand_id
+INNER JOIN dbo.categories c ON c.category_id = p.category_id
+GROUP BY
+    b.brand_name,
+    c.category_name,
+    p.model_year
+ORDER BY
+    b.brand_name,
+    c.category_name,
+    p.model_year;
+```
+Bạn sẽ nhận được một bảng dữ liệu tổng hợp doanh thu theo `brand`, `categories` và `year_model`
+
+![grou-set](img/SQL-Server-GROUPING-SETS-sample-table.png)
+
+Ví dụ: Từ đó hãy, Truy vấn trả về số tiền bán được nhóm theo thương hiệu và danh mục:
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand,
+    category
+ORDER BY
+    brand,
+    category;
+```
+
+Tương tự vậy: Chỉ nhóm theo `brand`
+
+```sql
+SELECT
+    brand,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand
+ORDER BY
+    brand;
+```
+
+Tương tự vậy: Chỉ nhóm theo `categories`
+
+```sql
+SELECT
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    category
+ORDER BY
+    category;
+```
+Và một nhóm tổng hợp: tổng doanh thu của tất cả `brand` và `categories`
+
+```sql
+SELECT
+    SUM (sales) sales
+FROM
+    dbo.sales_summary;
+```
+
+Như vậy chúng ta có 4 nhóm dữ liệu:
+
+```sql
+(brand, category)
+(brand)
+(category)
+()
+```
+Để có một báo cáo tổng hợp thông tin 4 nhóm trên bạn có thể dùng mệnh đề `UNION ALL` để nối lại như sau:
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand,
+    category
+UNION ALL
+SELECT
+    brand,
+    NULL,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand
+UNION ALL
+SELECT
+    NULL,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    category
+UNION ALL
+SELECT
+    NULL,
+    NULL,
+    SUM (sales)
+FROM
+    dbo.sales_summary
+ORDER BY brand, category;
+```
+
+==> Nhược điểm: Câu lênh truy vấn dài, phức tạp, hiệu suất truy vấn chậm
+
+==> Bạn có thể fix vấn đề này bằng cách dùng GROUP với `GROUPING SETS`
+
+```sql
+SELECT
+	brand,
+	category,
+	SUM (sales) sales
+FROM
+	dbo.sales_summary
+GROUP BY
+	GROUPING SETS (
+		(brand, category),
+		(brand),
+		(category),
+		()
+	)
+ORDER BY
+	brand,
+	category;
+```
+Hàm GROUPING cho biết liệu một cột được chỉ định trong mệnh đề GROUP BY có được tổng hợp hay không. Nó trả về 1 nếu được tổng hợp hoặc 0 nếu không được tổng hợp trong tập kết quả.
+
+```sql
+SELECT
+    GROUPING(brand) grouping_brand,
+    GROUPING(category) grouping_category,
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    sales.sales_summary
+GROUP BY
+    GROUPING SETS (
+        (brand, category),
+        (brand),
+        (category),
+        ()
+    )
+ORDER BY
+    brand,
+    category;
+```
+
+Giá trị trong cột grouping_brand cho biết hàng có được tổng hợp hay không, 1 nghĩa là số tiền bán hàng được tổng hợp theo thương hiệu, 0 có nghĩa là số tiền bán hàng không được tổng hợp theo thương hiệu. Khái niệm tương tự được áp dụng cho cột grouping_category.
+
+### 💥 GROUP BY với CUBE
+
+Cú pháp CUBE sẽ tạo ra tất cả các tổ hợp có thể của các cột được chỉ định, bao gồm các nhóm theo từng cột riêng lẻ, các nhóm con của từng cột, các nhóm con của các tổ hợp cột, và tổng hợp toàn bộ dữ liệu.
+
+Hay nói dễ hiểu hơn `CUBE` là cú pháp ngắn gọn để làm `GROUPING SETS`
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function (c4)
+FROM
+    table_name
+GROUP BY
+    GROUPING SETS (
+        (d1,d2,d3), 
+        (d1,d2),
+        (d1,d3),
+        (d2,d3),
+        (d1),
+        (d2),
+        (d3), 
+        ()
+     );
+```
+Rất dài dòng, thay vì thế dùng ngay `CUBE`
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function (c4)
+FROM
+    table_name
+GROUP BY
+    CUBE (d1, d2, d3); -- Rút gọn lại còn 1 dòng
+```
+
+Từ ví dụ trên có thể rút gọn lại, cho kết quả giống nhau
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    CUBE(brand, category)
+ORDER BY
+	brand,
+	category;
+```
+
+
+
+### 💥 GROUP BY với ROLLUP
+
+ROLLUP là một mệnh đề con của mệnh đề GROUP BY cung cấp cách viết tắt để xác định nhiều nhóm nhóm. Không giống như mệnh đề con CUBE, ROLLUP không tạo ra tất cả các tập hợp nhóm có thể có dựa trên các cột thứ nguyên; CUBE tạo ra một tập hợp con trong số đó.
+
+Khi tạo các tập hợp nhóm, ROLLUP giả định một hệ thống phân cấp giữa các cột thứ nguyên và chỉ tạo các tập hợp nhóm dựa trên hệ thống phân cấp này.
+
+ROLLUP thường được sử dụng để tạo subtotals và totals cho mục đích báo cáo.
+
+`CUBE (d1,d2,d3)` định nghĩa ra `8` grouping sets:
+
+```sql
+(d1, d2, d3)
+(d1, d2)
+(d2, d3)
+(d1, d3)
+(d1)
+(d2)
+(d3)
+()
+```
+Trong khi `ROLLUP(d1,d2,d3)` tạo `4` grouping sets, theo cấu trúc phân cấp d1 > d2> d3
+
+```sql
+(d1, d2, d3)
+(d1, d2)
+(d1)
+()
+```
+
+Cú pháp:
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function(c4)
+FROM
+    table_name
+GROUP BY
+    ROLLUP (d1, d2, d3);
+```
+
+Nối tiếp ví dụ trên 
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    ROLLUP(brand, category);
+```
+Kết quả được canh theo cột brand:  brand > category
+
+
+### 💥 GROUP BY WITH Aggregate Function
+
+Khi kết hợp với các hàm tổng hợp như COUNT, SUM, AVG, MIN, MAX, GROUP BY sẽ nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột và tính toán các hàm tổng hợp trên các nhóm này.
+
+#### 🔹 COUNT
+
+Dùng để đếm số lượng bản ghi trong một nhóm.
+
+```sql
+-- Đếm số lượng sản phẩm theo từng loại giá
+SELECT
+    price,
+    COUNT(product_id) AS 'NumberOfProducts'
+FROM products
+GROUP BY price
+```
+
+#### 🔹 SUM
+
+Dùng để tính tổng các giá trị trong một cột.
+
+```sql
+-- Tính tổng số lượng tồn kho theo từng nhóm category_id
+SELECT
+    category_id, 
+    SUM(Stock) AS 'total_stock'
+FROM products
+GROUP BY category_id
+```
+
+#### 🔹 MIN
+
+Dùng để lấy giá trị nhỏ nhất của các giá trị trong một cột.
+
+```sql
+-- Hiển thị sản phẩm có giá thấp nhất theo từng nhóm category_id
+SELECT
+    category_id, 
+    MIN(price) AS 'min_price'
+FROM products
+GROUP BY category_id
+```
+
+#### 🔹 MIN
+
+Dùng để lấy giá trị lớn nhất của các giá trị trong một cột.
+
+```sql
+-- Hiển thị sản phẩm có giá cao nhất theo từng nhóm category_id
+SELECT
+    category_id, 
+    MAX(price) AS 'max_price'
+FROM products
+GROUP BY category_id
+```
+
+### 💥 Sub Query
+
+Subquery (hoặc còn gọi là inner query hoặc nested query) là một câu truy vấn SELECT được nhúng bên trong một câu truy vấn khác. Nó cho phép bạn sử dụng kết quả của một câu truy vấn như là một tập dữ liệu đầu vào cho câu truy vấn chính.
+
+Ví dụ: Liệt kê danh sách danh mục kèm số lượng sản phẩm có trong danh mục đó
+
+
+```sql
+SELECT
+  c.*, (SELECT COUNT(product_id) FROM dbo.products AS P WHERE p.category_id = c.product_id) AS 'number_product'
+FROM dbo.categories AS c
+```
+
+Ví dụ, bạn có thể sử dụng subquery để tìm tất cả các khách hàng có đơn hàng với tổng giá trị lớn hơn một ngưỡng nào đó:
+
+```sql
+SELECT customer_name
+FROM dbo.customers
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM dbo.orders
+    GROUP BY customer_id
+    HAVING SUM(order_amount) > 1000
+)
+```
+
+Ví dụ: Lấy thông tin đơn hàng của tất cả khách hàng ở `New York`
+
+```sql
+SELECT
+    order_id,
+    order_date,
+    customer_id
+FROM
+    dbo.orders
+WHERE
+    customer_id IN (
+        SELECT
+            customer_id
+        FROM
+            dbo.customers
+        WHERE
+            city = 'New York'
+    )
+ORDER BY
+    order_date DESC;
+```
+
+Để có hiệu suất truy vấn cao hơn, khuyến nghị nên chuyển subquery thành JOIN trong các trường hợp nhất định. Lý do là các hệ quản lý cơ sở dữ liệu thường tối ưu hóa truy vấn JOIN và có thể sử dụng các chỉ mục và kỹ thuật tham gia để tìm kiếm và kết hợp dữ liệu hiệu quả.
+
+#### 🔹 Sub Query and ANY
 
 Cú pháp
 
 ```sql
-UPDATE [schame_name].[table_name]
-SET c1 = v1, c2 = v2, ... cn = vn
-[WHERE condition]
+scalar_expression comparison_operator ANY (subquery)
 ```
 
-Lưu ý: Câu lệnh UPDATE nên đi kèm với mệnh đề WHERE để giới hạn phạm vi tác động của dữ liệu, để giảm bớt sai sót nếu nhầm lẫn logic xử lý.
+- scalar_expression: biểu thức giá trị đơn
+- comparison_operator: toán tử so sánh
+- subquery: trả về một danh sách (v1, v2, … vn). `ANY` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với MỘT TRONG các giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
 
-**UPDATE JOIN syntax**
+Ví dụ
 
 ```sql
-UPDATE 
-    t1
-SET 
-    t1.c1 = t2.c2,
-    t1.c2 = expression,
-    ...   
-FROM 
-    t1
-    [INNER | LEFT] JOIN t2 ON join_predicate
-WHERE 
-    where_predicate;
+SELECT
+    product_name,
+    price
+FROM
+    dbo.products
+WHERE
+    -- Nếu price >= với bất kì giá trị nào
+    -- trong kết quả SELECT thì WHERE thực thi
+    price >= ANY (
+        SELECT
+            AVG (price)
+        FROM
+            production.products
+        GROUP BY
+            brand_id
+    )
 ```
 
-Tạo dữ liệu demo
+
+#### 🔹 Sub Query and ALL
+
+ALL có cách dùng tương tự nhưng khác một chỗ là khi dùng `ALL` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với TẤT CẢ giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
+
+
+#### 🔹 Sub Query and EXISTS, NOT EXISTS 
+
+Cú pháp
 
 ```sql
-DROP TABLE IF EXISTS dbo.targets;
-
-CREATE TABLE dbo.targets
-(
-    target_id  INT	PRIMARY KEY, 
-    percentage DECIMAL(4, 2) 
-        NOT NULL DEFAULT 0
-);
-
-INSERT INTO 
-    dbo.targets(target_id, percentage)
-VALUES
-    (1,0.2),
-    (2,0.3),
-    (3,0.5),
-    (4,0.6),
-    (5,0.8);
-
-CREATE TABLE dbo.commissions
-(
-    staff_id    INT PRIMARY KEY, 
-    target_id   INT, 
-    base_amount DECIMAL(10, 2) 
-        NOT NULL DEFAULT 0, 
-    commission  DECIMAL(10, 2) 
-        NOT NULL DEFAULT 0, 
-    FOREIGN KEY(target_id) 
-        REFERENCES sales.targets(target_id), 
-    FOREIGN KEY(staff_id) 
-        REFERENCES sales.staffs(staff_id),
-);
-
-INSERT INTO 
-    dbo.commissions(staff_id, base_amount, target_id)
-VALUES
-    (1,100000,2),
-    (2,120000,1),
-    (3,80000,3),
-    (4,900000,4),
-    (5,950000,5);
+WHERE [NOT] EXISTS (subquery)
 ```
+EXISTS trả về `TRUE` nếu `subquery` trả về kết quả; ngược lại trả về `FALSE`.
 
-Yêu cầu Cập nhật tiền thưởng (trường commissions) ở table `commissions` theo công thức: `commissions = base_amount * percentage` mặc định nhân viên mới sẽ có mức chiết khấu percentage = 0.1
+NOT EXISTS phủ định của EXISTS
 
+Ví dụ: Lấy thông tin khách hàng, có đơn hàng mua vào năm 2017.
 
 ```sql
-UPDATE 
-    dbo.commissions
-SET  
-    dbo.commissions.commission = 
-        c.base_amount  * COALESCE(t.percentage,0.1) -- COALESCE trả về 0.1 nếu percentage là NULL
-FROM  
-    dbo.commissions AS c
-    LEFT JOIN dbo.targets t -- tham chiếu đến targets để lấy trường percentage
-        ON c.target_id = t.target_id;
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    city
+FROM
+    dbo.customers c
+WHERE
+    EXISTS (
+        -- Đi tìm những khách hàng mua hàng năm 2017
+        SELECT
+            customer_id
+        FROM
+            dbo.orders o
+        WHERE
+            o.customer_id = c.customer_id
+        AND YEAR (order_date) = 2017
+    )
+ORDER BY
+    first_name,
+    last_name;
 ```
 
-#### 🔹 DELETE
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-subquery/
 
-Câu lệnh DELETE cho phép bạn loại bỏ dữ liệu không cần thiết, không chính xác hoặc không muốn từ một bảng cụ thể trong cơ sở dữ liệu.
-
-Cú pháp:
-
-```sql
-DELETE [ TOP ( expression ) [ PERCENT ] ]  
-FROM table_name
-[WHERE search_condition];
-```
-
-Ví dụ các trường hợp:
-
-```sql
--- Xóa tất cả records từ table target_table
-DELETE FROM target_table;
--- Xóa 1 dòng đầu tiên
-DELETE TOP 10 FROM target_table;  
--- Xóa 10 % records ngẫu nhiên trong table
-DELETE TOP 10 PERCENT FROM target_table;
-```
-
-**DELETE với mệnh đề WHERE**
-
-Thông thường câu lệnh DELETE đi kèm điều kiện WHERE để xác định cụ thể bản ghi nào cần xóa
-
-```sql
-DELETE FROM dbo.commissions WHERE staff_id = 1
-```
-
-
-
-### 💥 SQL CONSTRAINT
-
-CONSTRAINT (ràng buộc) là một khối mã hoặc một quy tắc được áp dụng cho một hoặc nhiều cột trong một bảng để định nghĩa và bảo vệ tính toàn vẹn dữ liệu. Ràng buộc định nghĩa các quy tắc và giới hạn cho dữ liệu được lưu trữ trong cơ sở dữ liệu.
-
-Các CONSTRAINT phổ biến:
-
-#### 🔹 PRIMARY KEY
-
-Primary key (Khóa chính) là một thuộc tính hoặc tập hợp các thuộc tính trong một bảng dùng để định danh duy nhất mỗi hàng trong bảng đó. Khóa chính đảm bảo tính duy nhất và xác định của các bản ghi trong bảng
-
-Là sự kết hợp giữa 2 CONSTRAINT `UNIQUE` và `NOT NULL`
-
-```sql
--- Định nghĩa PRIMARY KEY ngay khi tạo table
-CREATE TABLE [dbo].[products] (
-    product_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL
-)
--- Định nghĩa PRIMARY KEY cho table đã tồn tại
-ALTER TABLE [dbo].[products]
-ADD PRIMARY KEY (product_id);
--- Hoặc, bạn có thể đặt tên cho contraint là PK_products_product_id
---Khuyên dùng cách này để xảy ra lỗi thì dễ dàng nhận biết vì có tên
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
-```
-
-
-#### 🔹 FOREIGN KEY 
-
-- Foreign key (khóa ngoại) là một cột hoặc tập hợp các cột trong một bảng tham chiếu đến khóa chính của một bảng khác. Khóa ngoại tạo ra một mối quan hệ giữa hai bảng dựa trên giá trị của cột hoặc các cột được liên kết.
-
-- Bảng chứa khóa ngoại được gọi là bảng tham chiếu hoặc bảng con. Và bảng được tham chiếu bởi khóa ngoại được gọi là bảng được tham chiếu hoặc bảng cha.
-
-- Một bảng có thể có nhiều khóa ngoại tùy thuộc vào mối quan hệ của nó với các bảng khác.
-
-- Bạn xác định khóa ngoại bằng cách sử dụng ràng buộc khóa ngoại. Ràng buộc khóa ngoại giúp duy trì tính toàn vẹn tham chiếu của dữ liệu giữa bảng con và bảng cha.
-
-- Ràng buộc khóa ngoại chỉ ra rằng các giá trị trong một cột hoặc một nhóm cột trong bảng con bằng với các giá trị trong một cột hoặc một nhóm cột của bảng cha.
-
-```sql
--- Tạo khóa ngoại category_id, supplier_id ngay khi tạo mới Table
-CREATE TABLE [dbo].[products] (
-  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
-  [price] DECIMAL(18,2) NOT NULL,
-  [discount] DECIMAL(4,2) NOT NULL,
-  [description] NVARCHAR(MAX) NULL,
-  [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL,
-  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
-        REFERENCES categories(category_id), --Khóa ngoại category_id
-  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
-        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
-);
-```
-
-Hoặc bạn có thể tạo khóa ngoại cho một table đã tồn tại
-
-```sql
---Tạo khóa ngoại  FOREIGN KEY (category_id) tham chiếu đến khóa chính categories(Id)
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [FK_products_categories] FOREIGN KEY ([category_id]) REFERENCES [dbo].[categories] ([category_id]);
-GO
---Tạo khóa ngoại FOREIGN KEY (supplier_id) tham chiếu đến khóa chính suppliers(supplier_id)
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [FK_products_suppliers] FOREIGN KEY ([supplier_id]) REFERENCES [dbo].[suppliers] ([supplier_id]);
-```
-
-#### 🔹 UNIQUE
-
-SQL cung cấp cho bạn ràng buộc UNIQUE để duy trì tính duy nhất của dữ liệu một cách chính xác.
-
-Khi có ràng buộc UNIQUE, mỗi khi bạn chèn một hàng mới, nó sẽ kiểm tra xem giá trị đã có trong bảng chưa. Nó từ chối thay đổi và đưa ra lỗi nếu giá trị đã tồn tại. Quá trình tương tự được thực hiện để cập nhật dữ liệu hiện có.
-
-```sql
---Tạo UNIQUE ngay khi tạo mới table
-CREATE TABLE [dbo].[categories] (
-  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
-  [description] NVARCHAR(500) NULL,
-);
-GO
-```
-
-Bạn cũng có thể tạo UNIQUE cho một table đã tồn tại
-
-```sql
-ALTER TABLE [dbo].[categories]
-ADD CONSTRAINT [UQ_categories_name] UNIQUE ([name]); --UQ_categories_Name là tên bạn đặt cho CONTRAINT
-GO
-```
-
-#### 🔹 NOT NULL
-
-Trong lý thuyết cơ sở dữ liệu, NULL đại diện cho thông tin chưa biết hoặc thiếu thông tin. NULL không giống như một chuỗi trống hoặc số 0.
-
-Giả sử bạn cần chèn địa chỉ email của một liên hệ vào bảng. Bạn có thể yêu cầu địa chỉ email của người đó. Tuy nhiên, nếu bạn không biết người liên hệ đó có địa chỉ email hay không, bạn có thể chèn NULL vào cột địa chỉ email. Trong trường hợp này, NULL chỉ ra rằng địa chỉ email không được biết tại thời điểm ghi.
-
-NULL rất đặc biệt. Nó không bằng bất cứ thứ gì, kể cả chính nó. Biểu thức NULL = NULL trả về NULL vì điều đó có nghĩa là hai giá trị chưa biết không được bằng nhau.
-
-Định nghĩa NOT NULL ngay khi tạo mới table
-
-```sql
-CREATE TABLE [dbo].[categories] (
-  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
-  [description] NVARCHAR(500),
-);
-GO
-```
-Hoặc cho table đã tồn tại
-
-```sql
-ALTER TABLE [dbo].[categories]
-ALTER COLUMN [name] NVARCHAR(50) UNIQUE NOT NULL;
-```
-
-
-#### 🔹 DEFAULT
-
-DEFAULT là một thuộc tính được sử dụng trong cơ sở dữ liệu để định nghĩa giá trị mặc định cho một cột khi không có giá trị nào được cung cấp trong quá trình chèn dữ liệu mới hoặc cập nhật dữ liệu trong cột đó.
-
-Định nghĩa `DEFAULT CONTRAINT` ngay khi tạo mới Table
-
-price, discount, Stock mặc định = 0
-
-```sql
-CREATE TABLE [dbo].[products] (
-  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
-  [price] DECIMAL(18,2) NOT NULL,
-  [discount] DECIMAL(4,2) NOT NULL,
-  [description] NVARCHAR(MAX) NULL,
-  [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL,
-  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
-        REFERENCES categories(category_id), --Khóa ngoại category_id
-  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
-        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
-
-);
-GO
-
-```
-
-#### 🔹 CHECK
-
-Check Contraint là một loại ràng buộc cho phép bạn chỉ định xem các giá trị trong một cột có phải đáp ứng một yêu cầu cụ thể hay không.
-
-Nếu các giá trị vượt qua quá trình kiểm tra, PostgreSQL sẽ chèn hoặc cập nhật các giá trị này vào cột. Nếu không, PostgreSQL sẽ từ chối các thay đổi và đưa ra lỗi vi phạm ràng buộc.
-
-
-Tạo table  products FULL Các CONTRAINT, ngay khi tạo mới
-
-```sql
-CREATE TABLE [dbo].[products] (
-  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
-  [price] DECIMAL(18,2) DEFAULT 0 CHECK (price >=0),
-  [discount] DECIMAL(4,2) DEFAULT 0 NOT NULL CHECK (discount >=0 AND discount <= 70),
-  [description] NVARCHAR(MAX) NULL,
-  [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL,
-  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
-        REFERENCES categories(category_id), --Khóa ngoại category_id
-  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
-        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
-
-);
-GO
-
-```
-
-Bạn cũng có thể tạo CONTRAINT CHECK cho table đã tồn tại
-
-
-```sql
--- Create CHECK (price > 0)
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [CK_products_price] CHECK ([price] > 0);
-GO
-
---Create CHECK (discount >= 0 AND discount <= 90)
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [CK_products_discount] CHECK ([discount] >= 0 AND [discount] <= 90);
-GO
-
-```
-
-
-## 💛Homeworks Guide - Session 2-3-4
-
-
-
-
-
+---> Còn tiếp ở Day-06
