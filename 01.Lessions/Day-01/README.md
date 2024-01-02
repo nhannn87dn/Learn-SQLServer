@@ -1,6 +1,5 @@
 # Day 01
 
-Nội dung chính cần nắm
 
 ## 💛Session 01 - RDBMS Concepts
 
@@ -9,6 +8,8 @@ Chúng ta bắt gặp tổ chức dữ liệu, quản lí dữ liệu diễn ra 
 - Bà bán rau: ghi chép thu chi, công nợ, mối nhập hàng...
 - Ngân hàng: ghi nhận lại lịch sử từng giao dịch, tiền vào ra...
 - Hệ thống siêu thị: ghi nhận nhập xuất hàng, giá, mã sản phẩm, tồn kho...
+
+---
 
 ### 💥Data management
 
@@ -24,11 +25,15 @@ Data management được tổ chức thành 2 loại khác nhau:
 
 - Database system: Tổ chức khoa học hơn, có thể chia nhỏ để tối ưu hiệu suất
 
+---
+
 ### 💥 Database Management System (DBMS)
 
 Database Management System (Hệ quản trị cơ sở dữ liệu) là một phần mềm được sử dụng để quản lý và điều khiển cơ sở dữ liệu. DBMS cung cấp các công cụ và cơ chế để lưu trữ, truy xuất, cập nhật và xử lý dữ liệu trong cơ sở dữ liệu.
 
 Một hệ quản trị cơ sở dữ liệu cho phép người dùng tạo, sửa đổi và xóa dữ liệu trong cơ sở dữ liệu, thực hiện truy vấn để truy xuất thông tin từ cơ sở dữ liệu, và quản lý các quyền truy cập và bảo mật dữ liệu. Nó cung cấp giao diện để tương tác với cơ sở dữ liệu thông qua các ngôn ngữ truy vấn như SQL (Structured Query Language).
+
+---
 
 ### 💥 Database Models
 
@@ -56,6 +61,8 @@ Chúng ta bắt gặp rất nhiều mối quan hệ giữa các table từ mô h
 - Brands - Products: Xảy ra mối quan hệ 1 - NHIỀU
 - Customers - Orders: Xảy ra mối quan hệ 1 - NHIỀU
 - Staffs - Orders: Xảy ra mối quan hệ 1 - NHIỀU
+
+---
 
 ### 💥 Một số thuật ngữ liên quan đến RDBMS
 
@@ -91,6 +98,7 @@ Khóa chính (Primary Key) là một thuộc tính hoặc tập hợp các thu�
 
 Khóa ngoại (Foreign Key) là một thuộc tính trong một quan hệ (relation) trong cơ sở dữ liệu quan hệ, được sử dụng để thiết lập mối quan hệ giữa hai quan hệ khác nhau. Khóa ngoại là một thuộc tính trong quan hệ hiện tại, trỏ tới khóa chính của một quan hệ khác.
 
+---
 
 ### 💥 Entiry là gì ?
 
@@ -99,6 +107,8 @@ Entity (thực thể) trong ngữ cảnh của cơ sở dữ liệu là một đ
 Trong mô hình quan hệ, entity được biểu diễn bằng một bảng (table) và mỗi hàng (row) trong bảng đại diện cho một thể hiện của entity. Mỗi cột (column) trong bảng tương ứng với một thuộc tính (attribute) của entity.
 
 Ví dụ, trong một hệ thống quản lý nhân viên, "Nhân viên" có thể là một entity. Mỗi nhân viên có thể có các thuộc tính như "Họ và tên", "Ngày sinh", "Địa chỉ", "Số điện thoại", và "Vị trí công việc". Mỗi nhân viên trong hệ thống sẽ được biểu diễn bằng một hàng trong bảng và các thuộc tính tương ứng sẽ là các cột trong bảng.
+
+---
 
 ## 💛 Session 02
 
@@ -117,6 +127,7 @@ CSDL sử dụng mối quan hệ để tạo ra sự tương tác và liên kế
 
 Xem Chi tiết: [Database Design Concept](03-Database-Design-Concept.pdf)
 
+---
 
 ### 💥 E-R Diagram
 

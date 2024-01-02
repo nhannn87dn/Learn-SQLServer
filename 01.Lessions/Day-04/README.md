@@ -426,7 +426,7 @@ SELECT LEFT('SQL Tutorial', 3) AS ExtractString;
 SELECT LOWER('SQL Tutorial is FUN!');
 ```
 
-
+---
 
 ## 💛 Session 09- Advanced Queries and Joins - Part 1
 
@@ -449,7 +449,7 @@ ORDER BY discount ASC
 
 Câu lệnh sẽ chạy mệnh đề WHERE trước, lọc ra những sản phẩm có giá > 2000 trước khi đem đi GROUP BY
 
-
+---
 
 ### 💥 GROUP BY với NULL
 
@@ -466,6 +466,7 @@ ORDER BY shipping_city
 
 Bạn sẽ thấy giá trị NULL được liệt kê ra ở đầu danh sách.
 
+---
 
 ### 💥 GROUP BY với ALL
 
@@ -484,6 +485,8 @@ GROUP BY ALL order_id, customer_id;
 Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "orders". Kết quả trả về sẽ bao gồm tất cả các cặp order_id và customer_id có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp order_id và customer_id sẽ được tính bằng hàm SUM(TotalAmount).
 
 Lưu ý rằng mệnh đề GROUP BY ALL không phổ biến và thường không được sử dụng trong các trường hợp thông thường. Nó cung cấp một cách để xử lý các bản ghi trùng lặp trong quá trình nhóm dữ liệu.
+
+---
 
 ### 💥 GROUPING SETS
 
@@ -680,6 +683,8 @@ ORDER BY
 
 Giá trị trong cột grouping_brand cho biết hàng có được tổng hợp hay không, 1 nghĩa là số tiền bán hàng được tổng hợp theo thương hiệu, 0 có nghĩa là số tiền bán hàng không được tổng hợp theo thương hiệu. Khái niệm tương tự được áp dụng cho cột grouping_category.
 
+---
+
 ### 💥 GROUP BY với CUBE
 
 Cú pháp CUBE sẽ tạo ra tất cả các tổ hợp có thể của các cột được chỉ định, bao gồm các nhóm theo từng cột riêng lẻ, các nhóm con của từng cột, các nhóm con của các tổ hợp cột, và tổng hợp toàn bộ dữ liệu.
@@ -736,6 +741,8 @@ ORDER BY
 	category;
 ```
 
+
+---
 
 
 ### 💥 GROUP BY với ROLLUP
@@ -795,6 +802,7 @@ GROUP BY
 ```
 Kết quả được canh theo cột brand:  brand > category
 
+---
 
 ### 💥 GROUP BY WITH Aggregate Function
 
@@ -851,6 +859,8 @@ SELECT
 FROM products
 GROUP BY category_id
 ```
+
+---
 
 ### 💥 Sub Query
 
@@ -979,5 +989,3 @@ ORDER BY
 ```
 
 Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-subquery/
-
----> Còn tiếp ở Day-06

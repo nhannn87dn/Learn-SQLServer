@@ -1,6 +1,5 @@
 # Day 7
 
-
 ## 💛 Session 13 - Programming Transact-SQL
 
 ### 💥 Transact-SQL là gì ?
@@ -20,6 +19,8 @@ Dưới đây là một số điểm nổi bật về T-SQL:
 4. Lập trình: T-SQL hỗ trợ các cấu trúc điều khiển như IF...ELSE, WHILE, và BEGIN...END để viết mã logic phức tạp. Nó cũng hỗ trợ biến, hằng số, tham số và các hàm người dùng để tạo các tác vụ lập trình.
 
 5. Xử lý lỗi và gỡ lỗi: T-SQL cung cấp các cơ chế để xử lý lỗi và gỡ lỗi trong quá trình thực thi. Nó hỗ trợ các câu lệnh TRY...CATCH để bắt và xử lý các ngoại lệ trong quá trình thực thi mã.
+
+---
 
 ### 💥 Transact-SQL Variables
 
@@ -83,6 +84,7 @@ SELECT @product_count;
 PRINT @product_count;
 ```
 
+---
 
 ### 💥Synonyms
 
@@ -97,6 +99,7 @@ FOR dbo.customers;
 -- Sau đó bạn có thể sử dụng
 SELECT * FROM ctm --tên ngắn hơn
 ```
+---
 
 ### 💥 Program Flow Statements
 
@@ -306,6 +309,7 @@ WAITFOR DELAY '00:00:05'; --Dừng 5s rồi chạy lệnh Sau nó
 PRINT 'End';
 ```
 
+---
 
 ### 💥 Transact-SQL Functions
 
@@ -439,6 +443,7 @@ Sử dụng funtion
 ```sql
 SELECT * FROM dbo.udtf_PromotionProducts()
 ```
+---
 
 ### 💥 Windown Functions
 
@@ -479,6 +484,8 @@ Ngoài ra SQL Server  còn hỗ trợ các loại funtions:
 - System Functions
 
 Chi tiết xem tại: https://www.sqlservertutorial.net/sql-server-functions/
+
+---
 
 ### 💥 Expressions
 
@@ -618,6 +625,7 @@ SELECT NULLIF('Hello', 'Hi') result; --=> 'Hello'
 
 Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-nullif/
 
+---
 
 ## 💛 Session 15 - Error Handing
 
@@ -629,6 +637,7 @@ Tóm tắt nội dung:
 1. Cách sử dụng @@ERROR, ERROR_NUMBER, ERROR_SEVERITY, 
 ERROR_STATE, ERROR_PROCEDURE, ERROR_LINE, ERROR_MESSAGE
 
+---
 
 ### 💥 Các loại lỗi trong SQL Server
 
@@ -642,6 +651,7 @@ Là lỗi xảy ra khi câu lệnh SQL không được viết đúng cú pháp.
 
 Là lỗi xảy ra khi câu lệnh SQL được viết đúng cú pháp nhưng không thể thực thi được do sai logic hoặc do dữ liệu không hợp lệ.
 
+---
 
 ### 💥  TRY...CATCH
 Là cấu trúc dùng để bắt lỗi trong SQL Server. Được giới thiệu từ phiên bản SQL Server 2005. Ví dụ:
@@ -712,6 +722,8 @@ BEGIN
 END;
 ```
 
+---
+
 ### 💥 RAISERROR
 
 Là câu lệnh dùng để tạo ra một lỗi do người dùng tự định nghĩa. Ví dụ: Tạo một lỗi do người dùng tự định nghĩa
@@ -732,6 +744,7 @@ state: là một số nguyên 0 - 255. hầu hết hay để là 1
 
 Levels of severity: https://learn.microsoft.com/en-us/sql/relational-databases/errors-events/database-engine-error-severities?view=sql-server-ver16
 
+---
 
 ### 💥  THROW
 
@@ -764,7 +777,7 @@ END CATCH
 
 ```
 
-
+---
 
 ### 💥  Biến @@ERROR
 
@@ -807,7 +820,7 @@ Là hàm trả về số dòng gây ra lỗi gần nhất xảy ra.
 
 Là hàm trả về thông điệp lỗi gần nhất xảy ra.
 
-
+---
 
 ## 💛 Session 12 - Triggers
 
@@ -817,6 +830,7 @@ Là hàm trả về thông điệp lỗi gần nhất xảy ra.
 
 - Không giống như stored procedure, trigger không được gọi bởi một ứng dụng hoặc một người dùng. Trigger được kích hoạt bởi một sự kiện như INSERT, UPDATE, DELETE và không thể được gọi như một stored procedure
 
+---
 
 ### 💥 DML Trigger
 
@@ -929,6 +943,7 @@ BEGIN
 END
 ```
 
+---
 
 ### 💥 DDL Trigger
 
@@ -990,6 +1005,8 @@ BEGIN
 END
 ```
 
+---
+
 
 ### 💥 Disable Trigger
 
@@ -1021,6 +1038,7 @@ Vô hiệu hóa tất cả trigger trên một Databse
 DISABLE TRIGGER ALL ON DATABASE;
 ```
 
+---
 
 ### 💥 Enable Trigger
 
@@ -1029,8 +1047,9 @@ Kích hoạt lại Trigger
 ```sql
 ENABLE TRIGGER [schema_name.][trigger_name] 
 ON [object_name | DATABASE | ALL SERVER]
-
 ```
+
+---
 
 ### 💥 List ALl Triggers
 
@@ -1047,6 +1066,8 @@ WHERE
     type = 'TR';
 ```
 
+---
+
 ### 💥 Delete Trigger
 
 Cú pháp:
@@ -1056,7 +1077,7 @@ DROP TRIGGER [ IF EXISTS ] trigger_name [ ,...n ]
 ON { DATABASE | ALL SERVER };
 ```
 
-
+---
 
 ## 💛 Session 07- Azure SQL
 

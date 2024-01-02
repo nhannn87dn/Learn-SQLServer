@@ -438,6 +438,7 @@ Các ứng dụng của transaction:
 - Transaction được sử dụng để đảm bảo tính toàn vẹn của dữ liệu trong các ứng dụng doanh nghiệp.
 - Transaction có thể được sử dụng để thực hiện các thao tác như: chuyển tiền, thanh toán hóa đơn, đặt hàng, ...
 
+---
 
 ### 💥  Các lệnh quản lý transaction
 
@@ -454,6 +455,8 @@ Các ứng dụng của transaction:
 - **ROLLBACK TRANSACTION** : Dùng để hủy bỏ toàn bộ một transaction.
 
 - **ROLLBACK TRANSACTION [SavepointName]** : Dùng để hủy bỏ một savepoint trong transaction
+
+---
 
 ### 💥 Cách sử dụng transaction
 
@@ -607,6 +610,8 @@ COMMIT TRANSACTION
 ```
 
 `SAVE TRANSACTION` - Nó cho phép lưu lại trạng thái hiện tại của transaction và tiếp tục thực hiện các hoạt động trong transaction. Nếu sau đó có lỗi xảy ra, bạn có thể sử dụng lệnh ROLLBACK để hủy bỏ toàn bộ transaction hoặc sử dụng lệnh ROLLBACK TRANSACTION để hủy bỏ đến điểm đã được lưu trữ bởi SAVE TRANSACTION.
+
+---
 
 ### 💥 Locks
 
