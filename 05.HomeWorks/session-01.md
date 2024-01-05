@@ -1,5 +1,7 @@
 # Homework Day 01
 
--  Download Software SQL Server 2019: https://go.microsoft.com/fwlink/p/?linkid=2216019&clcid=0x409&culture=en-us&country=us
+- Cách cài đặt phần mềm
+  - SQL SERVER 2019 EXPRESS EDITION: https://go.microsoft.com/fwlink/p/?linkid=2216019&culture=en-us&country=ww
+  - SQL SERVER MANAGEMENT STUDIO (SSMS): https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
 
-- Download SQL Server Management Studio (SSMS): https://aka.ms/ssmsfullsetup
+- Hướng dẫn cài đặt: https://diadem.in/blog/sql-server-2019-express-installation

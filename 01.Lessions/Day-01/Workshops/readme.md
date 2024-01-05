@@ -4,5 +4,5 @@
 
 Tình huống khách hàng cần tạo ra một hệ thống quản lý học sinh
 
-- Hãy lên sơ đồ phác tạo các thuộc tính của thực thể (Entity) => Bằng file Excel.
+- Hãy lập danh sách các thuộc tính (Attributes) của thực thể (Entity) => Bằng file Excel.
 - Vẻ sơ đồ E-R Diagram thể hiện mối quan hệ giữa các thực thể
