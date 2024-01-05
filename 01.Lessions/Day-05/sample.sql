@@ -1,132 +1,71 @@
---GROUPING SETS
+---SUbQUERY
 
 SELECT
-    b.brand_name AS brand,
-    c.category_name AS category,
-    p.model_year,
-    round(
-        SUM (
-            quantity * i.list_price * (1 - discount)
-        ),
-        0
-    ) sales INTO sales.sales_summary
+  c.*, 
+  (SELECT COUNT(product_id) 
+        FROM products AS P 
+        WHERE p.category_id = c.product_id) AS 'number_product'
+FROM categories AS c
+
+
+---Ví dụ, bạn có thể sử dụng subquery để tìm tất cả các khách hàng có đơn hàng
+-- với tổng giá trị lớn hơn một ngưỡng nào đó
+
+SELECT customer_name
+FROM customers
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM orders
+    GROUP BY customer_id
+    HAVING SUM(order_amount) > 1000
+)
+
+--- Ví dụ: Lấy thông tin đơn hàng của tất cả khách hàng ở New York
+SELECT
+    order_id,
+    order_date,
+    customer_id
 FROM
-    sales.order_items i
-INNER JOIN production.products p ON p.product_id = i.product_id
-INNER JOIN production.brands b ON b.brand_id = p.brand_id
-INNER JOIN production.categories c ON c.category_id = p.category_id
-GROUP BY
-    b.brand_name,
-    c.category_name,
-    p.model_year
+    orders
+WHERE
+    customer_id IN (
+        SELECT
+            customer_id
+        FROM
+            customers
+        WHERE
+            city = 'New York'
+    )
 ORDER BY
-    b.brand_name,
-    c.category_name,
-    p.model_year;
+    order_date DESC;
 
--- Group by brand, category
 
-SELECT
-    brand,
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand,
-    category
-ORDER BY
-    brand,
-    category;
-
--- Group by brand
-
-SELECT
-    brand,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand
-ORDER BY
-    brand;
-
--- Group by category
+-- ANY
+expresion operator ANY(subquery)
 
 
 SELECT
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    category
-ORDER BY
-    category;
+    product_name,price
+FROM  products
+WHERE
+    -- Nếu price >= với bất kì giá trị nào
+    -- trong kết quả SELECT thì WHERE thực thi
+    price >= ANY (
+        SELECT AVG (price) FROM products GROUP BY brand_id
+);
 
 
-SELECT
-    SUM (sales) sales
-FROM
-    sales.sales_summary;
+--- Ví dụ: Lấy thông tin khách hàng, có đơn hàng mua vào năm 2017.
 
--- MERGE results
+SELECT customer_id,first_name,last_name, city
+FROM customers AS c
+WHERE
+    EXISTS (
+        -- Đi tìm những khách hàng mua hàng năm 2017
+        SELECT customer_id
+        FROM orders AS o
+        WHERE o.customer_id = c.customer_id AND YEAR (order_date) = 2017
+    )
+ORDER BY first_name, last_name;
 
-SELECT
-    brand,
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand,
-    category
-UNION ALL
-SELECT
-    brand,
-    NULL,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    brand
-UNION ALL
-SELECT
-    NULL,
-    category,
-    SUM (sales) sales
-FROM
-    sales.sales_summary
-GROUP BY
-    category
-UNION ALL
-SELECT
-    NULL,
-    NULL,
-    SUM (sales)
-FROM
-    sales.sales_summary
-ORDER BY brand, category;
-
-
-
---Thay vì thế chúng ta gom lại chỉ với 1 câu truy vấn
-
-
-SELECT
-	brand,
-	category,
-	SUM (sales) sales
-FROM
-	sales.sales_summary
-GROUP BY
-    -- Phân theo từng nhóm, trong 1 câu truy vấn
-	GROUPING SETS (
-		(brand, category),
-		(brand),
-		(category),
-		()
-	)
-ORDER BY
-	brand,
-	category;
+--JOIN

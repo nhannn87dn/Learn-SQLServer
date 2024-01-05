@@ -1,5 +1,7 @@
-# Day 3
-💥 🔹
+# Day 4
+
+
+
 ## 💛 Session 04 - Transact SQL
 
 Transact-SQL (T-SQL) là một ngôn ngữ truy vấn và lập trình được sử dụng trong hệ quản trị cơ sở dữ liệu SQL Server của Microsoft. Nó mở rộng cú pháp của SQL chuẩn với các tính năng bổ sung để làm việc với SQL Server.
@@ -18,18 +20,25 @@ Tính năng Transact-SQL:
 - transaction control: Điều khiển giao dịch
 - exception and error-handling: bắt lỗi, xử lý lỗi
 
+---
 
 ### 💥 Data Definition Language (DDL)
 
 Data Definition Language (DDL) là một phần của ngôn ngữ truy vấn trong hệ quản trị cơ sở dữ liệu (DBMS) dùng để định nghĩa và quản lý cấu trúc của cơ sở dữ liệu. DDL cung cấp các câu lệnh để tạo, thay đổi và xóa các đối tượng cơ sở dữ liệu như bảng, chỉ mục, ràng buộc, quyền truy cập và các đối tượng khác
 
+---
+
 ### 💥 Data Definition Language (DDL)
 
 Data Manipulation Language (DML) là một phần của ngôn ngữ truy vấn trong hệ quản trị cơ sở dữ liệu (DBMS) dùng để thao tác và thay đổi dữ liệu trong cơ sở dữ liệu. DML cung cấp các câu lệnh để truy vấn, chèn, cập nhật và xóa dữ liệu từ các bảng và đối tượng khác trong cơ sở dữ liệu.
 
+---
+
 ### 💥 Data Control Language (DCL)
 
 Data Control Language (DCL) là một phần của ngôn ngữ truy vấn trong hệ quản trị cơ sở dữ liệu (DBMS) dùng để quản lý quyền truy cập và phân quyền trong cơ sở dữ liệu. DCL cung cấp các câu lệnh để cấp quyền, thu hồi quyền và điều khiển quyền truy cập đối với người dùng và vai trò trong cơ sở dữ liệu.
+
+---
 
 ### 💥 Data Types
 
@@ -98,3 +107,731 @@ Mặt khác, đặt ra một bài toán thực tế: Khi bạn thiết kế mộ
 Vậy nếu lưu trữ thừa 1byte/ ngày, bạn sẽ gây ra thất thoát dung lượng đến 365.000.000 byte /năm. Ngược lại, việc thiếu dung lượng gây ra trì trệ hệ thống như lỗi thiếu bộ nhớ, không đủ dung lượng lưu trữ. Đó chỉ là một bài toán minh họa nhỏ, còn thực tế thường gấp nhiều lần như vậy.
 
 Các máy tính Desktop có RAM lớn, có thể chịu được thất thoát. Nhưng bạn lập trình cho App Mobile thì sao ?
+
+---
+
+## 💛 Session 05- Creating and Managing Databases
+
+### 💥 Database (Cơ sở dữ liệu) là gì? 
+
+- Một Database là tập hợp của rất nhiều dữ liệu phản ánh thế giới thực hoặc một phần của thế giới thực.
+- Có cấu trúc, được lưu trữ tuân theo quy tắc dựa trên lý thuyết toán học.
+- Các dữ liệu trong Database có liên quan với nhau về một lĩnh vực cụ thể, được tổ chức đặc biệt cho việc lưu trữ, tìm kiếm và trích xuất dữ liệu.
+- Được các Hệ cơ sở dữ liệu khai thác xử lý, tìm kiếm, tra cứu, sửa đổi, bổ sung hay loại bỏ dữ liệu trong Database.
+
+Ở mức logic, một DATABASE gồm nhiều bảng (TABLE), mỗi bảng được xác định bằng một tên, bảng chứa dữ liệu có cấu trúc và các ràng buộc (CONSTRAINT) định nghĩa trên các bảng. Ngoài ra, Database còn có khung nhìn (VIEW), các thủ tục/ hàm….
+
+Ở mức vật lý, DATABASE của SQL Server được lưu trữ dưới 3 loại tập tin: 
+
+- Tập tin dữ liệu (Data-file): gồm 1 tập tin lưu trữ dữ liệu chính (`*.mdf`) chứa các dữ liệu khởi đầu và các tập tin dữ liệu thứ cấp (`*.ndf`) chứa dữ liệu phát sinh hoặc không lưu hết trong tập tin lưu trữ chính.
+- Tập tin nhật ký thao tác (`*.ldf`) chứa thông tin giao tác, thường dùng để khôi phục Database nếu xảy ra sự cố. 
+
+---
+
+### 💥Tại sao phải tạo Database?
+
+Như việc truy xuất, đóng mở tập tin thông thường, bạn cần tạo file lưu trữ trước khi truy xuất. Tương tự vậy, bạn cần tạo một DATABASE để lưu trữ dữ liệu trong SQL Server để tiện cho việc truy vấn sau này.
+
+SQL Server sẽ giúp bạn quản lý, truy xuất những dữ liệu này một cách có cấu trúc và dễ dàng hơn.
+
+---
+
+### 💥 Cách tạo Database?
+
+#### 🔹 Tạo bằng giao diện đồ họa GUI
+
+
+#### 🔹 Tạo bằng dòng lệnh 
+
+```sql
+CREATE DATABASE  <database_name>
+```
+
+Trong đó database_name là tên mà bạn đặt cho Database bạn muốn tạo
+
+---
+
+### 💥 Xóa một Database?
+
+#### 🔹 Xóa bằng giao diện đồ họa GUI
+
+
+#### 🔹 Xóa bằng dòng lệnh 
+
+```sql
+DROP DATABASE <database_name>
+```
+Trong đó database_name là tên Database bạn muốn xóa
+
+---
+
+### 💥 Comment trong SQL Query
+
+Để tạo COMMENT trong SQL, chúng ta sử dụng cú pháp
+
+```sql
+--Nội dung Comment
+```
+---
+
+### 💥 Backup và Restore Một Database
+
+- Backup và restore từ file .bak
+- Gen ra thành SQL Scrtip để thực thi: Bao gồm cấu trúc Schema và Data
+
+### 💥 Database Snapshot
+
+Database snapshot là một bản sao tĩnh (read-only) của một cơ sở dữ liệu tại một thời điểm cụ thể. Nó lưu trữ dữ liệu nhưng không cho phép thay đổi dữ liệu trong snapshot. Database snapshot thường được sử dụng để tạo ra các bản sao lưu (backup) của cơ sở dữ liệu hoặc để tạo ra một điểm khôi phục (restore point) để phục hồi cơ sở dữ liệu sau khi có sự cố xảy ra.
+
+Khi tạo một snapshot, hệ thống sao chép các dữ liệu hiện có trong cơ sở dữ liệu và lưu trữ chúng trong một không gian lưu trữ riêng. Từ đó, các truy vấn đọc có thể được thực hiện trên snapshot mà không ảnh hưởng đến dữ liệu trong cơ sở dữ liệu gốc. Mỗi khi có một thay đổi dữ liệu trong cơ sở dữ liệu gốc, snapshot không bị ảnh hưởng, vẫn giữ nguyên dữ liệu lúc tạo snapshot.
+
+Snapshot có thể được sử dụng để phục hồi cơ sở dữ liệu trong trường hợp có sự cố xảy ra, ví dụ như mất dữ liệu, lỗi trong quá trình cập nhật dữ liệu, hoặc muốn phục hồi dữ liệu về một thời điểm cụ thể. Bằng cách khôi phục cơ sở dữ liệu từ snapshot, ta có thể đảm bảo rằng dữ liệu được phục hồi trở về trạng thái tương ứng với thời điểm tạo snapshot.
+
+Tuy nhiên, cần lưu ý rằng snapshot không phải là một phương án sao lưu hoàn chỉnh cho cơ sở dữ liệu. Nó chỉ lưu trữ dữ liệu hiện tại tại một thời điểm cụ thể và không bao gồm lịch sử thay đổi dữ liệu hoặc log giao dịch. Nếu muốn có một bản sao lưu đầy đủ và có khả năng khôi phục toàn bộ dữ liệu, cần sử dụng các phương pháp sao lưu khác như sao lưu toàn bộ cơ sở dữ liệu hoặc sao lưu theo log giao dịch.
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+## 💛 Session 06- Creating Tables
+
+
+### 💥 Tại sao phải tạo Table?
+
+
+Trong bài trước, chúng ta đã biết DATABASE ( Cơ sở dữ liệu) dùng để lưu trữ thông tin, truy xuất dữ liệu khi cần thiết. Vậy làm sao để lưu trữ dữ liệu trong Database? Làm sao để truy xuất dữ liệu đã lưu?
+
+>Bài toán thực tế đặt ra: 
+>
+>Khi muốn quản lý một trường học, bạn sẽ cần quản lý những gì? Danh sách giáo viên, danh sách học sinh, điểm thi, quá trình công tác, phòng ban…. Và khi truy vấn thì cần truy vấn như thể nào với các thông tin đó?
+
+Vậy khi tất cả dữ liệu cùng nằm trong một Database thì cần có một cách tổ chức thể hiện các thông tin theo một hệ thống lưu trữ, đó chính là TABLE – Bảng.
+
+Một Database bao gồm nhiều Table, giữa các Table có mối liên hệ với nhau thể hiện qua KHÓA CHÍNH & KHÓA NGOẠI. 
+
+---
+
+### 💥 Vậy Table (Bảng) là gì?
+
+Là đối tượng được Database sử dụng để tổ chức và lưu trữ dữ liệu.
+
+Mỗi Table trong Database có thể liên kết với một hoặc nhiều Table khác, ở một hoặc nhiều thuộc tính
+
+---
+
+### 💥 Cách tạo Table
+
+#### 🔹 Tạo bằng giao diện đồ họa GUI
+
+
+#### 🔹 Tạo bằng dòng lệnh 
+
+Tạo Table với các column, CONSTRAINT được định nghĩa ngay khi tạo mới Table
+
+```sql
+--Create table categories
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [category_name] NVARCHAR(50) UNIQUE NOT NULL,
+  [description] NVARCHAR(500) NULL,
+);
+GO
+--Create table  products
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL,
+  [discount] DECIMAL(4,2) NOT NULL,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL
+);
+GO
+
+```
+
+Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, suppliers trước khi tạo products
+
+---
+
+### 💥 Cách Xóa Table
+
+#### 🔹 Xóa bằng giao diện đồ họa GUI
+
+
+#### 🔹 Xóa bằng dòng lệnh 
+
+```sql
+-- Xóa table categories, Nếu table không tồn tại thì gây lỗi
+DROP TABLE [dbo].[categories];
+-- Xóa table categories với mệnh đề IF EXISTS để check tồn tại thì mới xóa, ==> tránh lỗi
+DROP TABLE IF EXISTS [dbo].[categories];
+```
+---
+
+
+### 💥 Alert Table
+
+Các thao tác này bạn có thể thực hiện với giao diện đồ họa GUI
+
+#### 🔹 Thêm một Column Table
+
+```sql
+--Thêm vào table customers một cột email
+ALTER TABLE customers
+ADD email varchar(255);
+```
+
+#### 🔹 Xóa một Column Table
+
+```sql
+--Xóa cột email từ table customers
+ALTER TABLE customers
+DROP COLUMN email;
+```
+
+#### 🔹 Thay đổi tên của Column Table
+
+```sql
+ALTER TABLE table_name
+RENAME COLUMN old_name to new_name;
+```
+
+#### 🔹 Thay đổi Data Type của Column Table
+
+```sql
+ALTER TABLE customers
+ALTER COLUMN email nvarchar(255);
+```
+---
+
+### 💥 TRUNCATE
+
+Xóa dữ liệu của một table và dữ lại cấu trúc
+
+TRUNCATE TABLE [schema_name].[table_name]
+
+Temporary Tables (Bảng tạm thời) là các bảng được tạo ra trong cơ sở dữ liệu để lưu trữ tạm thời dữ liệu trong quá trình thực thi của một phiên làm việc. Chúng tồn tại trong bộ nhớ hoặc trên đĩa trong một thời gian ngắn và được xóa tự động sau khi phiên làm việc kết thúc hoặc sau khi chúng không còn cần thiết.
+
+Bạn có thể tìm thấy bảng tạm ở: `System Databases > tempdb > Temporary Tables`
+
+#### 🔹 Tạo bảng tạm
+
+```sql
+CREATE TABLE #tmp_products  -- bắt đầu với kí tự #
+(
+    product_name VARCHAR(MAX),
+    list_price DEC(10,2)
+);
+```
+
+Sau khi tạo xong bạn có thể chèn dữ liệu vào
+
+```sql
+INSERT INTO #tmp_products
+SELECT
+    product_name,
+    list_price
+FROM 
+    dbo.products
+WHERE
+    brand_id = 2;
+```
+
+Truy vấn từ bảng tạm
+
+
+```sql
+SELECT * FROM #tmp_products
+```
+
+- Lưu ý: các câu lệnh trên thực hiện liên tiếp nhau vì bảng tạm chỉ tồn tại trong phiên truy vấn. Dữ liệu sẽ mất khi kết thúc truy vấn.
+
+- Tuy nhiên bạn có thể tạo một bảng tạm với cấp độ toàn cục (Global), bạn có thể truy vấn tại bất kỳ một phiên truy vấn nào.
+
+```sql
+CREATE TABLE ##heller_products -- Sử dụng 2 dấu ## ở trước tên
+(
+    product_name VARCHAR(MAX),
+    list_price DEC(10,2)
+);
+```
+
+---
+
+### 💥 Modifying data
+
+#### 🔹 INSERT
+
+Câu lệnh INSERT cho phép bạn thêm một hoặc nhiều bản ghi mới vào bảng dữ liệu.
+
+Cú pháp:
+
+```sql
+INSERT INTO table_name (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...);
+```
+
+Nếu bạn muốn chèn nhiều bản ghi cùng một lúc, bạn có thể sử dụng cú pháp sau:
+
+```sql
+INSERT INTO table_name (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...),
+       (value1, value2, value3, ...),
+       (value1, value2, value3, ...);
+```
+
+Ví dụ: Tạo table `promotion` cho demo
+
+```sql
+CREATE TABLE dbo.promotions (
+    promotion_id INT PRIMARY KEY IDENTITY (1, 1),
+    promotion_name VARCHAR (255) NOT NULL,
+    discount DECIMAL (4, 2) DEFAULT 0,
+    start_date DATE NOT NULL,
+    expired_date DATE NOT NULL
+); 
+```
+
+Thêm 1 record vào `promotion`
+
+```sql
+INSERT INTO dbo.promotions (
+    promotion_name,
+    discount,
+    start_date,
+    expired_date
+)
+VALUES
+    (
+      '2018 Summer Promotion',
+      0.15,
+      '20180601',
+      '20180901'
+    );
+-- Lưu ý: không cần đưa promotion_id vào vì nó sẽ tự tăng
+```
+
+Thêm nhiều record vào `promotion` trong một câu truy vấn
+
+```sql
+INSERT INTO dbo.promotions (
+    promotion_name,
+    discount,
+    start_date,
+    expired_date
+)
+VALUES
+    (
+      '2018 Summer Promotion',
+      0.15,
+      '20180601',
+      '20180901'
+    ),
+     (
+      '2018 Chrismats Promotion',
+      2,
+      '20181201',
+      '20181230'
+    );
+```
+
+Bạn không thể chèn giá trị vào cột được khai báo là `IDENTITY` bởi vì nó sẽ được tạo tự động. Tuy nhiên bạn vẫn muốn làm thì SQL Server có hỗ trợ:
+
+```sql
+--Bước 1: Để câu này trước câu lệnh INSERT
+SET IDENTITY_INSERT dbo.promotions ON; 
+--Bước 2: Các câu lệnh INSERT
+INSERT INTO dbo.promotions (
+    promotion_id, --có đưa thêm trường IDENTITY
+    promotion_name,
+    discount,
+    start_date,
+    expired_date
+)
+VALUES
+    (
+      5, --Điền trước một giá trị đúng kiểu dữ liệu đã khai báo
+      '2018 Winter Promotion',
+      0.2,
+      '20180701',
+      '20181001'
+    );
+--Bước 3: Tắt tính năng tự động sinh giá trị IDENTITY 
+SET IDENTITY_INSERT dbo.promotions OFF; 
+```
+
+Nếu bạn không thiết lập `IDENTITY_INSERT` bạn sẽ gặp lỗi:
+
+```bash
+Cannot insert explicit value for identity column in table 'promotions' when IDENTITY_INSERT is set to OFF.
+```
+
+
+**INSERT Với giá trị Unicode**
+
+Để hỗ trợ lưu trữ và hiển thị các giá trị là chuỗi Unicode bạn cần:8
+
+```sql
+INSERT INTO table_name (column1, column2) VALUES (N'Xin Chào', N'SQL Server khá dễ học');
+```
+
+Trong đó, tiền tố "N" trước chuỗi ký tự đảm bảo rằng chuỗi được coi là một chuỗi Unicode.
+
+
+**INSERT INTO SELECT statement**
+
+Để chèn dữ liệu từ table đến table khác bạn có thể sử dụng mệnh đề `INSERT INTO SELECT`
+
+Cú pháp:
+
+```sql
+INSERT  [ TOP ( expression ) [ PERCENT ] ] 
+INTO target_table (column_list)
+query;
+```
+
+Ví dụ:
+
+```sql
+-- Tạo cấu trúc bảng regions
+CREATE TABLE dbo.regions (
+    address_id INT IDENTITY PRIMARY KEY,
+    street VARCHAR (255) NOT NULL,
+    city VARCHAR (50),
+    state VARCHAR (25),
+    zip_code VARCHAR (5)
+); 
+-- Lấy dữ liệu từ table customer đổ qua cho regions
+INSERT INTO dbo.regions (street, city, state, zip_code) 
+SELECT
+    street,
+    city,
+    state,
+    zip_code
+FROM
+    dbo.customers
+ORDER BY
+    first_name,
+    last_name; 
+```
+
+
+
+#### 🔹 UPDATE
+
+Mệnh đề UPDATE dùng để thay đổi dữ liệu trong table
+
+Cú pháp
+
+```sql
+UPDATE [schame_name].[table_name]
+SET c1 = v1, c2 = v2, ... cn = vn
+[WHERE condition]
+```
+
+Lưu ý: Câu lệnh UPDATE nên đi kèm với mệnh đề WHERE để giới hạn phạm vi tác động của dữ liệu, để giảm bớt sai sót nếu nhầm lẫn logic xử lý.
+
+**UPDATE JOIN syntax**
+
+```sql
+UPDATE 
+    t1
+SET 
+    t1.c1 = t2.c2,
+    t1.c2 = expression,
+    ...   
+FROM 
+    t1
+    [INNER | LEFT] JOIN t2 ON join_predicate
+WHERE 
+    where_predicate;
+```
+
+Tạo dữ liệu demo
+
+```sql
+DROP TABLE IF EXISTS dbo.targets;
+
+CREATE TABLE dbo.targets
+(
+    target_id  INT	PRIMARY KEY, 
+    percentage DECIMAL(4, 2) 
+        NOT NULL DEFAULT 0
+);
+
+INSERT INTO 
+    dbo.targets(target_id, percentage)
+VALUES
+    (1,0.2),
+    (2,0.3),
+    (3,0.5),
+    (4,0.6),
+    (5,0.8);
+
+CREATE TABLE dbo.commissions
+(
+    staff_id    INT PRIMARY KEY, 
+    target_id   INT, 
+    base_amount DECIMAL(10, 2) 
+        NOT NULL DEFAULT 0, 
+    commission  DECIMAL(10, 2) 
+        NOT NULL DEFAULT 0, 
+    FOREIGN KEY(target_id) 
+        REFERENCES sales.targets(target_id), 
+    FOREIGN KEY(staff_id) 
+        REFERENCES sales.staffs(staff_id),
+);
+
+INSERT INTO 
+    dbo.commissions(staff_id, base_amount, target_id)
+VALUES
+    (1,100000,2),
+    (2,120000,1),
+    (3,80000,3),
+    (4,900000,4),
+    (5,950000,5);
+```
+
+Yêu cầu Cập nhật tiền thưởng (trường commissions) ở table `commissions` theo công thức: `commissions = base_amount * percentage` mặc định nhân viên mới sẽ có mức chiết khấu percentage = 0.1
+
+
+```sql
+UPDATE 
+    dbo.commissions
+SET  
+    dbo.commissions.commission = 
+        c.base_amount  * COALESCE(t.percentage,0.1) -- COALESCE trả về 0.1 nếu percentage là NULL
+FROM  
+    dbo.commissions AS c
+    LEFT JOIN dbo.targets t -- tham chiếu đến targets để lấy trường percentage
+        ON c.target_id = t.target_id;
+```
+
+#### 🔹 DELETE
+
+Câu lệnh DELETE cho phép bạn loại bỏ dữ liệu không cần thiết, không chính xác hoặc không muốn từ một bảng cụ thể trong cơ sở dữ liệu.
+
+Cú pháp:
+
+```sql
+DELETE [ TOP ( expression ) [ PERCENT ] ]  
+FROM table_name
+[WHERE search_condition];
+```
+
+Ví dụ các trường hợp:
+
+```sql
+-- Xóa tất cả records từ table target_table
+DELETE FROM target_table;
+-- Xóa 1 dòng đầu tiên
+DELETE TOP 10 FROM target_table;  
+-- Xóa 10 % records ngẫu nhiên trong table
+DELETE TOP 10 PERCENT FROM target_table;
+```
+
+**DELETE với mệnh đề WHERE**
+
+Thông thường câu lệnh DELETE đi kèm điều kiện WHERE để xác định cụ thể bản ghi nào cần xóa
+
+```sql
+DELETE FROM dbo.commissions WHERE staff_id = 1
+```
+
+
+
+### 💥 SQL CONSTRAINT
+
+CONSTRAINT (ràng buộc) là một khối mã hoặc một quy tắc được áp dụng cho một hoặc nhiều cột trong một bảng để định nghĩa và bảo vệ tính toàn vẹn dữ liệu. Ràng buộc định nghĩa các quy tắc và giới hạn cho dữ liệu được lưu trữ trong cơ sở dữ liệu.
+
+Các CONSTRAINT phổ biến:
+
+#### 🔹 PRIMARY KEY
+
+Primary key (Khóa chính) là một thuộc tính hoặc tập hợp các thuộc tính trong một bảng dùng để định danh duy nhất mỗi hàng trong bảng đó. Khóa chính đảm bảo tính duy nhất và xác định của các bản ghi trong bảng
+
+Là sự kết hợp giữa 2 CONSTRAINT `UNIQUE` và `NOT NULL`
+
+```sql
+-- Định nghĩa PRIMARY KEY ngay khi tạo table
+CREATE TABLE [dbo].[products] (
+    product_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL
+)
+-- Định nghĩa PRIMARY KEY cho table đã tồn tại
+ALTER TABLE [dbo].[products]
+ADD PRIMARY KEY (product_id);
+-- Hoặc, bạn có thể đặt tên cho contraint là PK_products_product_id
+--Khuyên dùng cách này để xảy ra lỗi thì dễ dàng nhận biết vì có tên
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
+```
+
+
+#### 🔹 FOREIGN KEY 
+
+- Foreign key (khóa ngoại) là một cột hoặc tập hợp các cột trong một bảng tham chiếu đến khóa chính của một bảng khác. Khóa ngoại tạo ra một mối quan hệ giữa hai bảng dựa trên giá trị của cột hoặc các cột được liên kết.
+
+- Bảng chứa khóa ngoại được gọi là bảng tham chiếu hoặc bảng con. Và bảng được tham chiếu bởi khóa ngoại được gọi là bảng được tham chiếu hoặc bảng cha.
+
+- Một bảng có thể có nhiều khóa ngoại tùy thuộc vào mối quan hệ của nó với các bảng khác.
+
+- Bạn xác định khóa ngoại bằng cách sử dụng ràng buộc khóa ngoại. Ràng buộc khóa ngoại giúp duy trì tính toàn vẹn tham chiếu của dữ liệu giữa bảng con và bảng cha.
+
+- Ràng buộc khóa ngoại chỉ ra rằng các giá trị trong một cột hoặc một nhóm cột trong bảng con bằng với các giá trị trong một cột hoặc một nhóm cột của bảng cha.
+
+```sql
+-- Tạo khóa ngoại category_id, supplier_id ngay khi tạo mới Table
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL,
+  [discount] DECIMAL(4,2) NOT NULL,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
+        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
+);
+```
+
+Hoặc bạn có thể tạo khóa ngoại cho một table đã tồn tại
+
+```sql
+--Tạo khóa ngoại  FOREIGN KEY (category_id) tham chiếu đến khóa chính categories(Id)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [FK_products_categories] FOREIGN KEY ([category_id]) REFERENCES [dbo].[categories] ([category_id]);
+GO
+--Tạo khóa ngoại FOREIGN KEY (supplier_id) tham chiếu đến khóa chính suppliers(supplier_id)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [FK_products_suppliers] FOREIGN KEY ([supplier_id]) REFERENCES [dbo].[suppliers] ([supplier_id]);
+```
+
+#### 🔹 UNIQUE
+
+SQL cung cấp cho bạn ràng buộc UNIQUE để duy trì tính duy nhất của dữ liệu một cách chính xác.
+
+Khi có ràng buộc UNIQUE, mỗi khi bạn chèn một hàng mới, nó sẽ kiểm tra xem giá trị đã có trong bảng chưa. Nó từ chối thay đổi và đưa ra lỗi nếu giá trị đã tồn tại. Quá trình tương tự được thực hiện để cập nhật dữ liệu hiện có.
+
+```sql
+--Tạo UNIQUE ngay khi tạo mới table
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [description] NVARCHAR(500) NULL,
+);
+GO
+```
+
+Bạn cũng có thể tạo UNIQUE cho một table đã tồn tại
+
+```sql
+ALTER TABLE [dbo].[categories]
+ADD CONSTRAINT [UQ_categories_name] UNIQUE ([name]); --UQ_categories_Name là tên bạn đặt cho CONTRAINT
+GO
+```
+
+#### 🔹 NOT NULL
+
+Trong lý thuyết cơ sở dữ liệu, NULL đại diện cho thông tin chưa biết hoặc thiếu thông tin. NULL không giống như một chuỗi trống hoặc số 0.
+
+Giả sử bạn cần chèn địa chỉ email của một liên hệ vào bảng. Bạn có thể yêu cầu địa chỉ email của người đó. Tuy nhiên, nếu bạn không biết người liên hệ đó có địa chỉ email hay không, bạn có thể chèn NULL vào cột địa chỉ email. Trong trường hợp này, NULL chỉ ra rằng địa chỉ email không được biết tại thời điểm ghi.
+
+NULL rất đặc biệt. Nó không bằng bất cứ thứ gì, kể cả chính nó. Biểu thức NULL = NULL trả về NULL vì điều đó có nghĩa là hai giá trị chưa biết không được bằng nhau.
+
+Định nghĩa NOT NULL ngay khi tạo mới table
+
+```sql
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [description] NVARCHAR(500),
+);
+GO
+```
+Hoặc cho table đã tồn tại
+
+```sql
+ALTER TABLE [dbo].[categories]
+ALTER COLUMN [name] NVARCHAR(50) UNIQUE NOT NULL;
+```
+
+
+#### 🔹 DEFAULT
+
+DEFAULT là một thuộc tính được sử dụng trong cơ sở dữ liệu để định nghĩa giá trị mặc định cho một cột khi không có giá trị nào được cung cấp trong quá trình chèn dữ liệu mới hoặc cập nhật dữ liệu trong cột đó.
+
+Định nghĩa `DEFAULT CONTRAINT` ngay khi tạo mới Table
+
+price, discount, Stock mặc định = 0
+
+```sql
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL,
+  [discount] DECIMAL(4,2) NOT NULL,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
+        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
+
+);
+GO
+
+```
+
+#### 🔹 CHECK
+
+Check Contraint là một loại ràng buộc cho phép bạn chỉ định xem các giá trị trong một cột có phải đáp ứng một yêu cầu cụ thể hay không.
+
+Nếu các giá trị vượt qua quá trình kiểm tra, PostgreSQL sẽ chèn hoặc cập nhật các giá trị này vào cột. Nếu không, PostgreSQL sẽ từ chối các thay đổi và đưa ra lỗi vi phạm ràng buộc.
+
+
+Tạo table  products FULL Các CONTRAINT, ngay khi tạo mới
+
+```sql
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) DEFAULT 0 CHECK (price >=0),
+  [discount] DECIMAL(4,2) DEFAULT 0 NOT NULL CHECK (discount >=0 AND discount <= 70),
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [supplier_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
+        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
+
+);
+GO
+
+```
+
+Bạn cũng có thể tạo CONTRAINT CHECK cho table đã tồn tại
+
+
+```sql
+-- Create CHECK (price > 0)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [CK_products_price] CHECK ([price] > 0);
+GO
+
+--Create CHECK (discount >= 0 AND discount <= 90)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [CK_products_discount] CHECK ([discount] >= 0 AND [discount] <= 90);
+GO
+
+```
+
+
+## 💛Homeworks Guide - Session 2-3-4
+
+
+
+
+
