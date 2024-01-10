@@ -71,6 +71,15 @@ Có một bảng dữ liệu thô chưa được chuẩn hóa như sau:
 | E002       | Bob   | J02,   J03 | Waiter,   Bartender | 56         | Wyoming    |
 | E003       | Alice | J01        | Chef                | 56         | Wyomin     |
 
+
+Bảng trên bao gồm các điểm dị thường sau:
+
+- Insertion Anomaly
+- Deletion Anomaly
+- Updation Anomaly
+- Redundancy / Duplication / Repetition
+
+
 Phân tích:
 
 - Giá trị tại mỗi ô chưa phải là giá trị đơn
