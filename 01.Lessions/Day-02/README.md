@@ -4,15 +4,9 @@
 
 ### 💥 Các bước phân tích, thiết kế CSDL
 
-Trong thiết kế CSDL SQL Server, các khái niệm Normal 1 (1NF), Normal 2 (2NF) và Normal 3 (3NF) liên quan đến quy tắc bảo toàn tính nguyên vẹn dữ liệu trong quá trình lưu trữ và truy xuất dữ liệu. Dưới đây là giải thích cho từng khái niệm:
+Trong thiết kế CSDL SQL Server, các khái niệm Normal 1 (1NF), Normal 2 (2NF) và Normal 3 (3NF) liên quan đến quy tắc bảo toàn tính nguyên vẹn dữ liệu trong quá trình lưu trữ và truy xuất dữ liệu. 
 
-1. Normal 1 (1NF - First Normal Form): Đây là mức độ cơ bản nhất của chuẩn hóa dữ liệu. Theo quy tắc 1NF, một bảng được coi là tuân thủ khi không có giá trị lặp lại trong bất kỳ cột nào và mỗi cột chỉ chứa một giá trị duy nhất. Nó loại bỏ sự lặp lại và không cho phép các trường có nhiều giá trị.
-
-2. Normal 2 (2NF - Second Normal Form): 2NF áp dụng khi dữ liệu trong bảng đã tuân thủ 1NF. Nó yêu cầu rằng một bảng phải có một khóa chính duy nhất và tất cả các cột phi khóa phải phụ thuộc vào toàn bộ khóa chính. Điều này đảm bảo rằng mọi cột phi khóa liên quan chức năng duy nhất với toàn bộ khóa chính, giúp loại bỏ sự phụ thuộc phi chức năng.
-
-3. Normal 3 (3NF - Third Normal Form): 3NF áp dụng khi dữ liệu trong bảng đã tuân thủ 2NF. Quy tắc 3NF yêu cầu rằng mọi cột phi khóa phải phụ thuộc trực tiếp vào khóa chính, không được phụ thuộc vào nhau. Điều này đảm bảo rằng dữ liệu không có sự phụ thuộc chéo giữa các cột phi khóa và giúp giảm thiểu sự trùng lặp và các vấn đề liên quan đến cập nhật dữ liệu không nhất quán.
-
-Các nguyên tắc chuẩn hóa này giúp tăng tính nhất quán, hiệu quả và dễ quản lý cho CSDL SQL Server, giúp tránh các vấn đề như sự lặp lại dữ liệu, phụ thuộc phi chức năng và không nhất quán dữ liệu.
+Các nguyên tắc chuẩn hóa giúp tăng tính nhất quán, hiệu quả và dễ quản lý cho CSDL SQL Server, giúp tránh các vấn đề như sự lặp lại dữ liệu, phụ thuộc phi chức năng và không nhất quán dữ liệu.
 
 ---
 
@@ -79,80 +73,45 @@ Bảng trên bao gồm các điểm dị thường sau:
     
     *   Các giá trị trong mỗi cột phải là giá trị đơn (Atomic value).
     *   Các giá trị trong mỗi cột cùng một kiểu dữ liệu (Data type).
-    *   Xác định khóa cho mỗi hàng.
+    *   Các hàng trong bảng phải có một `khóa chính duy nhất` để xác định một cách duy nhất mỗi hàng dữ liệu trong bảng.
+
+
+Để đạt được 1NF, nếu có một trường có giá trị lặp lại trong một hàng dữ liệu, ta cần chia thành các bảng riêng biệt và tạo quan hệ giữa chúng bằng cách sử dụng khóa chính và khóa ngoại.
+
+Mục tiêu của chuẩn 1NF là loại bỏ các phần tử đa trị (multivalued) và lặp lại (repeating) trong bảng dữ liệu, giúp tăng tính nhất quán và hiệu quả trong việc truy xuất dữ liệu.
+
+
 *   Cách làm như sau:
     
-    *   Tách bảng thành hai bảng riêng biệt: một bảng cho thông tin về nhân viên (Employees) và một bảng cho thông tin về dự án (Projects).
-    *   Bảng Employees:
-        *   Các cột trong bảng Employees sẽ bao gồm: EmployeeId, EmployeeName, Grade và Salary, ProjectId.
-        *   Trong bảng Employees, EmployeeId và ProjectId sẽ là khóa chính (primary key) để định danh mỗi nhân viên một cách duy nhất.
-    *   Bảng Projects:
-        *   Các cột trong bảng Projects sẽ bao gồm: ProjectId và ProjectName.
-        *   Trong bảng Projects, ProjectId sẽ là khóa chính (primary key) để định danh mỗi dự án một cách duy nhất.
-        
-**📰 Bảng Employees**
+ Ở bảng trên, cột "ProjectId" chứa nhiều giá trị phân tách bằng dấu phẩy. Để đạt chuẩn 1NF, ta cần tách cột này thành các hàng riêng biệt.
 
-| EmployeeId | ProjectId | EmployeeName | Grade | Salary |
-|------------|-----------|--------------|-------|--------|
-| 142        | 113       | John         | A     | 20,000 |
-| 142        | 124       | John         | A     | 20,000 |
-| 168        | 113       | James        | B     | 15,000 |
-| 263        | 113       | Andrew       | C     | 10,000 |
-| 109        | 124       | Bob          | C     | 10,000 |
+ | EmployeeId | ProjectId | ProjectName | EmployeeName | Grade | Salary |
+|------------|-----------|-------------|--------------|-------|--------|
+| 142        | 113       | BLUE STAR   | John         | A     | 20,000 |
+| 142        | 124       | MAGNUM      | John         | A     | 20,000 |
+| 168        | 113       | BLUE STAR   | James        | B     | 15,000 |
+| 263        | 113       | BLUE STAR   | Andrew       | C     | 10,000 |
+| 109        | 124       | MAGNUM      | Bob          | C     | 10,000 |
 
-**📰 Bảng Projects**
-
-| ProjectId | ProjectName |
-|-----------|-------------|
-| 113       | BLUE STAR   |
-| 124       | MAGNUM      |
-
----
 
 ### 💥 Second Normal Form (2NF)
 
 *   Để đạt được 2NF, bảng cần thỏa mãn các điều kiện sau:
     
-    *   Cần đạt được 1NF.
+    *  Đạt chuẩn 1NF
     *   Các cột không phải là khóa chính (non-key columns) phải phụ thuộc vào toàn bộ khóa chính (entire primary key).
     *   Xây dựng mối quan hệ giữa các bảng.
+
+Nếu có trường phi khóa phụ thuộc vào một phần của khóa chính, ta cần tách bảng thành các bảng riêng biệt để đảm bảo tính chất này. Bằng cách này, ta giảm thiểu sự lặp lại dữ liệu và đảm bảo tính nhất quán trong cơ sở dữ liệu.
+
+2NF là một bước tiến quan trọng trong việc chuẩn hóa cơ sở dữ liệu và giúp cải thiện tính nhất quán và hiệu quả trong việc truy xuất dữ liệu.
+
+
 *   Cách làm như sau:
     
-    *   Tạo bảng mới có tên là Employees\_Projects với các cột: EmployeeId và ProjectId.
-    *   Trong bảng Employees\_Projects, cả hai cột EmployeeId và ProjectId tham gia cùng làm 1 khóa chính (primary key) để định danh mỗi hàng một cách duy nhất.
-    *   Xóa cột ProjectId trong bảng Employees.
-    *   Thiết lập khóa chính cho bảng Employees là cột EmployeeId.
-    *   Tạo mối quan hệ giữa bảng Employees và bảng Employees\_Projects thông qua cột EmployeeId.
-    *   Tạo mối quan hệ giữa bảng Projects và bảng Employees\_Projects thông qua cột ProjectId.
+Trong bảng trên, cột "ProjectName" phụ thuộc vào cả khóa chính {"EmployeeId", "ProjectId"} và không phụ thuộc vào bất kỳ trường phi khóa nào khác. 
 
-
-**📰 Bảng Employees_Projects:**
-
-| EmployeeId | ProjectId |
-|------------|-----------|
-| 142        | 113       |
-| 142        | 124       |
-| 168        | 113       |
-| 263        | 113       |
-| 109        | 124       |
-
-
-**📰 Bảng Projects:**
-
-| ProjectId | ProjectName |
-|-----------|-------------|
-| 113       | BLUE STAR   |
-| 124       | MAGNUM      |
-
-**📰 Bảng Employees:**
-
-| EmployeeId | EmployeeName | Grade | Salary |
-|------------|--------------|-------|--------|
-| 142        | John         | A     | 20,000 |
-| 168        | James        | B     | 15,000 |
-| 263        | Andrew       | C     | 10,000 |
-| 109        | Bob          | C     | 10,000 |
-
+Vì vậy, không cần thực hiện thay đổi.
 
 ---
 
@@ -161,48 +120,42 @@ Bảng trên bao gồm các điểm dị thường sau:
 *   Để đạt được 3NF, bảng cần thỏa mãn các điều kiện sau:
     
     *   Cần đạt được 2NF.
-    *   Tất cả các thuộc tính không khóa trong 3NF được yêu cầu là phải phụ thuộc trực tiếp vào mỗi khóa của quan hệ
+    *   Tất cả các trường phi khóa không được phụ thuộc vào nhau: Điều này có nghĩa là không có sự phụ thuộc không cần thiết giữa các trường phi khóa.
+
+Nếu có sự phụ thuộc không cần thiết giữa các trường phi khóa, ta cần tách bảng thành các bảng riêng biệt để loại bỏ sự phụ thuộc không cần thiết này. Bằng cách này, ta giảm thiểu sự phụ thuộc không cần thiết, loại bỏ sự lặp lại dữ liệu và đảm bảo tính nhất quán trong cơ sở dữ liệu.
+
+3NF là một bước tiến quan trọng trong việc chuẩn hóa cơ sở dữ liệu và giúp cải thiện tính nhất quán, hiệu quả và khả năng bảo trì của cơ sở dữ liệu.
+
+
 *   Cách làm như sau:
-    
-    *   Tạo bảng Grade với các cột: Grade và Salary.
-    *   Trong bảng Grade, cột Grade sẽ là khóa chính (primary key) để định danh mỗi hàng một cách duy nhất.
-    *   Xóa cột Salary trong bảng Employees.
-    *   Tạo mối quan hệ giữa bảng Employees và bảng Grade thông qua cột Grade.
 
-**📰 Bảng Grade**
+Trong bảng trên, cột "Salary" phụ thuộc vào cả khóa chính {"EmployeeId", "ProjectId"} và cột "Grade" không phụ thuộc vào cả khóa chính. Vì vậy, ta cần tách bảng thành hai bảng riêng biệt.
 
-| Grade | Salary |
-|-------|--------|
-| A     | 20,000 |
-| B     | 15,000 |
-| C     | 10,000 |
+**📰 Bảng "Employees":**
 
+| EmployeeId | EmployeeName |
+|------------|--------------|
+| 142        | John         |
+| 168        | James        |
+| 263        | Andrew       |
+| 109        | Bob          |
 
-**📰 Bảng Employees**
-
-| EmployeeId | EmployeeName | Grade |
-|------------|--------------|-------|
-| 142        | John         | A     |
-| 168        | James        | B     |
-| 263        | Andrew       | C     |
-| 109        | Bob          | C     |
-
-**📰 Bảng Projects**
+**📰 Bảng "Projects":**
 
 | ProjectId | ProjectName |
 |-----------|-------------|
 | 113       | BLUE STAR   |
 | 124       | MAGNUM      |
 
-**📰 Bảng Employees_Projects**
+**📰 Bảng "EmployeeProjects":**
 
-| EmployeeId | ProjectId |
-|------------|-----------|
-| 142        | 113       |
-| 142        | 124       |
-| 168        | 113       |
-| 263        | 113       |
-| 109        | 124       |
+| EmployeeId | ProjectId | Grade | Salary |
+|------------|-----------|-------|--------|
+| 142        | 113       | A     | 20,000 |
+| 142        | 124       | A     | 20,000 |
+| 168        | 113       | B     | 15,000 |
+| 263        | 113       | C     | 10,000 |
+| 109        | 124       | C     | 10,000 |
 
 ---
 
