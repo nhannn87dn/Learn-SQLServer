@@ -109,9 +109,41 @@ Nếu có trường phi khóa phụ thuộc vào một phần của khóa chính
 
 *   Cách làm như sau:
     
-Trong bảng trên, cột "ProjectName" phụ thuộc vào cả khóa chính {"EmployeeId", "ProjectId"} và không phụ thuộc vào bất kỳ trường phi khóa nào khác. 
+    *   Tạo bảng mới có tên là Employees\_Projects với các cột: EmployeeId và ProjectId.
+    *   Trong bảng Employees\_Projects, cả hai cột EmployeeId và ProjectId tham gia cùng làm 1 khóa chính (primary key) để định danh mỗi hàng một cách duy nhất.
+    *   Xóa cột ProjectId trong bảng Employees.
+    *   Thiết lập khóa chính cho bảng Employees là cột EmployeeId.
+    *   Tạo mối quan hệ giữa bảng Employees và bảng Employees\_Projects thông qua cột EmployeeId.
+    *   Tạo mối quan hệ giữa bảng Projects và bảng Employees\_Projects thông qua cột ProjectId.
 
-Vì vậy, không cần thực hiện thay đổi.
+
+**📰 Bảng Employees_Projects:**
+
+| EmployeeId | ProjectId |
+|------------|-----------|
+| 142        | 113       |
+| 142        | 124       |
+| 168        | 113       |
+| 263        | 113       |
+| 109        | 124       |
+
+
+**📰 Bảng Projects:**
+
+| ProjectId | ProjectName |
+|-----------|-------------|
+| 113       | BLUE STAR   |
+| 124       | MAGNUM      |
+
+**📰 Bảng Employees:**
+
+| EmployeeId | EmployeeName | Grade | Salary |
+|------------|--------------|-------|--------|
+| 142        | John         | A     | 20,000 |
+| 168        | James        | B     | 15,000 |
+| 263        | Andrew       | C     | 10,000 |
+| 109        | Bob          | C     | 10,000 |
+
 
 ---
 
@@ -128,34 +160,46 @@ Nếu có sự phụ thuộc không cần thiết giữa các trường phi khó
 
 
 *   Cách làm như sau:
+    
+    *   Tạo bảng Grade với các cột: Grade và Salary.
+    *   Trong bảng Grade, cột Grade sẽ là khóa chính (primary key) để định danh mỗi hàng một cách duy nhất.
+    *   Xóa cột Salary trong bảng Employees.
+    *   Tạo mối quan hệ giữa bảng Employees và bảng Grade thông qua cột Grade.
 
-Trong bảng trên, cột "Salary" phụ thuộc vào cả khóa chính {"EmployeeId", "ProjectId"} và cột "Grade" không phụ thuộc vào cả khóa chính. Vì vậy, ta cần tách bảng thành hai bảng riêng biệt.
+**📰 Bảng Grade**
 
-**📰 Bảng "Employees":**
+| Grade | Salary |
+|-------|--------|
+| A     | 20,000 |
+| B     | 15,000 |
+| C     | 10,000 |
 
-| EmployeeId | EmployeeName |
-|------------|--------------|
-| 142        | John         |
-| 168        | James        |
-| 263        | Andrew       |
-| 109        | Bob          |
 
-**📰 Bảng "Projects":**
+**📰 Bảng Employees**
+
+| EmployeeId | EmployeeName | Grade |
+|------------|--------------|-------|
+| 142        | John         | A     |
+| 168        | James        | B     |
+| 263        | Andrew       | C     |
+| 109        | Bob          | C     |
+
+**📰 Bảng Projects**
 
 | ProjectId | ProjectName |
 |-----------|-------------|
 | 113       | BLUE STAR   |
 | 124       | MAGNUM      |
 
-**📰 Bảng "EmployeeProjects":**
+**📰 Bảng Employees_Projects**
 
-| EmployeeId | ProjectId | Grade | Salary |
-|------------|-----------|-------|--------|
-| 142        | 113       | A     | 20,000 |
-| 142        | 124       | A     | 20,000 |
-| 168        | 113       | B     | 15,000 |
-| 263        | 113       | C     | 10,000 |
-| 109        | 124       | C     | 10,000 |
+| EmployeeId | ProjectId |
+|------------|-----------|
+| 142        | 113       |
+| 142        | 124       |
+| 168        | 113       |
+| 263        | 113       |
+| 109        | 124       |
 
 ---
 
