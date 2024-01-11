@@ -251,6 +251,24 @@ GO
 Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, suppliers trước khi tạo products
 
 
+#### 🔹Giải thích lệnh GO
+
+```sql
+--Tạo databse
+CREATE DATABASE Batch37
+GO
+--Sử dụng database
+USE Batch37
+GO
+-- Tạo table vào databse Batch37
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [category_name] NVARCHAR(50) UNIQUE NOT NULL,
+  [description] NVARCHAR(500) NULL,
+);
+GO
+```
+
 #### 🔹 Tạo table và chỉ định lưu vào một filegroup cụ thể
 
 Cú pháp:
