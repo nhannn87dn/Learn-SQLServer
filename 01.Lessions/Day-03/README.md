@@ -84,8 +84,8 @@ KIỂU DỮ LIỆU – DATA TYPE là một quy trình về cấu trúc, miền g
 
 | Data type      | Description                                                                                                                                                                                                                         | Storage    |
 ----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
- datetime       | Kiểu dữ liệu ngày tháng, Có miền giá trị từ 1/1/0001 đến 31/12/9999                                                                                                                                                   | 8 bytes    |
- datetime2      | Kiểu dữ liệu ngày tháng và thời gian, Có miền giá trị từ 1/1/1753 00:00:00 đến 31/12/9999 23:59:59.997                                                                                                                                                     | 6-8 bytes  |
+ datetime       | Kiểu dữ liệu ngày tháng, Có miền giá trị từ 1/1/1753 00:00:00 đến 31/12/9999 23:59:59                                                                                                                                                   | 8 bytes    |
+ datetime2      | Kiểu dữ liệu ngày tháng và thời gian, Có miền giá trị từ 1/1/0001 00:00:00 đến 31/12/9999 23:59:59.997                                                                                                                                                     | 6-8 bytes  |
  smalldatetime  | Kiểu dữ liệu ngày tháng và thời gian, có miền giá trị từ 1/1/1900 00:00:00 đến 6/6/2079 23:59:59                                                                                                                                                                   | 4 bytes    |
  date           | Kiểu ngày. Có miền giá trị từ 1/1/0001 đến 31/12/9999                                                                                                                                                                        | 3 bytes    |
  time           |  Kiểu dữ liệu thời gian, có miền giá trị từ 00:00:00.0000000 đến 23:59:59.9999999                                                                                                                                                                                 | 3-5 bytes  |
@@ -250,12 +250,40 @@ GO
 
 Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, suppliers trước khi tạo products
 
+
+#### 🔹 Tạo table và chỉ định lưu vào một filegroup cụ thể
+
+Cú pháp:
+
+```sql
+CREATE TABLE TenBang
+(
+    Cot1 datatype1,
+    Cot2 datatype2,
+    ...
+)
+ON TenFileGroup
+```
+
+Ví dụ
+
+```sql
+CREATE TABLE Employees
+(
+    EmployeeID INT,
+    EmployeeName NVARCHAR(100)
+)
+ON HR --file group with name "HR"
+```
+
 ---
 
 ### 💥 Cách Xóa Table
 
 #### 🔹 Xóa bằng giao diện đồ họa GUI
 
+
+CLick phải lên tên table --> Delete.
 
 #### 🔹 Xóa bằng dòng lệnh 
 
@@ -291,9 +319,10 @@ DROP COLUMN email;
 #### 🔹 Thay đổi tên của Column Table
 
 ```sql
-ALTER TABLE table_name
-RENAME COLUMN old_name to new_name;
+EXEC sp_rename 'table_name.old_column_name', 'new_column_name', 'COLUMN';
 ```
+
+Ref: https://learn.microsoft.com/vi-vn/sql/relational-databases/tables/rename-columns-database-engine?view=sql-server-ver16
 
 #### 🔹 Thay đổi Data Type của Column Table
 
@@ -301,7 +330,16 @@ RENAME COLUMN old_name to new_name;
 ALTER TABLE customers
 ALTER COLUMN email nvarchar(255);
 ```
+
+
+#### 🔹 Thay đổi tên của Table
+
+```sql
+EXEC sp_rename 'old_table_name', 'new_table_name'
+```
+
 ---
+
 
 ### 💥 TRUNCATE
 
@@ -386,8 +424,8 @@ CREATE TABLE dbo.promotions (
     promotion_id INT PRIMARY KEY IDENTITY (1, 1),
     promotion_name VARCHAR (255) NOT NULL,
     discount DECIMAL (4, 2) DEFAULT 0,
-    start_date DATE NOT NULL,
-    expired_date DATE NOT NULL
+    start_date DATE NOT NULL, --Kiểu ngày yyyy-mm-dd
+    expired_date DATE NOT NULL --Kiểu ngày yyyy-mm-dd
 ); 
 ```
 
@@ -397,8 +435,8 @@ Thêm 1 record vào `promotion`
 INSERT INTO dbo.promotions (
     promotion_name,
     discount,
-    start_date,
-    expired_date
+    start_date, --Kiểu ngày yyyy-mm-dd
+    expired_date --Kiểu ngày yyyy-mm-dd
 )
 VALUES
     (
@@ -416,8 +454,8 @@ Thêm nhiều record vào `promotion` trong một câu truy vấn
 INSERT INTO dbo.promotions (
     promotion_name,
     discount,
-    start_date,
-    expired_date
+    start_date, --Kiểu ngày yyyy-mm-dd
+    expired_date --Kiểu ngày yyyy-mm-dd
 )
 VALUES
     (
@@ -444,8 +482,8 @@ INSERT INTO dbo.promotions (
     promotion_id, --có đưa thêm trường IDENTITY
     promotion_name,
     discount,
-    start_date,
-    expired_date
+    start_date, --Kiểu ngày yyyy-mm-dd
+    expired_date --Kiểu ngày yyyy-mm-dd
 )
 VALUES
     (
@@ -512,6 +550,49 @@ FROM
 ORDER BY
     first_name,
     last_name; 
+```
+
+**INSERT Với kiểu dữ liệu thời gian**
+
+
+Ví dụ có bảng
+
+```sql
+CREATE TABLE dbo.visits (
+    visit_id INT PRIMARY KEY IDENTITY,
+    customer_name VARCHAR (50) NOT NULL,
+    phone VARCHAR (25),
+    store_id INT NOT NULL,
+    visit_on DATE NOT NULL,
+    start_at TIME (0) NOT NULL,
+    end_at TIME (0) NOT NULL,
+    create_at DATETIME2 NOT NULL, --kiểu yyyy-mm-dd H:i:s, không tự động tạo
+    modified_at DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP --kiểu yyyy-mm-dd H:i:s, tự động tạo
+    FOREIGN KEY (store_id) REFERENCES sales.stores (store_id)
+);
+
+--Chèn dữ liệu
+INSERT INTO sales.visits (
+    customer_name,
+    phone,
+    store_id,
+    visit_on,
+    start_at,
+    end_at,
+    create_at
+)
+VALUES
+    (
+        'John Doe',
+        '(408)-993-3853',
+        1,
+        '2018-06-23',
+        '09:10:00',
+        '09:30:00',
+        '2018-06-23 09:30:00'
+    );
+-- Trường visit_id, modified_at không cần đưa vào vì nó sẽ tạo tự động
+
 ```
 
 
@@ -665,6 +746,30 @@ ALTER TABLE [dbo].[products]
 ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
 ```
 
+==> Sử dụng tiếp đầu ngữ `pk_` để nhận biết đó là khóa chính
+
+Ngoài cách dùng `IDENTITY` bạn có thể sử một phương thức mới hơn là `GUID`
+
+```sql
+SELECT NEWID() AS GUID;
+-- Cho ra được: 3297F0F2-35D3-4231-919D-1CFCF4035975
+-- Đảm bảo được tính duy nhất khi làm khóa chính
+```
+
+Bạn có thể áp dụng GUID làm `primary key`
+
+```sql
+CREATE TABLE marketing.customers(
+    customer_id UNIQUEIDENTIFIER DEFAULT NEWID(),
+    first_name NVARCHAR(100) NOT NULL,
+    last_name NVARCHAR(100) NOT NULL,
+    email VARCHAR(200) NOT NULL
+);
+-- Trong đó: UNIQUEIDENTIFIER ==> Đảm bảo định danh duy nhất, không trùng lặp, 
+-- DEFAULT NEWID() --> tự động tạo
+```
+
+
 
 #### 🔹 FOREIGN KEY 
 
@@ -694,6 +799,9 @@ CREATE TABLE [dbo].[products] (
         REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
 );
 ```
+
+==> Sử dụng tiếp đầu ngữ `fk_` để nhận biết đó là khóa ngoại
+
 
 Hoặc bạn có thể tạo khóa ngoại cho một table đã tồn tại
 
@@ -731,6 +839,8 @@ ADD CONSTRAINT [UQ_categories_name] UNIQUE ([name]); --UQ_categories_Name là t�
 GO
 ```
 
+==> Sử dụng tiếp đầu ngữ `uq_` để nhận biết đó là UNIQUE
+
 #### 🔹 NOT NULL
 
 Trong lý thuyết cơ sở dữ liệu, NULL đại diện cho thông tin chưa biết hoặc thiếu thông tin. NULL không giống như một chuỗi trống hoặc số 0.
@@ -763,14 +873,14 @@ DEFAULT là một thuộc tính được sử dụng trong cơ sở dữ liệu 
 
 Định nghĩa `DEFAULT CONTRAINT` ngay khi tạo mới Table
 
-price, discount, Stock mặc định = 0
+price, discount mặc định = 0
 
 ```sql
 CREATE TABLE [dbo].[products] (
   [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
   [name] NVARCHAR(100) NOT NULL,
-  [price] DECIMAL(18,2) NOT NULL,
-  [discount] DECIMAL(4,2) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL DEFAULT 0,
+  [discount] DECIMAL(4,2) NOT NULL DEFAULT 0,
   [description] NVARCHAR(MAX) NULL,
   [category_id] INT NOT NULL,
   [supplier_id] INT NOT NULL,
@@ -783,6 +893,32 @@ CREATE TABLE [dbo].[products] (
 GO
 
 ```
+Với kiểu dữ liệu thời gian ví dụ như ghi nhận thời gian thêm mới đơn hàng `order_date`
+
+Ví dụ:
+
+```sql
+CREATE TABLE [dbo].[orders] (
+	[order_id] [int]  NOT NULL,
+	[customer_id] [int] NOT NULL,
+	[order_status] [tinyint] NOT NULL,
+	-- Order status: 1 = Pending; 2 = Processing; 3 = cancel; 4 = Completed
+	[order_date] [datetime2] NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	[required_date] [datetime2] NOT NULL,
+	[shipped_date] [datetime2] NULL,
+	[store_id] [int] NOT NULL,
+	[staff_id] [int] NOT NULL,
+	[order_note] [nvarchar](500) NULL,
+	[shipping_address] [nvarchar](500) NULL,
+	[shipping_city] [nvarchar](50) NULL,
+	[payment_type] [tinyint] NOT NULL,
+	-- payment type: 1 = COD; 2 = Credit; 3 = ATM; 4 = Cash
+	[order_amount] [decimal](18, 2) NOT NULL
+);
+GO
+```
+
+
 
 #### 🔹 CHECK
 
@@ -827,6 +963,8 @@ ADD CONSTRAINT [CK_products_discount] CHECK ([discount] >= 0 AND [discount] <= 9
 GO
 
 ```
+
+==> Sử dụng tiếp đầu ngữ `ck_` để nhận biết đó là Check
 
 
 ## 💛Homeworks Guide - Session 2-3-4

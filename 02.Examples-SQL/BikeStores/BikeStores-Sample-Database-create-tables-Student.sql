@@ -1,18 +1,21 @@
 
 -- create tables
-CREATE TABLE dbo.categories (
+CREATE TABLE dbo.categories
+(
 	[category_id] [int] NOT NULL,
 	[category_name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](500) NULL
 );
 
-CREATE TABLE dbo.brands (
+CREATE TABLE dbo.brands
+(
 	[brand_id] [int] NOT NULL,
 	[brand_name] [nvarchar](255) NOT NULL,
 	[description] [nvarchar](500) NULL
 );
 
-CREATE TABLE dbo.products (
+CREATE TABLE dbo.products
+(
 	[product_id] [int] NOT NULL,
 	[product_name] [nvarchar](255) NOT NULL,
 	[brand_id] [int] NOT NULL,
@@ -21,10 +24,11 @@ CREATE TABLE dbo.products (
 	[price] [decimal](18, 2) NOT NULL DEFAULT 0,
 	[discount] [decimal](4, 2) NOT NULL DEFAULT 0,
 	[description] [nvarchar](max) NULL
-	
+
 );
 
-CREATE TABLE dbo.customers (
+CREATE TABLE dbo.customers
+(
 	[customer_id] [int] NOT NULL,
 	[first_name] [nvarchar](255) NOT NULL,
 	[last_name] [nvarchar](255) NOT NULL,
@@ -35,10 +39,11 @@ CREATE TABLE dbo.customers (
 	[city] [nvarchar](50) NOT NULL,
 	[state] [nvarchar](50) NOT NULL,
 	[zip_code] [varchar](5) NULL
-	
+
 );
 
-CREATE TABLE dbo.stores (
+CREATE TABLE dbo.stores
+(
 	[store_id] [int] NOT NULL,
 	[store_name] [nvarchar](255) NOT NULL,
 	[phone] [varchar](25) NULL,
@@ -47,10 +52,11 @@ CREATE TABLE dbo.stores (
 	[city] [nvarchar](255) NULL,
 	[state] [nvarchar](50) NULL,
 	[zip_code] [varchar](5) NULL
-	
+
 );
 
-CREATE TABLE dbo.staffs (
+CREATE TABLE dbo.staffs
+(
 	[staff_id] [int] NOT NULL,
 	[first_name] [nvarchar](50) NOT NULL,
 	[last_name] [nvarchar](50) NOT NULL,
@@ -61,14 +67,15 @@ CREATE TABLE dbo.staffs (
 	[manager_id] [int] NULL
 );
 
-CREATE TABLE [dbo].[orders] (
-	[order_id] [int]  NOT NULL,
+CREATE TABLE [dbo].[orders]
+(
+	[order_id] [int] NOT NULL,
 	[customer_id] [int] NOT NULL,
 	[order_status] [tinyint] NOT NULL,
 	-- Order status: 1 = Pending; 2 = Processing; 3 = cancel; 4 = Completed
-	[order_date] [date] NOT NULL,
-	[required_date] [date] NOT NULL,
-	[shipped_date] [date] NULL,
+	[order_date] [datetime2] NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	[required_date] [datetime2] NOT NULL,
+	[shipped_date] [datetime2] NULL,
 	[store_id] [int] NOT NULL,
 	[staff_id] [int] NOT NULL,
 	[order_note] [nvarchar](500) NULL,
@@ -79,7 +86,8 @@ CREATE TABLE [dbo].[orders] (
 	[order_amount] [decimal](18, 2) NOT NULL
 );
 
-CREATE TABLE  [dbo].[order_items] (
+CREATE TABLE [dbo].[order_items]
+(
 	[order_id] [int] NOT NULL,
 	[item_id] [int] NOT NULL,
 	[product_id] [int] NOT NULL,
@@ -88,7 +96,8 @@ CREATE TABLE  [dbo].[order_items] (
 	[discount] [decimal](4, 2) NOT NULL DEFAULT 0
 );
 
-CREATE TABLE [dbo].[stocks] (
+CREATE TABLE [dbo].[stocks]
+(
 	[store_id] [int] NOT NULL,
 	[product_id] [int] NOT NULL,
 	[quantity] [int] NULL DEFAULT 0
