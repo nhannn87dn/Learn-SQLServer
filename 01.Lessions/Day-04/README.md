@@ -81,6 +81,10 @@ SELECT [customer_id], [first_name], [last_name], [first_name] + ' ' + [last_name
 - Dùng khi bạn muốn truy vấn muốn nhận kết quả dựa vào điều kiện nào đó.
 - Thông thường kết hợp cùng các toán tử
 
+Thứ tự thực hiện
+
+![where order](img/SQL-Server-SELECT-from-where-select.png)
+
 **Các phép toán lô-gíc (logical)**
 
 *   AND: dùng để kết hợp các mệnh đề với nhau, trả về TRUE nếu tất cả các mệnh đề đều đúng.
@@ -99,16 +103,53 @@ SELECT [customer_id], [first_name], [last_name], [first_name] + ' ' + [last_name
 `=` `<>` `!=` `>` `>=` `<` `<=`
 
 
-Ví dụ: Tìm những sản phẩm có giá bán >= 50.000
+**Ví dụ với toán tử so sánh**
+
+Tìm những sản phẩm có giá bán >= 50.000
 
 ```sql
 SELECT * FROM products WHERE price >= 500000
 ```
-Ví dụ: Tìm những sản phẩm có giá bán >= 20.000 và <= 50.000
+
+**Ví dụ với toán tử AND**
+
+Cú pháp:
+
+```sql
+boolean_expression AND boolean_expression
+```
+
+Bảng kết quả kết hợp 2 vế:
+
+|         | TRUE    | FALSE | UNKNOWN |
+|---------|---------|-------|---------|
+| TRUE    | TRUE    | FALSE | UNKNOWN |
+| FALSE   | FALSE   | FALSE | FALSE   |
+| UNKNOWN | UNKNOWN | FALSE | UNKNOWN |
+
+
+Tìm những sản phẩm có giá bán >= 20.000 và <= 50.000
 
 ```sql
 SELECT * FROM products WHERE price >= 200000 AND price <= 500000
 ```
+
+**Ví dụ với toán tử OR**
+
+Cú pháp:
+
+```sql
+boolean_expression OR boolean_expression    
+```
+
+Bảng kết quả kết hợp 2 vế:
+
+|         | TRUE | FALSE   | UNKNOWN |
+|---------|------|---------|---------|
+| TRUE    | TRUE | TRUE    | TRUE    |
+| FALSE   | TRUE | FALSE   | UNKNOWN |
+| UNKNOWN | TRUE | UNKNOWN | UNKNOWN |
+
 
 Ví dụ: Tìm những sản phẩm có discount = 10 hoặc 20
 
@@ -116,11 +157,18 @@ Ví dụ: Tìm những sản phẩm có discount = 10 hoặc 20
 SELECT * FROM products WHERE discount = 10 OR discount = 20
 ```
 
+
+**Ví dụ với toán tử IS**
+
+
 Ví dụ: Tìm những sản phẩm được nhập mô tả Description (Tức khác NULL)
 
 ```sql
 SELECT * FROM products WHERE Description IS NOT NULL
 ```
+
+**Ví dụ với toán tử IN**
+
 
 Ví dụ: Tìm những sản phẩm thuộc danh mục có ID 2 hoặc 3
 
@@ -128,6 +176,19 @@ Ví dụ: Tìm những sản phẩm thuộc danh mục có ID 2 hoặc 3
 SELECT * FROM products WHERE category_id IN (2,3)
 --Câu lệnh trên tương đương với toán tử OR
 SELECT * FROM products WHERE category_id = 2 OR category_id = 3
+```
+
+
+**Ví dụ với toán tử BETWEEN**
+
+
+Cú pháp
+
+```sql
+--Trong khoảng 
+column | expression BETWEEN start_expression AND end_expression
+--Ngoài khoảng 
+column | expression NOT BETWEEN start_expression AND end_expresion
 ```
 
 Ví dụ: Tìm những đơn đặt hàng từ 2016-01-01 - 2016-05-01
@@ -150,6 +211,8 @@ SELECT *
 FROM orders
 WHERE order_date BETWEEN CAST('2016-01-01' AS DATE) AND CAST('2016-03-01' AS DATE);
 ```
+
+**Ví dụ với toán tử LIKE**
 
 Ví dụ: Tìm tên khách hàng có số điện thoại đuôi 678
 
@@ -187,6 +250,12 @@ Lưu ý rằng mệnh đề LIKE được sử dụng trong câu lệnh SELECT c
 
 - Dùng để sắp xếp kết quả truy vấn theo một hoặc nhiều cột.
 - Mặc định sắp xếp theo thứ tự tăng dần (ASC), nhưng bạn cũng có thể chỉ định thứ tự giảm dần (DESC).
+
+
+Thứ tự thực hiện
+
+![where order](img/SQL-Server-SELECT-from-where-select-order-by.png)
+
 
 Ví dụ: Sắp xếp tất cả các khách hàng theo `first_name` tăng dần:
 
@@ -350,6 +419,14 @@ ORDER BY price DESC
 Mệnh đề GROUP BY dùng để nhóm các hàng dữ liệu thành các nhóm dựa trên giá trị của một hoặc nhiều cột. Nó cho phép bạn thực hiện các phép tính tổng hợp (aggregate) trên các nhóm dữ liệu này.
 
 Khi sử dụng GROUP BY, dữ liệu sẽ được phân chia thành các nhóm dựa trên giá trị của cột được chỉ định trong mệnh đề GROUP BY. Các bản ghi có giá trị giống nhau trong cột này sẽ thuộc cùng một nhóm.
+
+
+Thứ tự thực hiện
+
+![where order](img/SQL-Server-SELECT-from-where-group-by-select-order-by.png)
+
+
+
 
 Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần.
 

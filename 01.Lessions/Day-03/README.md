@@ -294,6 +294,26 @@ CREATE TABLE Employees
 ON HR --file group with name "HR"
 ```
 
+#### 🔹 Quy tắc đặt tên các cột trong Table
+
+Trong SQL Server, có một số quy tắc và khuyến nghị khi đặt tên cột để đảm bảo tính rõ ràng, dễ đọc và dễ hiểu trong quá trình phát triển và bảo trì cơ sở dữ liệu. Dưới đây là một số quy tắc thường được sử dụng:
+
+1. Sử dụng tên có ý nghĩa: Đặt tên cột dựa trên ý nghĩa và nội dung của dữ liệu mà cột đại diện. Tên cột nên phản ánh mục đích và thông tin liên quan của nó.
+
+2. Sử dụng đúng kiểu từ: Đặt tên cột bằng các từ ngữ rõ ràng, dễ hiểu và không gây nhầm lẫn. Tránh việc sử dụng các từ viết tắt, chữ số hoặc ký tự đặc biệt trong tên cột.
+
+3. Sử dụng kiểu đặt tên theo quy ước: Có thể sử dụng các quy ước về đặt tên như Pascal Case (ví dụ: EmployeeName), Camel Case (ví dụ: employeeName) hoặc Snake Case (ví dụ: employee_name). Quy ước này giúp tạo ra tên cột dễ đọc và dễ nhìn.
+
+4. Tránh sử dụng các từ khóa: Đảm bảo rằng tên cột không trùng với các từ khóa được sử dụng trong câu lệnh SQL hoặc trong hệ quản trị cơ sở dữ liệu.
+
+5. Sử dụng tên cột ngắn gọn và đủ mô tả: Tránh đặt tên cột quá dài hoặc quá ngắn. Đặt tên cột sao cho nó cung cấp thông tin đủ để hiểu nó đại diện cho dữ liệu nào, nhưng đồng thời không quá dài để làm cho các truy vấn và mã SQL trở nên phức tạp.
+
+6. Sử dụng phân cách hợp lý: Sử dụng ký tự phân cách (như dấu gạch dưới "_") hoặc phân cách từ (như dấu cách) để tách các từ trong tên cột. Điều này giúp làm rõ từng thành phần của tên cột và làm cho nó dễ đọc hơn.
+
+7. Tuân thủ quy tắc đặt tên chung: Ngoài các quy tắc cụ thể cho SQL Server, hãy tuân thủ các quy tắc đặt tên chung trong lĩnh vực phát triển phần mềm, nhưng hãy đảm bảo tuân thủ quy tắc cụ thể cho SQL Server.
+
+Lưu ý rằng quy tắc đặt tên có thể khác nhau tùy thuộc vào quy ước của dự án hoặc tổ chức. Quan trọng nhất là đảm bảo tính rõ ràng, dễ đọc và duy trì của tên cột trong quá trình phát triển và bảo trì cơ sở dữ liệu.
+
 ---
 
 ### 💥 Cách Xóa Table
@@ -833,6 +853,43 @@ ALTER TABLE [dbo].[products]
 ADD CONSTRAINT [FK_products_suppliers] FOREIGN KEY ([supplier_id]) REFERENCES [dbo].[suppliers] ([supplier_id]);
 ```
 
+**📢 Khóa ngoại với tùy chọn tham chiếu**
+
+Câu lệnh FOREIGN KEY trong SQL Server được sử dụng để tạo ràng buộc khóa ngoại giữa hai bảng trong cơ sở dữ liệu. Ràng buộc khóa ngoại đảm bảo tính toàn vẹn dữ liệu bằng cách xác định mối quan hệ giữa các bảng thông qua khóa ngoại và khóa chính.
+
+Cú pháp chung của câu lệnh FOREIGN KEY như sau:
+
+```sql
+FOREIGN KEY (foreign_key_columns)
+    REFERENCES parent_table(parent_key_columns)
+    ON UPDATE action 
+    ON DELETE action;
+```
+
+- `foreign_key_columns`: Là danh sách các cột trong bảng hiện tại, được định nghĩa là khóa ngoại và sẽ tham chiếu đến khóa chính trong bảng cha.
+- `parent_table`: Là tên của bảng cha, tức là bảng mà các cột khóa chính được tham chiếu đến.
+- `parent_key_columns`: Là danh sách các cột khóa chính trong bảng cha.
+- `ON UPDATE action`: Xác định hành động khi giá trị của khóa chính trong bảng cha được cập nhật. Có thể là `CASCADE`, `SET NULL`, `SET DEFAULT`, `NO ACTION` hoặc `RESTRICT`.
+- `ON DELETE action`: Xác định hành động khi một hàng trong bảng cha bị xóa. Có thể là `CASCADE`, `SET NULL`, `SET DEFAULT`, `NO ACTION` hoặc `RESTRICT`.
+
+Ví dụ, để tạo một ràng buộc khóa ngoại trong bảng "Orders" tham chiếu đến khóa chính "OrderID" trong bảng "Customers", và khi khóa chính trong bảng "Customers" được cập nhật hoặc xóa, các hành động tương ứng được thực hiện, bạn có thể sử dụng câu lệnh sau:
+
+```sql
+ALTER TABLE Orders
+ADD FOREIGN KEY (CustomerID)
+REFERENCES Customers(CustomerID)
+ON UPDATE CASCADE
+ON DELETE SET NULL;
+```
+
+Trong ví dụ trên, cột "CustomerID" trong bảng "Orders" được định nghĩa là khóa ngoại, tham chiếu đến cột "CustomerID" trong bảng "Customers".
+
+- Khi khóa chính trong bảng "Customers" được cập nhật, các bản ghi tương ứng trong bảng "Orders" sẽ được cập nhật theo (`ON UPDATE CASCADE`). 
+- Khi một bản ghi trong bảng "Customers" bị xóa, giá trị khóa ngoại trong bảng "Orders" sẽ được đặt thành NULL (`ON DELETE SET NULL`).
+
+
+
+
 #### 🔹 UNIQUE
 
 SQL cung cấp cho bạn ràng buộc UNIQUE để duy trì tính duy nhất của dữ liệu một cách chính xác.
@@ -858,6 +915,15 @@ GO
 ```
 
 ==> Sử dụng tiếp đầu ngữ `uq_` để nhận biết đó là UNIQUE
+
+**Xóa UNIQUE Contraint**
+
+```sql
+ALTER TABLE table_name
+DROP CONSTRAINT uq_constraint_name;
+
+```
+
 
 #### 🔹 NOT NULL
 
@@ -983,6 +1049,22 @@ GO
 ```
 
 ==> Sử dụng tiếp đầu ngữ `ck_` để nhận biết đó là Check
+
+**Xóa Check Contraint**
+
+```sql
+ALTER TABLE table_name
+DROP CONSTRAINT check_constraint_name;
+```
+
+**Tắt Check Contraint**
+
+Cú pháp
+
+```sql
+ALTER TABLE table_name
+NO CHECK CONSTRAINT check_constraint_name;
+```
 
 
 ## 💛Homeworks Guide - Session 2-3-4
