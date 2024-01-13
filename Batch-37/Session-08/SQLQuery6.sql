@@ -11,6 +11,17 @@ SELECT
 FROM
 	products
 
+ALTER TABLE dbo.products
+DROP CONSTRAINT PK_products_product_id;
+--xóa cột product_id
+ALTER TABLE dbo.products DROP COLUMN product_id
+--tạo lại product_id với IDENTITY
+ALTER TABLE dbo.products
+ADD product_id INT IDENTITY(1,1)
+--Thiết lập lại khóa chính
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
+
 --Lấy sản phẩm có product_id = 5
 SELECT * FROM dbo.products WHERE product_id = 5;
 --Lấy sản phẩm có brand_id = 9
