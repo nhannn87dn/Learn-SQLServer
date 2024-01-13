@@ -1,4 +1,32 @@
-# Day 5
+# Day 4
+
+
+## 💛 Load Data mẫu:
+
+Bước 1: Tải 2 file .sql về máy tính mình ở thưc mục `02.Examples-SQL\BikeStores`
+
+- 1. BikeStores-Sample-Database-create-tables-Student.sql
+- 2. BikeStores-Sample-Database-load-data-Student.sql
+
+Bước 2
+
+- Mở Microsoft SQL Server Management Studio (MSSMS) lên.
+
+- Kết nối với chế độ xác thực là windown authentication
+
+Bước 3
+
+- Menu FIle --> Open --> File (Hoặc Ctrl + O)
+- Chọn file .sql đã tải ở trên theo thứ tự lần lượt
+
+Bước 4
+
+- Chạy file số 1 trước, sau đó đến file số 2 bằng cách nhấn f5 (Nút Excute)
+
+Bước 5
+
+Kiểm tra lại dữ liệu trong table bằng cách, show mục table tại database, Click phải lên table bạn muốn xem dữ liệu --> chọn `Select top 1000 rows`
+
 
 
 ## 💛 Session 08- Accessing Data
