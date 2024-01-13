@@ -1,5 +1,5 @@
-# Day 6
-💥 🔹
+# Day 5
+
 ## 💛 Session 09- Advanced Queries and Joins - Part 2
 
 

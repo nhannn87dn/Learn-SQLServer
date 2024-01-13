@@ -1,5 +1,4 @@
-# Day 4
-
+# Day 03
 
 
 ## 💛 Session 05- Creating and Managing Databases
@@ -754,8 +753,8 @@ Cú pháp chung của câu lệnh FOREIGN KEY như sau:
 ```sql
 FOREIGN KEY (foreign_key_columns)
     REFERENCES parent_table(parent_key_columns)
-    ON UPDATE action 
-    ON DELETE action;
+    ON UPDATE CASCADE |  SET NULL | SET DEFAULT | NO ACTION | RESTRICT
+    ON DELETE CASCADE |  SET NULL | SET DEFAULT | NO ACTION | RESTRICT;
 ```
 
 - `foreign_key_columns`: Là danh sách các cột trong bảng hiện tại, được định nghĩa là khóa ngoại và sẽ tham chiếu đến khóa chính trong bảng cha.
@@ -763,6 +762,21 @@ FOREIGN KEY (foreign_key_columns)
 - `parent_key_columns`: Là danh sách các cột khóa chính trong bảng cha.
 - `ON UPDATE action`: Xác định hành động khi giá trị của khóa chính trong bảng cha được cập nhật. Có thể là `CASCADE`, `SET NULL`, `SET DEFAULT`, `NO ACTION` hoặc `RESTRICT`.
 - `ON DELETE action`: Xác định hành động khi một hàng trong bảng cha bị xóa. Có thể là `CASCADE`, `SET NULL`, `SET DEFAULT`, `NO ACTION` hoặc `RESTRICT`.
+
+Trong đó:
+
+1. SET DEFAULT: Khi sử dụng "SET DEFAULT", nếu một bản ghi trong bảng cha (parent table) được cập nhật hoặc xóa, và có các bản ghi tương ứng trong bảng con (child table) sử dụng khóa ngoại, giá trị của các cột khóa ngoại trong bảng con sẽ được đặt về giá trị mặc định (default value) đã được xác định trước đó. Nếu không có giá trị mặc định, thì một lỗi có thể xảy ra.
+
+2. NO ACTION: Khi sử dụng "NO ACTION", nếu có sự thay đổi trong bảng cha, nhưng các bản ghi trong bảng con vẫn có tham chiếu đến các bản ghi trong bảng cha, thì NO ACTION sẽ ngăn chặn các thay đổi này. Nghĩa là, hệ thống sẽ không thực hiện thay đổi hoặc xóa bản ghi trong bảng cha nếu có các bản ghi con liên quan. Điều này đảm bảo tính nhất quán của dữ liệu, nhưng có thể gây ra lỗi nếu không được xử lý cẩn thận.
+
+3. RESTRICT: RESTRICT tương tự như NO ACTION, nghĩa là nó ngăn chặn sự thay đổi hoặc xóa bản ghi trong bảng cha khi có các bản ghi con liên quan. RESTRICT cũng được sử dụng để đảm bảo ràng buộc dữ liệu và tính nhất quán, và có thể gây ra lỗi nếu không được xử lý cẩn thận.
+
+4. CASCADE: Khi sử dụng "CASCADE" trong mệnh đề FOREIGN KEY, nếu có sự thay đổi trong bảng cha, như cập nhật hoặc xóa bản ghi, các thay đổi tương ứng sẽ được tự động lan truyền (cascade) đến bảng con. Nghĩa là, các bản ghi trong bảng con có khóa ngoại trùng khớp sẽ được cập nhật hoặc xóa một cách tự động.
+
+5. SET NULL: Khi sử dụng "SET NULL", nếu một bản ghi trong bảng cha được cập nhật hoặc xóa, và có các bản ghi tương ứng trong bảng con sử dụng khóa ngoại, giá trị của các cột khóa ngoại trong bảng con sẽ được đặt về NULL. Điều này cho phép tồn tại các bản ghi trong bảng con không có liên kết với bảng cha.
+
+Tóm lại, khi sử dụng các từ khóa trong mệnh đề FOREIGN KEY, chúng ta có thể xác định cách thức xử lý dữ liệu liên quan đến khóa ngoại khi có sự thay đổi trong bảng cha. Mỗi từ khóa có ý nghĩa và tác động khác nhau lên dữ liệu và các bảng liên quan. Lựa chọn từ khóa phù hợp phụ thuộc vào yêu cầu kinh doanh và mô hình dữ liệu của hệ thống.
+
 
 Ví dụ, để tạo một ràng buộc khóa ngoại trong bảng "Orders" tham chiếu đến khóa chính "OrderID" trong bảng "Customers", và khi khóa chính trong bảng "Customers" được cập nhật hoặc xóa, các hành động tương ứng được thực hiện, bạn có thể sử dụng câu lệnh sau:
 
