@@ -251,9 +251,9 @@
 
 ## 💛  Phần B: Câu lệnh  UPDATE, DELETE
 
-1. Viết câu lệnh UPDATE để cập nhật price với điều kiện: Các mặt hàng có price <= 100 thì tăng thêm 10%
-1. Viết câu lệnh UPDATE để cập nhật DISCOUNT với điều kiện: Các mặt hàng có discount <= 10% thì tăng thêm 5%
-1. Viết câu lệnh XOÁ tất cả các mặt hàng có quanlity là 0
+1. Viết câu lệnh UPDATE để cập nhật price với điều kiện: Các sản phẩm có price <= 100 thì tăng thêm 10%
+1. Viết câu lệnh UPDATE để cập nhật DISCOUNT với điều kiện: Các sản phẩm có discount <= 10% thì tăng thêm 5%
+1. Viết câu lệnh XOÁ tất cả các sản phẩm có quanlity là 0
 1. Chèn vào table brands thêm 3 thương hiệu nữa rồi sau đó viết câu lệnh XÓA 3 thương hiệu vừa thêm
 1. Viết câu lệnh UPDATE để cập nhật ngày thay đổi `updated_at` của table taxes bằng ngày hiện tại
 1. Viết câu lệnh UPDATE để cập nhật `max_local_tax_rate` tăng 2% và `avg_local_tax_rate ` tăng 1% của table taxes cho những quận nào có `max_local_tax_rate`  1%
@@ -262,16 +262,19 @@
 
 ## 💛  Phần C: Truy vấn cơ bản
 
-1. Hiển thị tất cả các mặt hàng có giảm giá <= 10%
-1. Hiện thị tất cả các mặt hàng không có giảm giá
-1. Hiển thị tất cả các mặt hàng có số lượng tồn kho <= 5
-1. Hiển thị tất cả các mặt hàng có Giá bán sau khi đã giảm giá <= 100
-1. Hiện thị tất cả các mặt hàng thuộc danh mục A AND B và A OR B
+1. Hiển thị tất cả các sản phẩm có giảm giá (discount)  <= 10%
+1. Hiện thị tất cả các sản phẩm không có giảm giá (discount) 
+1. Hiển thị tất cả các sản phẩm có Giá bán sau khi đã giảm giá (discount)  <= 100
+1. Hiện thị tất cả các sản phẩm thuộc danh mục có category_id = 4 và thương hiệu = 5
+1. Hiện thị tất cả các sản phẩm thuộc danh mục có category_id = 2 và 4.
+1. Hiện thị tất cả các sản phẩm có model sản xuất (model_year) từ 2017 - 2020.
 1. Hiển thị tất cả các khách hàng có địa chỉ ở `city = 'New York'`
 1. Hiển thị tất cả các khách hàng có địa chỉ ở `city = 'New York'` hoặc `city = 'Victoria'`
 1. Hiển thị tất cả các khách hàng có năm sinh 1990.
 1. Hiển thị tất cả các khách hàng có tuổi trên 60.
 1. Hiển thị tất cả các khách hàng có tuổi từ 20 đến 30.
+1. Hiển thị tất cả các khách hàng có số đuôi điện thoại '500'
+1. Hiển thị tất cả các khách hàng có tên chứa ký tự `de`.
 1. Hiển thị tất cả các khách hàng có sinh nhật là hôm nay. Gợi ý: dùng hàm GETDATE(), MONTH(), DAY()
 1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4)
 1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong ngày hôm nay
@@ -288,10 +291,10 @@
 1. Hiển thị tất cả các thương hiệu (brands) có tên là: (Electra, Haro, Heller, Trek)
 1. Hiển thị tất cả các thương hiệu (brands) không có tên là: (Heller, Trek)
 1. Hiển thị tất cả các khách hàng có sinh nhật là ngày hôm nay.
-1. Hiển thị xem có bao nhiêu mức giảm giá khác nhau.
-1. Hiển thị xem có bao nhiêu mức giảm giá khác nhau và số lượng mặt hàng có mức giảm giá đó.
-1. Hiển thị xem có bao nhiêu mức giảm giá khác nhau và số lượng mặt hàng có mức giảm giá đó, sắp xếp theo số lượng giảm giá giảm dần.
-1. Hiển thị xem có bao nhiêu mức giảm giá khác nhau và số lượng mặt hàng có mức giảm giá đó, sắp xếp theo số lượng giảm giá tăng dần, chỉ hiển thị các mức giảm giá có số lượng mặt hàng >= 5
+1. Hiển thị xem có bao nhiêu mức giảm giá (discount)  khác nhau.
+1. Hiển thị xem có bao nhiêu mức giảm giá (discount)  khác nhau và số lượng sản phẩm có mức giảm giá (discount)  đó.
+1. Hiển thị xem có bao nhiêu mức giảm giá (discount)  khác nhau và số lượng sản phẩm có mức giảm giá (discount)  đó, sắp xếp theo số lượng giảm giá (discount)  giảm dần.
+1. Hiển thị xem có bao nhiêu mức giảm giá (discount)  khác nhau và số lượng sản phẩm có mức giảm giá (discount)  đó, sắp xếp theo số lượng giảm giá (discount)  tăng dần, chỉ hiển thị các mức giảm giá (discount)  có số lượng sản phẩm >= 5
 1. Hiển thị xem có bao nhiêu mức tuổi khác nhau của khách hàng và số lượng khách hàng có mức tuổi đó, sắp xếp theo số lượng khách hàng tăng dần.
 1. Hiển thị xem có bao nhiêu mức tuổi khác nhau của nhân viên và số lượng nhân viên có mức tuổi đó, sắp xếp theo số lượng nhân viên giảm dần.
 1. Hiển thị số lượng đơn hàng theo từng ngày khác nhau sắp xếp theo số lượng đơn hàng giảm dần.
@@ -301,11 +304,11 @@
 
 ## 💛  Phần D: Truy vấn nâng cao
 
-1. Hiển thị tất cả các mặt hàng cùng với category_name.
-1. Hiển thị tất cả các mặt hàng cùng với brand_name.
+1. Hiển thị tất cả các sản phẩm cùng với tên danh mục (category_name).
+1. Hiển thị tất cả các sản phẩm cùng với tên thương hiệu (brand_name).
 
-1. Hiển thị tất cả các mặt hàng cùng với thông tin chi tiết của categories và brands
-
+1. Hiển thị tất cả các sản phẩm cùng với thông tin chi tiết của categories và brands
+1. Hiển thị tất cả các sản phẩm có số lượng tồn kho <= 5
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer.
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết nhân viên Staff.
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer và nhân viên Staff.
@@ -319,7 +322,7 @@
 - Dùng INNER JOIN + GROUP BY với lệnh COUNT
 - Dùng SubQuery với lệnh COUNT
 
-1. Hiển thị tất cả các mặt hàng được bán trong khoảng từ ngày, đến ngày
+1. Hiển thị tất cả các sản phẩm được bán trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả các khách hàng mua hàng trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả các khách hàng mua hàng (với tổng số tiền) trong khoảng từ ngày, đến ngày
 
@@ -328,11 +331,11 @@
 
 1. Hiển thị tất cả đơn hàng với tổng số tiền của đơn hàng đó
 1. Hiển thị tất cả các nhân viên bán hàng với tổng số tiền bán được
-1. Hiển thị tất cả các mặt hàng không bán được
+1. Hiển thị tất cả các sản phẩm không bán được
 1. Hiển thị tất cả các thương hiệu (brands) không bán được trong khoảng từ ngày, đến ngày
 1. Hiển thị top 3 các nhân viên bán hàng với tổng số tiền bán được từ cao đến thấp trong khoảng từ ngày, đến ngày
 1. Hiển thị top 5 các khách hàng mua hàng với tổng số tiền mua được từ cao đến thấp trong khoảng từ ngày, đến ngày
-1. Hiển thị danh sách các mức giảm giá của cửa hàng
+1. Hiển thị danh sách các mức giảm giá (discount)  của cửa hàng
 1. Hiển thị tất cả danh mục (Categories) với tổng số tiền bán được trong mỗi danh mục
 
 - Dùng INNER JOIN + GROUP BY với lệnh SUM
@@ -347,8 +350,8 @@
 
 ## 💛  Phần E: Views
 
-1. Hiển thị danh sách các mức giảm giá của cửa hàng cùng với số lượng mặt hàng được giảm giá đó, gồm các fields: discount, NumberOfProducts, Total.
-1. Hiển thị tất cả các mặt hàng cùng với thông tin chi tiết của Category và Brand gồm các fields: product_id, product_name, price, discount, category_id, category_name, brand_id, brand_name.
+1. Hiển thị danh sách các mức giảm giá (discount)  của cửa hàng cùng với số lượng sản phẩm được giảm giá (discount)  đó, gồm các fields: discount, NumberOfProducts, Total.
+1. Hiển thị tất cả các sản phẩm cùng với thông tin chi tiết của Category và Brand gồm các fields: product_id, product_name, price, discount, category_id, category_name, brand_id, brand_name.
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer và Staff gồm các fields: order_id, order_date, order_status, customer_id, customer_name, street, phone, staff_id, staff_name, staff_address, phone, total.
 1. Hiển thị tất cả danh mục (Categories) với số lượng hàng hóa trong mỗi danh mục, gồm các fields: category_id, category_name, description, NumberOfProducts.
 
@@ -371,7 +374,7 @@
 - Dùng INNER JOIN + GROUP BY với lệnh SUM
 - Dùng SubQuery với lệnh SUM
 
-1. Hiển thị tất cả các mặt hàng không bán được, gồm các fields: product_id, product_name, price, discount, category_id, category_name, brand_id, brand_name.
+1. Hiển thị tất cả các sản phẩm không bán được, gồm các fields: product_id, product_name, price, discount, category_id, category_name, brand_id, brand_name.
 
 1. Hiển thị tất cả các thương hiệu (brands) không bán được, gồm các fields: brand_id, brand_name
 1. Hiển thị tất cả các nhân viên không bán được hàng, gồm các fields: staff_id, staff_name,  phone
@@ -379,9 +382,9 @@
 
 ## 💛  Phần F: Stored Procedures
 
-1. Hiển thị tất cả các mặt hàng có giảm giá <= @Mindiscount
-1. Hiển thị tất cả các mặt hàng có số lượng tồn kho <= @MinStock
-1. Hiển thị tất cả các mặt hàng có Giá bán sau khi đã giảm giá <= @Total
+1. Hiển thị tất cả các sản phẩm có giảm giá (discount)  <= @Mindiscount
+1. Hiển thị tất cả các sản phẩm có số lượng tồn kho <= @MinStock
+1. Hiển thị tất cả các sản phẩm có Giá bán sau khi đã giảm giá (discount)  <= @Total
 1. Hiển thị tất cả các khách hàng có địa chỉ ở @Address
 1. Hiển thị tất cả các khách hàng có năm sinh @YearOfBirth
 1. Hiển thị tất cả các khách hàng có tuổi từ @MinAge đến MaxAge.
@@ -391,7 +394,7 @@
 1. Hiển thị tất cả các đơn hàng có hình thức thanh toán là @PaymentMethod
 1. Hiển thị tất cả đơn hàng theo trạng thái @Status với tổng số tiền của đơn hàng đó trong khoảng từ ngày @FromDate, đến ngày @ToDate
 1. Hiển thị tất cả các nhân viên bán hàng theo trạng thái @Status với tổng số tiền bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
-1. Hiển thị tất cả các mặt hàng không bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
+1. Hiển thị tất cả các sản phẩm không bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
 1. Hiển thị tất cả các thương hiệu (brands) không bán được trong khoảng từ ngày @FromDate, đến ngày @ToDate
 1. Hiển thị tất cả các khách hàng mua hàng với tổng số tiền trong khoảng từ ngày @FromDate, đến ngày @ToDate
 
@@ -402,7 +405,7 @@
 1. Viết 1 scalar function tính total price của 1 Order (@OrderID), tên function là udf_Order_GetTotalprice
 1. Viết table function trả về table gồm các fields: order_id, product_id, product_name, category_id, category_name, quantity, price, discount, total với tham số @OrderId, tên function là udf_Order_Getorder_items
 1. Viết table function trả về các mức giá của 1 danh mục loại sản phẩm, với tham số @category_id, tên function là udf_Category_GetCategoryprices
-1. Viết table function trả về các mức giảm giá của 1 danh mục loại sản phẩm, với tham số @category_id, tên function là udf_Category_GetCategorydiscounts
+1. Viết table function trả về các mức giảm giá (discount)  của 1 danh mục loại sản phẩm, với tham số @category_id, tên function là udf_Category_GetCategorydiscounts
 1. Viết scalar function nhập vào năm sinh, trả về số tuổi, tên function là udf_CalculateAge
 1. Viết scalar function chuyển đổi UNICODE có dấu sang không dấu, tên function là udf_ConvertUnicodeToNonUnicode, ví dụ: udf_ConvertUnicodeToNonUnicode(N'Ngô Thanh Tùng') -> 'Ngo Thanh Tung'.
 
@@ -421,9 +424,9 @@
 
 ## 💛  Phần I: Transactions
 
-1. Tạo store procedure với 1 transaction để thêm 1 Order mới, với các order_items, và cập nhật tồn kho (quanlity) của các mặt hàng, gồm các bước:
+1. Tạo store procedure với 1 transaction để thêm 1 Order mới, với các order_items, và cập nhật tồn kho (quanlity) của các sản phẩm, gồm các bước:
 
-- Kiểm tra tồn kho (quanlity) của mặt hàng có product_id = @product_id, nếu quanlity < @quantity thì rollback transaction, và trả về lỗi 'Số lượng tồn kho không đủ'
+- Kiểm tra tồn kho (quanlity) của sản phẩm có product_id = @product_id, nếu quanlity < @quantity thì rollback transaction, và trả về lỗi 'Số lượng tồn kho không đủ'
 - Tạo 1 Order mới, với order_status = 1, order-date = GETDATE(), staff_id = @staff_id, customer_id = @customer_id
 - Tạo 1 order_items mới, với order_id = order_id vừa tạo, product_id = @product_id, quantity = @quantity, price = products.price, discount = products.discount
-- Cập nhật tồn kho (quanlity) của mặt hàng có product_id = @product_id, trừ đi @quantity.
+- Cập nhật tồn kho (quanlity) của sản phẩm có product_id = @product_id, trừ đi @quantity.
