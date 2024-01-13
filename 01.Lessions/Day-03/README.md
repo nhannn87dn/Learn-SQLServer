@@ -133,7 +133,7 @@ CREATE TABLE [dbo].[products] (
   [discount] DECIMAL(4,2) NOT NULL,
   [description] NVARCHAR(MAX) NULL,
   [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL
+  [brand_id] INT NOT NULL
 );
 GO
 
@@ -688,7 +688,7 @@ SELECT NEWID() AS GUID;
 Bạn có thể áp dụng GUID làm `primary key`
 
 ```sql
-CREATE TABLE marketing.customers(
+CREATE TABLE dbo.customers(
     customer_id UNIQUEIDENTIFIER DEFAULT NEWID(),
     first_name NVARCHAR(100) NOT NULL,
     last_name NVARCHAR(100) NOT NULL,
@@ -697,6 +697,39 @@ CREATE TABLE marketing.customers(
 -- Trong đó: UNIQUEIDENTIFIER ==> Đảm bảo định danh duy nhất, không trùng lặp, 
 -- DEFAULT NEWID() --> tự động tạo
 ```
+**Xóa Khóa chính**
+
+```sql
+ALTER TABLE table_name
+DROP CONSTRAINT constraint_name;
+```
+
+Ví dụ
+
+```sql
+ALTER TABLE dbo.products
+DROP CONSTRAINT PK_products_product_id;
+```
+
+
+Nếu như khóa chính chưa set tự động tăng trước đó bạn có thể tạo như sau
+
+```sql
+-- xóa khóa chính
+ALTER TABLE dbo.products
+DROP CONSTRAINT PK_products_product_id;
+--xóa cột product_id
+ALTER TABLE dbo.products DROP COLUMN product_id
+--tạo lại product_id với IDENTITY
+ALTER TABLE dbo.products
+ADD product_id INT IDENTITY(1,1)
+--Thiết lập lại khóa chính
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
+--
+Go
+```
+
 
 
 
@@ -713,7 +746,7 @@ CREATE TABLE marketing.customers(
 - Ràng buộc khóa ngoại chỉ ra rằng các giá trị trong một cột hoặc một nhóm cột trong bảng con bằng với các giá trị trong một cột hoặc một nhóm cột của bảng cha.
 
 ```sql
--- Tạo khóa ngoại category_id, supplier_id ngay khi tạo mới Table
+-- Tạo khóa ngoại category_id, brand_id ngay khi tạo mới Table
 CREATE TABLE [dbo].[products] (
   [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
   [name] NVARCHAR(100) NOT NULL,
@@ -721,11 +754,11 @@ CREATE TABLE [dbo].[products] (
   [discount] DECIMAL(4,2) NOT NULL,
   [description] NVARCHAR(MAX) NULL,
   [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
   CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
         REFERENCES categories(category_id), --Khóa ngoại category_id
-  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
-        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES suppliers(brand_id) --Khóa ngoại brand_id
 );
 ```
 
@@ -739,9 +772,23 @@ Hoặc bạn có thể tạo khóa ngoại cho một table đã tồn tại
 ALTER TABLE [dbo].[products]
 ADD CONSTRAINT [FK_products_categories] FOREIGN KEY ([category_id]) REFERENCES [dbo].[categories] ([category_id]);
 GO
---Tạo khóa ngoại FOREIGN KEY (supplier_id) tham chiếu đến khóa chính suppliers(supplier_id)
+--Tạo khóa ngoại FOREIGN KEY (brand_id) tham chiếu đến khóa chính suppliers(brand_id)
 ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [FK_products_suppliers] FOREIGN KEY ([supplier_id]) REFERENCES [dbo].[suppliers] ([supplier_id]);
+ADD CONSTRAINT [FK_products_brands_id] FOREIGN KEY ([brand_id]) REFERENCES [dbo].[suppliers] ([brand_id]);
+```
+
+**Xóa Khóa phụ**
+
+```sql
+ALTER TABLE table_name
+DROP CONSTRAINT constraint_name;
+```
+
+Ví dụ
+
+```sql
+ALTER TABLE dbo.products
+DROP CONSTRAINT FK_products_brands_id
 ```
 
 **📢 Khóa ngoại với tùy chọn tham chiếu**
@@ -873,11 +920,11 @@ CREATE TABLE [dbo].[products] (
   [discount] DECIMAL(4,2) NOT NULL DEFAULT 0,
   [description] NVARCHAR(MAX) NULL,
   [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
   CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
         REFERENCES categories(category_id), --Khóa ngoại category_id
-  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
-        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES suppliers(brand_id) --Khóa ngoại brand_id
 
 );
 GO
@@ -927,11 +974,11 @@ CREATE TABLE [dbo].[products] (
   [discount] DECIMAL(4,2) DEFAULT 0 NOT NULL CHECK (discount >=0 AND discount <= 70),
   [description] NVARCHAR(MAX) NULL,
   [category_id] INT NOT NULL,
-  [supplier_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
   CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
         REFERENCES categories(category_id), --Khóa ngoại category_id
-  CONSTRAINT FK_products_supplier_id FOREIGN KEY (supplier_id) 
-        REFERENCES suppliers(supplier_id) --Khóa ngoại supplier_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES suppliers(brand_id) --Khóa ngoại brand_id
 
 );
 GO
