@@ -424,6 +424,7 @@ VALUES
     ('a', 250),
     ('b', 0)
 
+SET XACT_ABORT ON
 BEGIN TRANSACTION;
 --b1. Trừ tiền người a: 50
 UPDATE bank SET balance = balance - 50 WHERE name = 'a';
@@ -431,15 +432,22 @@ UPDATE bank SET balance = balance - 50 WHERE name = 'a';
 INSERT bank_log
     (note)
 VALUES
-    ('Chuyen tien tu a sang 5, 50USD')
+    ('Chuyen tien tu a sang b, 50USD')
 --b3. Cộng tiền người b: 50
 UPDATE bank SET balance = balance + 50 WHERE name = 'b';
 --b4. Ghi log lịch sử giao dịch
 INSERT bank_log
     (id, note)
 VALUES
-    (2, 'Nhan tien tu nguoi a, 50USD')
+    (2, 'Nhan tien tu nguoi a, 50USD');
 COMMIT TRANSACTION;
+
+
+SELECT *
+FROM bank
+
+SELECT *
+FROM bank_log
 
 DECLARE @xact_abort_status VARCHAR(3);
 SET @xact_abort_status = CASE WHEN (64 & @@OPTIONS) = 64 THEN 'ON' ELSE 'OFF' END;
@@ -490,5 +498,7 @@ COMMIT TRANSACTION; -- or COMMIT
 
 
 --Giả lập hiện tượng Lock trong SQL Serever
-BEGIN TRAN;
-UPDATE bank SET balance = 500 WHERE name = 'a'
+BEGIN TRAN
+
+UPDATE bank SET balance = 500 
+WHERE name = 'a'
