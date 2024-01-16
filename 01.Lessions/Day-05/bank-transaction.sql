@@ -37,6 +37,17 @@ VALUES
 SELECT *
 FROM bank
 
+
+SET XACT_ABORT ON
+/*
+
+Khi "SET XACT_ABORT ON" được thiết lập, nếu một lỗi xảy ra trong một giao dịch, 
+nó sẽ tự động kết thúc giao dịch đó và rollback (hoàn tác) 
+tất cả các thay đổi đã được thực hiện trong giao dịch. 
+Điều này đảm bảo tính toàn vẹn dữ liệu 
+và giúp tránh tình trạng dữ liệu không nhất quán.
+*/
+
 BEGIN TRANSACTION;
 --b1. Trừ tiền người a: 50
 UPDATE bank SET balance = balance - 50 WHERE name = 'a';
