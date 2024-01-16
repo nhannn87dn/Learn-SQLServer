@@ -2,8 +2,7 @@
 
 ## 💛 Session 09- Advanced Queries and Joins - Part 2
 
-
-### 💥 JOINs 
+### 💥 JOINs
 
 Trong SQL, joins là phép kết hợp các hàng từ hai hoặc nhiều bảng dựa trên một điều kiện kết hợp. Joins cho phép bạn kết hợp dữ liệu từ các bảng liên quan nhau để tạo ra các kết quả kết hợp mới, giúp truy vấn dữ liệu từ nhiều nguồn trở nên linh hoạt và mạnh mẽ hơn.
 
@@ -60,7 +59,6 @@ Phép nối Inner Join được biểu diễn với sơ đồ  Venn diagram
 
 ![innner join](img/Join-Inner-Join.png)
 
-
 Ví dụ: Lấy danh sách sản phẩm bao gồm tên sản phẩm, danh mục sản phẩm, giá bán.
 
 ```sql
@@ -81,7 +79,6 @@ Kết quả
 ![query inner join](img/SQL-Server-Inner-Join-example.png)
 
 Bảng `products` có trường khóa ngoại `category_id`, dựa vào đó bạn móc nối với Bảng `categories` để lấy tên danh mục dựa vào khóa chính  `category_id`
-
 
 #### 🔹 OUTER JOIN
 
@@ -112,7 +109,6 @@ Kết quả
 Phép nối Left Join được biểu diễn với sơ đồ  Venn diagram
 
 ![innner join](img/Join-Left-Join.png)
-
 
 Ví dụ: Dựa vào mối quan hệ giữ `order_items` và `products` ==> Một sản phẩm có thể nằm trong nhiều đơn hàng
 
@@ -145,14 +141,13 @@ SELECT
     o.order_date
 FROM
     production.products p
-	LEFT JOIN sales.order_items i
-		ON i.product_id = p.product_id
-	LEFT JOIN sales.orders o
-		ON o.order_id = i.order_id
+ LEFT JOIN sales.order_items i
+  ON i.product_id = p.product_id
+ LEFT JOIN sales.orders o
+  ON o.order_id = i.order_id
 ORDER BY
     order_id;
 ```
-
 
 #### 🔹 RIGHT JOIN
 
@@ -194,15 +189,14 @@ FROM
 FULL OUTER JOIN basket_b 
     ON fruit_a = fruit_b;
 ```
+
 Kết quả
 
 ![join-full-outer-join-example](img/join-full-outer-join-example.png)
 
-
 Phép nối Full Join được biểu diễn với sơ đồ  Venn diagram
 
 ![full join](img/Join-Full-Outer-Join.png)
-
 
 #### 🔹 SEFT JOIN
 
@@ -215,6 +209,7 @@ SELECT t1.column_name, t2.column_name
 FROM table_name t1
 JOIN table_name t2 ON t1.column = t2.column;
 ```
+
 Cùng quan sát table `staffs` chúng ta thấy có trường manager_id, là khóa ngoại nằm tham chiếu tới chính table `staffs`
 
 ![self join](img/staffs.png)
@@ -222,7 +217,6 @@ Cùng quan sát table `staffs` chúng ta thấy có trường manager_id, là kh
 Bạn có thể hiểu trong mô hình cây quản lý nhân sự: cấp trên <==> cấp dưới
 
 Dựa vào trường `manager_id` dễ dàng tìm ra ai là quản lý của một người
-
 
 ```sql
 SELECT
@@ -305,6 +299,7 @@ FROM
 WHERE
     year = 2018;
 ```
+
 ---
 
 ### 💥 Combining Data
@@ -312,7 +307,6 @@ WHERE
 #### 🔹 UNION
 
 UNION là một câu lệnh SQL được sử dụng để kết hợp các kết quả của hai hoặc nhiều câu lệnh SELECT thành một tập kết quả duy nhất. Các bản ghi trong các tập kết quả được hợp nhất không có bất kỳ sự trùng lặp nào.
-
 
 ![union](img/SQL-Server-UNION-vs-JOIN.png)
 
@@ -328,11 +322,7 @@ Khi sử dụng UNION trong câu lệnh SQL, dưới đây là một số lưu �
 
 1. Hiệu suất: UNION có thể tạo ra một tập kết quả lớn và tốn tài nguyên. Hãy đảm bảo rằng sử dụng UNION chỉ khi cần thiết và kiểm tra hiệu suất của câu lệnh của bạn.
 
-
-
-
 Ví dụ: Nếu kết quả truy vấn thông tin từ table `staffs` và `customer` thành một danh sách:
-
 
 ```sql
 SELECT
@@ -368,9 +358,7 @@ Ví dụ có `order_items` và `products` ==> cả 2 đều cho trường produc
 
 ![o-p](img/products-order_items.png)
 
-
 Dựa vào đó bạn có thể: Lấy ra danh sách những sản phẩm ĐÃ được bán ra.
-
 
 ```sql
 SELECT
@@ -390,7 +378,6 @@ Dùng để lấy các bản ghi của câu lệnh SELECT đầu tiên mà khôn
 
 ![SQL-Server-EXCEPT-illustration](img/SQL-Server-EXCEPT-illustration.png)
 
-
 Dựa vào đó bạn có thể: Lấy ra danh sách những sản phẩm CHƯA được bán ra.
 
 ```sql
@@ -409,12 +396,11 @@ FROM
 
 ## 💛 Session 14 - Transactions
 
-
 ### 💥 Transaction là gì?
 
 Transaction là một tập hợp các hoạt động được thực hiện như một đơn vị không thể chia rời. Mục tiêu chính của transaction là đảm bảo tính toàn vẹn và nhất quán của dữ liệu trong cơ sở dữ liệu trong quá trình thực hiện các hoạt động.
 
-Transaction được sử dụng để thực hiện các thay đổi dữ liệu trong cơ sở dữ liệu, bao gồm cả việc chèn, cập nhật và xóa dữ liệu. Một transaction bao gồm ít nhất hai hoặc nhiều hơn các hoạt động dữ liệu và được xem là một đơn vị làm việc hoàn chỉnh. 
+Transaction được sử dụng để thực hiện các thay đổi dữ liệu trong cơ sở dữ liệu, bao gồm cả việc chèn, cập nhật và xóa dữ liệu. Một transaction bao gồm ít nhất hai hoặc nhiều hơn các hoạt động dữ liệu và được xem là một đơn vị làm việc hoàn chỉnh.
 
 Nếu một hoặc nhiều hoạt động trong transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ được phục hồi về trạng thái ban đầu.
 
@@ -458,6 +444,8 @@ Các ứng dụng của transaction:
 
 ---
 
+Xem Thêm: <https://learn.microsoft.com/en-us/sql/t-sql/language-elements/begin-transaction-transact-sql?view=sql-server-ver16>
+
 ### 💥 Cách sử dụng transaction
 
 Để bắt đầu một transaction bạn sử dụng từ khóa `BEGIN TRANSACTION` hoặc `BEGIN TRAN`
@@ -484,16 +472,14 @@ Về bản chất các câu lệnh truy vấn trên nó chưa được ghi nhậ
 
 Sau đó dựa vào Bước 3, chờ bạn quyết định như thế nào với dữ liệu tạm đó, thì nó mới chính thức đi cập nhật thay đổi với dữ liệu thật.
 
-
-Ví dụ: Tạo 2 bảng mới `invoices ` và `invoice_items`
+Ví dụ: Tạo 2 bảng mới `invoices` và `invoice_items`
 
 ```sql
 -- Hóa đơn
 CREATE TABLE invoices (
   id int IDENTITY(1,1) PRIMARY KEY,
   customer_id int NOT NULL,
-  total decimal(10, 2) NOT NULL DEFAULT 0 CHECK (total >= 0),
-  FOREIGN KEY (customer_id) REFERENCES customers (customer_id)
+  total decimal(10, 2) NOT NULL DEFAULT 0 CHECK (total >= 0)
 );
 -- Chi tiết các mục ghi vào hóa đơn
 CREATE TABLE invoice_items (
@@ -504,13 +490,12 @@ CREATE TABLE invoice_items (
   tax decimal(4, 2) NOT NULL CHECK (tax >= 0),
   PRIMARY KEY (id, invoice_id),
   FOREIGN KEY (invoice_id) REFERENCES invoices (id)
-	ON UPDATE CASCADE
-	ON DELETE CASCADE
+ ON UPDATE CASCADE
+ ON DELETE CASCADE
 );
 ```
 
 Bây giờ chúng ta tạo một `TRANSACTION` thực hiện thêm mới dữ liệu vào cho 2 table cùng lúc:
-
 
 ```sql
 -- Bước 1
@@ -539,20 +524,50 @@ Kết quả của một tập hợp các câu lệnh truy vấn trên:
 - Nếu 1 trong 3 câu lệnh THẤT BẠI ==> Tất cả sẽ đều THẤT BẠI, trả lại trạng thái ban đầu.
 - Nếu cả 3 THÀNH CÔNG ==> TRANSACTION thành công, dữ liệu được cập nhật.
 
-
 Lưu ý Để đúng như phần lý thuyết bạn nên kiểm tra lại cấu hình `XACT_ABORT`:
 
 - Khi "SET XACT_ABORT ON" được thiết lập, nếu một lỗi xảy ra trong một giao dịch, nó sẽ tự động kết thúc giao dịch đó và rollback (hoàn tác) tất cả các thay đổi đã được thực hiện trong giao dịch. Điều này đảm bảo tính toàn vẹn dữ liệu và giúp tránh tình trạng dữ liệu không nhất quán.
 
 - Khi "SET XACT_ABORT OFF" (giá trị mặc định) được thiết lập, một lỗi trong một giao dịch không đảm bảo sẽ kết thúc giao dịch tự động. Trong trường hợp này, các lệnh trong giao dịch có thể tiếp tục thực hiện sau khi xảy ra lỗi, và phải thực hiện rollback thủ công để hoàn tác các thay đổi.
 
+Bạn có thể TEST trường hợp thất bại với câu lệnh INSERT bị lỗi
+
+```sql
+--Check dữ liệu của 2 table trước khi thực hiện
+select * from invoices
+select * from invoice_items
+
+-- Bước 1
+BEGIN TRANSACTION; -- or BEGIN TRAN
+-- Bước 2
+-- Thêm vào invoices
+INSERT INTO dbo.invoices (customer_id, total)
+VALUES (100, 0);
+--Trường ID đã khai báo IDENTITY nên bạn không thể khai báo chi tiết giá trị của id khi thêm mới
+--Câu lệnh này sẽ gây lỗi IDENTITY_INSERT is set to OFF
+ INSERT INTO dbo.invoice_items (id, invoice_id, item_name, amount, tax)
+VALUES (3, 1, 'Keyboard v2 ', 70, 0.08),
+       (4, 1, 'Mouse v2 ', 50, 0.08);
+-- Thay đổi dữ liệu cho record đã chèn vào invoices
+UPDATE dbo.invoices
+SET total = (SELECT
+  SUM(amount * (1 + tax))
+FROM invoice_items
+WHERE invoice_id = 1);
+
+--Bước 3: xác nhận cho phép thay đổi dữ liệu
+COMMIT TRANSACTION; -- or COMMIT
 
 
->Bạn có thể TEST trường hợp thất bại với câu lệnh UPDATE, bằng cách cho WHERE invoice_id = id không tồn tại
+--Check dữ liệu của 2 table SAU khi thực hiện
+select * from invoices
+select * from invoice_items
+```
+
+Bạn có thể kiểm tra dữ liệu, Chỉ cần 1 trong 3 câu lệnh bị lỗi thì toàn bộ transaction sẽ bị hủy.
 
 
-Ví dụ 2: 
-
+Ví dụ 2:
 
 ```sql
 -- Bước 1
@@ -579,9 +594,7 @@ ROLLBACK TRANSACTION;
 - Các câu lệnh ở Bước 2: vẫn chạy, và đưa vào dữ liệu tạm
 - Đến Bước 3, gặp câu lệnh `ROLLBACK` thì dữ liệu tạm bị HỦY, việc INSERT dữ liệu không được ghi nhận.
 
-
 Ví dụ 3:
-
 
 ```sql
 -- Bước 1
@@ -642,3 +655,40 @@ Có nhiều loại lock khác nhau trong SQL Server, bao gồm:
    - Được sử dụng khi giao dịch thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
 
 SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các giao dịch đồng thời.
+
+Ví dụ giả lập tình trạng Lock trong thực tế có thể xảy ra làm TREO CPU
+
+1. Mở một cùng lúc 2 cửa sổ Query như sau
+
+![lock](img/lock.png)
+
+- Cửa sổ 1: chạy lệnh UPDATE số dư của người a
+- Cửa sổ 2: Xóa người a
+
+2. Bạn thực hiện tuần từ 1 xong đến 2. Bạn sẽ thấy trạng thái `Executing query...` xoay miết không ngừng. ==> Transaction này đã bị TREO.
+
+Lí do là bên cửa sổ 1. Transaction đã chạy rồi, nhưng không có lệnh để đóng transaction lại. ==> Thể hiện transaction chưa thực hiện xong.
+
+==> Đó là hiện tượng LOCKED
+
+
+Làm sao để xử lý Lock để Server không bị ĐƠ (Quá tải CPU)
+
+Bạn hãy mở thêm một instance Server mới
+
+1. Kích phải lên instance chọn `Activity Monitor`
+
+![lock process](img/lock-2.png)
+
+2. Xổ mục Processes ra để xem danh sách các tiến trình đang chạy
+3. Tại mục 3, click đúp 2 lần vào cột `Blocked by` để sắp xếp giảm dần.
+
+Như hình bạn thấy dòng `Session ID` 64 đang lock một session có giá trị 53.
+
+Bạn có thể click phải lên các dòng và chọn `Detail` để xem chi tiết câu lệnh SQL đang thực hiện.
+
+4. Để xử lí LOCK bạn có thể thực hiện `Kill Process` bằng cách click phải lên dòng bị lock. Trong trường hợp trên thì dòng `53` bị lock bởi `64`. Sau đó chọn `Kill Process`
+
+5. Quay lại màn hình truy vấn trước đó. Bạn sẽ thấy cửa số 2 đã có trạng thái `disconect`. Kết nối này bị đóng.
+
+![kill process](img/lock-3.png)
