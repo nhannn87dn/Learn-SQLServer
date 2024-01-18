@@ -822,330 +822,306 @@ Là hàm trả về thông điệp lỗi gần nhất xảy ra.
 
 ---
 
-## 💛 Session 12 - Triggers
-
-### 💥 Trigger là gì?
-
-- Trigger là một đối tượng trong SQL Server, nó được sử dụng để thực thi một tập hợp các câu lệnh SQL khi một sự kiện xảy ra. Sự kiện có thể là một câu lệnh INSERT, UPDATE hoặc DELETE. Trigger có thể được kích hoạt trước hoặc sau khi sự kiện xảy ra.
-
-- Không giống như stored procedure, trigger không được gọi bởi một ứng dụng hoặc một người dùng. Trigger được kích hoạt bởi một sự kiện như INSERT, UPDATE, DELETE và không thể được gọi như một stored procedure
-
----
-
-### 💥 DML Trigger
-
-Là loại trigger được kích hoạt bởi các câu lệnh DML như INSERT, UPDATE hoặc DELETE. Có hai loại DML trigger:
-
-- **After trigger**: được kích hoạt sau khi sự kiện xảy ra.
-- **Instead of trigger**: được kích hoạt thay thế cho sự kiện.
-
-> Lưu ý: Có 2 bảng inserted và deleted được sử dụng trong trigger. Bảng inserted chứa các bản ghi được thêm vào bởi câu lệnh INSERT hoặc UPDATE. Table deleted chứa các bản ghi bị xóa bởi câu lệnh DELETE hoặc UPDATE.
-
-Thứ tự thực thi của các DML trigger:
-
-- Các trigger INSTEAD OF được kích hoạt trước.
-- Các trigger AFTER được kích hoạt sau.
-
-```sql
-sp_settriggerorder [@triggername = ] 'triggername' , [@order = ] 'order' , [@stmttype = ] 'stmttype'
-```
-
-### 🔹 AFTER Trigger
-
-Ví dụ: Tình huống gặp trong thực tế. Khi có đơn đặt hàng, và đơn đã xác nhận thanh toán thành công, thì phải cập nhật trạng thái tồn kho giảm đi = số lượng sản phẩm có trong đơn hàng đã mua.
-
-Và theo cách thông thường: Khi gọi câu lệnh cập nhật xác nhận thanh toán thành công. Bạn làm tiếp câu lệnh cập nhật số lượng tồn kho.
-
-Thay vì thế chúng ta có thể tạo một Trigger thực hiện cập nhật tồn kho một cách tự động (chạy ngầm) khi một đơn hàng được xác nhận thanh toán thành công.
-
-```sql
-
-CREATE TRIGGER trg_OrderItems_Update_ProductStock
-ON order_items
-AFTER INSERT
-AS
-BEGIN
-    UPDATE stocks
-        SET quantity = s.quantity - i.quantity
-    FROM
-       stocks as s
-    INNER JOIN inserted AS i ON s.product_id = i.product_id
-	INNER JOIN orders AS o ON o.order_id = i.order_id AND o.store_id = s.store_id;
-END;
-```
-
-Ví dụ 2: Tạo một trigger AFTER để ngăn chặn việc cập nhật / xóa đơn hàng khi đơn hàng (orders) có trạng thái order_status = 4 (COMPLETED)
 
 
-```sql
-CREATE TRIGGER trg_Orders_Prevent_UpdateDelete
-ON orders
-AFTER UPDATE, DELETE -- Ngăn cách nhau bởi dấy phẩu khi có nhiều action
-AS
-BEGIN
-    IF EXISTS (SELECT * FROM inserted WHERE [order_status] = 4)
-    BEGIN
-        PRINT 'Cannot update order having status = 4 (COMPLETED).'
-        ROLLBACK -- Hủy lệnh UPDATE trước đó vào orders
-    END
+## 💛 Session 14 - Transactions
 
-    IF EXISTS (SELECT * FROM deleted WHERE [order_status] = 4)
-    BEGIN
-        PRINT 'Cannot delete order having status = 4 (COMPLETED).'
-        ROLLBACK -- Hủy lệnh DELETE trước đó vào orders
-    END
-END;
-```
+### 💥 Transaction là gì?
 
-Ví dụ 3: Tạo một trigger AFTER để ngăn chặn việc cập nhật / thêm mới / xóa chi tiết đơn hàng (orders) có trạng thái order_status = 4 (COMPLETED)
+Transaction là một tập hợp các hoạt động được thực hiện như một đơn vị không thể chia rời. Mục tiêu chính của transaction là đảm bảo tính toàn vẹn và nhất quán của dữ liệu trong cơ sở dữ liệu trong quá trình thực hiện các hoạt động.
 
-```sql
-CREATE OR ALTER TRIGGER trg_OrderItems_Prevent_InsertUpdateDelete
-ON order_items
-AFTER INSERT, UPDATE, DELETE
-AS
-BEGIN
-    IF EXISTS (
-        SELECT * FROM
-        inserted AS oi INNER JOIN dbo.orders AS o ON oi.order_id = o.order_id
-        WHERE [order_status] = 4
-    )
-    BEGIN
-        PRINT 'Cannot insert or update order details having order''s status = 4 (COMPLETED).'
-        ROLLBACK
-    END
+Transaction được sử dụng để thực hiện các thay đổi dữ liệu trong cơ sở dữ liệu, bao gồm cả việc chèn, cập nhật và xóa dữ liệu. Một transaction bao gồm ít nhất hai hoặc nhiều hơn các hoạt động dữ liệu và được xem là một đơn vị làm việc hoàn chỉnh.
 
-    IF EXISTS (
-        SELECT * FROM
-        deleted AS oi INNER JOIN dbo.orders AS o ON oi.order_id = o.order_id
-    )
-    BEGIN
-        PRINT 'Cannot delete order details having order''s status = 4 (COMPLETED).'
-        ROLLBACK
-    END
-END
-```
+Nếu một hoặc nhiều hoạt động trong transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ được phục hồi về trạng thái ban đầu.
 
-### 🔹 INSTEAD OF Trigger
+Transaction được xác định bằng ba tính chất ACID:
 
-INSTEAD OF trigger là một trigger cho phép bạn bỏ qua một câu lệnh INSERT, DELETE hoặc UPDATE đối với một bảng hoặc một view và thay vào đó thực thi các câu lệnh khác được định nghĩa trong trigger. Thực tế, việc INSERT, DELETE hoặc UPDATE không xảy ra.
+1. Atomicity (Toàn vẹn): Transaction được coi là một đơn vị toàn vẹn không thể chia rời. Nếu một phần của transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ trở về trạng thái ban đầu.
 
+2. Consistency (Nhất quán): Một transaction phải đảm bảo rằng dữ liệu sẽ được đưa về trạng thái nhất quán sau khi hoàn thành. Nếu dữ liệu không tuân thủ các ràng buộc hoặc quy tắc, transaction sẽ bị hủy.
 
-Ví dụ: Tạo một trigger INSTEAD OF để ngăn chặn việc thêm dữ liệu vào bảng customers
+3. Isolation (Cô lập): Mỗi transaction phải thực hiện một cách cô lập và không bị tác động bởi các transaction khác đang thực hiện đồng thời. Điều này đảm bảo tính nhất quán của dữ liệu và tránh xảy ra xung đột.
 
-```sql
-CREATE TRIGGER trg_customers_PreventInsert
-ON customers
-INSTEAD OF INSERT
-AS
-BEGIN
-    PRINT 'Cannot insert data into the Customers table.'
-END
-```
+4. Durability (Bền vững): Một khi một transaction đã được hoàn thành thành công, các thay đổi dữ liệu phải được lưu trữ vĩnh viễn và không bị mất trong trường hợp xảy ra sự cố hệ thống.
+
+Trong SQL Server hoạt động theo các chế độ giao dịch sau:
+
+- Transaction tự động xác nhận (Autocommit transactions)
+- Mỗi câu lệnh riêng lẻ được coi là một giao dịch.
+
+Các ứng dụng của transaction:
+
+- Transaction được sử dụng để đảm bảo tính toàn vẹn của dữ liệu trong các ứng dụng doanh nghiệp.
+- Transaction có thể được sử dụng để thực hiện các thao tác như: chuyển tiền, thanh toán hóa đơn, đặt hàng, ...
 
 ---
 
-### 💥 DDL Trigger
+### 💥  Các lệnh quản lý transaction
 
-DDL Trigger được kích hoạt bởi sự kiện ở cấp độ Server hoặc Databse. 
+- **BEGIN TRANSACTION** : Dùng để bắt đầu một transaction.
 
-Các sự kiện này được tạo ra bởi câu lệnh Transact-SQL thường bắt đầu bằng một trong các từ khóa sau: CREATE, ALTER, DROP, GRANT, DENY, REVOKE hoặc UPDATE STATISTICS.
+- **COMMIT TRANSACTION** : Dùng để xác nhận toàn bộ một transaction.
 
+- **COMMIT WORK** : Dùng để đánh đấu kết thúc của transaction.
 
-Các trigger DDL rất hữu ích trong các trường hợp sau:
+- **SAVE TRANSACTION** : Dùng để tạo một savepoint trong transaction.
 
-- Ghi lại các thay đổi trong cấu trúc CSDL.
-- Ngăn chặn một số thay đổi cụ thể trong cấu trúc CSDL.
-- Phản hồi một thay đổi trong cấu trúc CSDL.
+- **ROLLBACK WORK** : Dùng để hủy bỏ một transaction.
 
+- **ROLLBACK TRANSACTION** : Dùng để hủy bỏ toàn bộ một transaction.
 
-Lưu ý: Triggler loại này lưu ở `Databse Name --> Programmability --> Database Triggers`
+- **ROLLBACK TRANSACTION [SavepointName]** : Dùng để hủy bỏ một savepoint trong transaction
 
+---
 
-Ví dụ: Tạo một trigger để ngăn chặn việc xóa bảng customers
+Xem Thêm: <https://learn.microsoft.com/en-us/sql/t-sql/language-elements/begin-transaction-transact-sql?view=sql-server-ver16>
+
+### 💥 Cách sử dụng transaction
+
+Để bắt đầu một transaction bạn sử dụng từ khóa `BEGIN TRANSACTION` hoặc `BEGIN TRAN`
 
 ```sql
-CREATE TRIGGER trg_customers_Prevent_DropTable
-ON DATABASE
-FOR DROP_TABLE
-AS
-BEGIN
-    IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[customers]') AND type in (N'U'))
-    BEGIN
-        PRINT 'Cannot drop the table: Customers.'
-        ROLLBACK
-    END
-END;
+-- Bước 1:  start a transaction
+BEGIN TRANSACTION; -- or BEGIN TRAN
+
+-- Bước 2:  Các câu lênh truy vấn bắt đầu ở đây INSERT, UPDATE, and DELETE
+
+-- =====================
+-- Chạy xong các câu lệnh trên thì bạn kết thúc TRANSACTION với 1 trong 2 hình thức.
+-- =====================
+
+-- Bước 3 -  1. commit the transaction
+-- Để xác nhận thay đổi dữ liệu
+COMMIT;
+
+-- Bước 3 - 2. rollback -- Hồi lại những thay đổi trong những câu lệnh truy vấn ở trên. (Hủy ko thực hiện nữa, trả lại trạng thái ban đầu lúc chưa chạy)
+ROLLBACK;
 ```
 
-Ví dụ 2: Tạo một trigger để ghi nhật ký sửa đổi cấu trúc bảng customers
+Về bản chất các câu lệnh truy vấn trên nó chưa được ghi nhận thay đổi vào dữ liệu thật mà nó tạo ra dữ liệu tạm trước.
+
+Sau đó dựa vào Bước 3, chờ bạn quyết định như thế nào với dữ liệu tạm đó, thì nó mới chính thức đi cập nhật thay đổi với dữ liệu thật.
+
+Ví dụ: Tạo 2 bảng mới `invoices` và `invoice_items`
 
 ```sql
--- Tạo table logs trước
-CREATE TABLE dbo.logs (
-    ID INT IDENTITY(1,1) PRIMARY KEY,
-    [Date] DATETIME,
-    [User] NVARCHAR(100),
-    [Host] NVARCHAR(100),
-    [Action] NVARCHAR(100),
-    [Table] NVARCHAR(100)
+-- Hóa đơn
+CREATE TABLE invoices (
+  id int IDENTITY(1,1) PRIMARY KEY,
+  customer_id int NOT NULL,
+  total decimal(10, 2) NOT NULL DEFAULT 0 CHECK (total >= 0)
 );
-
--- Thêm trigger
-CREATE TRIGGER trg_customers_LogAlterTable
-ON DATABASE
-FOR ALTER_TABLE
-AS
-BEGIN
-    IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[customers]') AND type in (N'U'))
-    BEGIN
-        INSERT INTO dbo.logs ([Date], [User], [Host], [Action], [Table])
-        SELECT GETDATE(), USER_NAME(), HOST_NAME(), 'ALTER TABLE', 'customers'
-    END
-END
+-- Chi tiết các mục ghi vào hóa đơn
+CREATE TABLE invoice_items (
+  id int IDENTITY(1,1),
+  invoice_id int NOT NULL,
+  item_name varchar(100) NOT NULL,
+  amount decimal(18, 2) NOT NULL CHECK (amount >= 0),
+  tax decimal(4, 2) NOT NULL CHECK (tax >= 0),
+  PRIMARY KEY (id, invoice_id),
+  FOREIGN KEY (invoice_id) REFERENCES invoices (id)
+ ON UPDATE CASCADE
+ ON DELETE CASCADE
+);
 ```
+
+Bây giờ chúng ta tạo một `TRANSACTION` thực hiện thêm mới dữ liệu vào cho 2 table cùng lúc:
+
+```sql
+-- Bước 1
+BEGIN TRANSACTION; -- or BEGIN TRAN
+-- Bước 2
+-- Thêm vào invoices
+INSERT INTO dbo.invoices (customer_id, total)
+VALUES (100, 0);
+-- Thêm vào invoice_items
+ INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Keyboard', 70, 0.08),
+       (1, 'Mouse', 50, 0.08);
+-- Thay đổi dữ liệu cho record đã chèn vào invoices
+UPDATE dbo.invoices
+SET total = (SELECT
+  SUM(amount * (1 + tax))
+FROM invoice_items
+WHERE invoice_id = 1);
+
+--Bước 3: xác nhận cho phép thay đổi dữ liệu
+COMMIT TRANSACTION; -- or COMMIT
+```
+
+Kết quả của một tập hợp các câu lệnh truy vấn trên:
+
+- Nếu 1 trong 3 câu lệnh THẤT BẠI ==> Tất cả sẽ đều THẤT BẠI, trả lại trạng thái ban đầu.
+- Nếu cả 3 THÀNH CÔNG ==> TRANSACTION thành công, dữ liệu được cập nhật.
+
+Lưu ý Để đúng như phần lý thuyết bạn nên kiểm tra lại cấu hình `XACT_ABORT`:
+
+- Khi "SET XACT_ABORT ON" được thiết lập, nếu một lỗi xảy ra trong một giao dịch, nó sẽ tự động kết thúc giao dịch đó và rollback (hoàn tác) tất cả các thay đổi đã được thực hiện trong giao dịch. Điều này đảm bảo tính toàn vẹn dữ liệu và giúp tránh tình trạng dữ liệu không nhất quán.
+
+- Khi "SET XACT_ABORT OFF" (giá trị mặc định) được thiết lập, một lỗi trong một giao dịch không đảm bảo sẽ kết thúc giao dịch tự động. Trong trường hợp này, các lệnh trong giao dịch có thể tiếp tục thực hiện sau khi xảy ra lỗi, và phải thực hiện rollback thủ công để hoàn tác các thay đổi.
+
+Bạn có thể TEST trường hợp thất bại với câu lệnh INSERT bị lỗi
+
+```sql
+--Check dữ liệu của 2 table trước khi thực hiện
+select * from invoices
+select * from invoice_items
+
+-- Bước 1
+BEGIN TRANSACTION; -- or BEGIN TRAN
+-- Bước 2
+-- Thêm vào invoices
+INSERT INTO dbo.invoices (customer_id, total)
+VALUES (100, 0);
+--Trường ID đã khai báo IDENTITY nên bạn không thể khai báo chi tiết giá trị của id khi thêm mới
+--Câu lệnh này sẽ gây lỗi IDENTITY_INSERT is set to OFF
+ INSERT INTO dbo.invoice_items (id, invoice_id, item_name, amount, tax)
+VALUES (3, 1, 'Keyboard v2 ', 70, 0.08),
+       (4, 1, 'Mouse v2 ', 50, 0.08);
+-- Thay đổi dữ liệu cho record đã chèn vào invoices
+UPDATE dbo.invoices
+SET total = (SELECT
+  SUM(amount * (1 + tax))
+FROM invoice_items
+WHERE invoice_id = 1);
+
+--Bước 3: xác nhận cho phép thay đổi dữ liệu
+COMMIT TRANSACTION; -- or COMMIT
+
+
+--Check dữ liệu của 2 table SAU khi thực hiện
+select * from invoices
+select * from invoice_items
+```
+
+Bạn có thể kiểm tra dữ liệu, Chỉ cần 1 trong 3 câu lệnh bị lỗi thì toàn bộ transaction sẽ bị hủy.
+
+
+Ví dụ 2:
+
+```sql
+-- Bước 1
+BEGIN TRANSACTION;
+-- Bước 2
+-- Thêm vào invoice_items
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Headphone', 80, 0.08),
+       (1, 'Mainboard', 30, 0.08);
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'TochPad', 20, 0.08),
+       (1, 'Camera', 90, 0.08);
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Wifi', 120, 0.08),
+       (1, 'Bluetooth', 20, 0.08);
+
+--Bước 3: xác nhận HỦY thay đổi dữ liệu
+ROLLBACK TRANSACTION;
+```
+
+- Các câu lệnh ở Bước 2: vẫn chạy, và đưa vào dữ liệu tạm
+- Đến Bước 3, gặp câu lệnh `ROLLBACK` thì dữ liệu tạm bị HỦY, việc INSERT dữ liệu không được ghi nhận.
+
+Ví dụ 3:
+
+```sql
+-- Bước 1
+BEGIN TRANSACTION;
+-- Bước 2
+-- Thêm vào invoice_items
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Headphone', 80, 0.08),
+       (1, 'Mainboard', 30, 0.08);
+
+SAVE TRANSACTION Savepoint1
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'TochPad', 20, 0.08),
+       (1, 'Camera', 90, 0.08);
+
+ROLLBACK TRANSACTION Savepoint1
+
+INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
+VALUES (1, 'Wifi', 120, 0.08),
+       (1, 'Bluetooth', 20, 0.08);
+
+--Bước 3: xác nhận cho phép thay đổi dữ liệu
+COMMIT TRANSACTION
+```
+
+`SAVE TRANSACTION` - Nó cho phép lưu lại trạng thái hiện tại của transaction và tiếp tục thực hiện các hoạt động trong transaction. Nếu sau đó có lỗi xảy ra, bạn có thể sử dụng lệnh ROLLBACK để hủy bỏ toàn bộ transaction hoặc sử dụng lệnh ROLLBACK TRANSACTION để hủy bỏ đến điểm đã được lưu trữ bởi SAVE TRANSACTION.
 
 ---
 
+### 💥 Locks
 
-### 💥 Disable Trigger
+Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm soát truy cập và sửa đổi dữ liệu trong quá trình thực hiện các giao dịch. Khi một giao dịch yêu cầu truy cập vào dữ liệu, SQL Server áp dụng các locks trên dữ liệu tương ứng để đảm bảo tính nhất quán và độc lập của dữ liệu trong môi trường đa người dùng.
 
-Vô hiệu hóa hoạt động của một Trigger
+Có nhiều loại lock khác nhau trong SQL Server, bao gồm:
 
-```sql
-DISABLE TRIGGER [schema_name.][trigger_name] 
-ON [object_name | DATABASE | ALL SERVER]
+1. Shared Lock (Shared Read Lock):
+   - Được sử dụng khi giao dịch muốn đọc (truy vấn) dữ liệu.
+   - Nhiều shared locks có thể được áp dụng trên cùng một dữ liệu.
+   - Shared locks không ngăn được các shared locks khác trên cùng một dữ liệu.
+   - Shared locks không cho phép exclusive lock được áp dụng lên dữ liệu.
 
-```
-Ví dụ:
+2. Exclusive Lock (Write Lock):
+   - Được sử dụng khi giao dịch muốn thay đổi (ghi) dữ liệu.
+   - Không thể có bất kỳ shared locks hoặc exclusive locks khác trên cùng một dữ liệu.
+   - Exclusive locks ngăn cả shared locks và exclusive locks khác.
 
-```sql
-DISABLE TRIGGER dbo.trg_customers_LogAlterTable 
-ON dbo.customers;
-```
+3. Update Lock:
+   - Được sử dụng trong các trường hợp cần đảm bảo rằng dữ liệu không được đọc hoặc chỉnh sửa trong quá trình thực hiện giao dịch.
+   - Update locks được nâng cấp thành exclusive lock khi giao dịch cần thực hiện các thay đổi.
 
-Vô hiệu hóa tất cả trigger trên một table
+4. Intent Lock:
+   - Là các locks nhỏ hơn được áp dụng trên các cấu trúc dữ liệu phức tạp hơn như bảng, trang, phân vùng.
+   - Intent locks đại diện cho ý định của giao dịch để áp dụng shared locks hoặc exclusive locks trên các đối tượng con của cấu trúc dữ liệu.
 
-```sql
-DISABLE TRIGGER ALL ON table_name;
-```
+5. Schema Lock:
+   - Được sử dụng khi giao dịch thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
 
+SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các giao dịch đồng thời.
 
+Ví dụ giả lập tình trạng Lock trong thực tế có thể xảy ra làm TREO CPU
 
-Vô hiệu hóa tất cả trigger trên một Databse
+1. Mở một cùng lúc 2 cửa sổ Query như sau
 
-```sql
-DISABLE TRIGGER ALL ON DATABASE;
-```
+![lock](img/lock.png)
 
----
+- Cửa sổ 1: chạy lệnh UPDATE số dư của người a
+- Cửa sổ 2: Xóa người a
 
-### 💥 Enable Trigger
+2. Bạn thực hiện tuần từ 1 xong đến 2. Bạn sẽ thấy trạng thái `Executing query...` xoay miết không ngừng. ==> Transaction này đã bị TREO.
 
-Kích hoạt lại Trigger
+Lí do là bên cửa sổ 1. Transaction đã chạy rồi, nhưng không có lệnh để đóng transaction lại. ==> Thể hiện transaction chưa thực hiện xong.
 
-```sql
-ENABLE TRIGGER [schema_name.][trigger_name] 
-ON [object_name | DATABASE | ALL SERVER]
-```
-
----
-
-### 💥 List ALl Triggers
-
-Liệt kê danh sách tất cả Triggers
+==> Đó là hiện tượng LOCKED
 
 
-```sql
-SELECT  
-    name,
-    is_instead_of_trigger
-FROM 
-    sys.triggers  
-WHERE 
-    type = 'TR';
-```
+Làm sao để xử lý Lock để Server không bị ĐƠ (Quá tải CPU)
 
----
+Bạn hãy mở thêm một instance Server mới
 
-### 💥 Delete Trigger
+1. Kích phải lên instance chọn `Activity Monitor`
 
-Cú pháp:
+![lock process](img/lock-2.png)
 
-```sql
-DROP TRIGGER [ IF EXISTS ] trigger_name [ ,...n ]   
-ON { DATABASE | ALL SERVER };
-```
+2. Xổ mục Processes ra để xem danh sách các tiến trình đang chạy
+3. Tại mục 3, click đúp 2 lần vào cột `Blocked by` để sắp xếp giảm dần.
 
----
+Như hình bạn thấy dòng `Session ID` 64 đang lock một session có giá trị 53.
 
-## 💛 Session 07- Azure SQL
+Bạn có thể click phải lên các dòng và chọn `Detail` để xem chi tiết câu lệnh SQL đang thực hiện.
 
+4. Để xử lí LOCK bạn có thể thực hiện `Kill Process` bằng cách click phải lên dòng bị lock. Trong trường hợp trên thì dòng `53` bị lock bởi `64`. Sau đó chọn `Kill Process`
 
-### 💥 Giới thiệu SQL Azure
+5. Quay lại màn hình truy vấn trước đó. Bạn sẽ thấy cửa số 2 đã có trạng thái `disconect`. Kết nối này bị đóng.
 
-SQL Azure là một dịch vụ cơ sở dữ liệu quan hệ dựa trên đám mây, thúc đẩy các công nghệ SQL Server hiện có. Microsoft SQL Azure mở rộng chức năng của Microsoft SQL Server để phát triển các ứng dụng dựa trên web, có khả năng mở rộng và được phân phối. SQL Azure cho phép người dùng thực hiện các truy vấn quan hệ, hoạt động tìm kiếm và đồng bộ hóa dữ liệu với người dùng di động và các office từ xa. SQL Azure có thể lưu trữ và lấy cả dữ liệu có cấu trúc và phi cấu trúc.
-
-
-Quy trình hoạt động của SQL Azure được giải thích trong mô hình như được trình bày bên dưới:
-
-![](https://images.viblo.asia/63d95cfa-351a-44a6-a537-fa8976f1929c.png)
-
-### 💥  Mô hình hoạt động của SQL Azure
-
-Ba đối tượng cốt lõi trong mô hình hoạt động của SQL Azure như sau:
-
-1. Tài khoản
-
-Đầu tiên phải tạo một tài khoản SQL Azure. Tài khoản này được tạo ra cho mục đích thanh toán. Thuê bao tài khoản được ghi lại và đo lường, được tính tiền theo lượng sử dụng. Sau khi tài khoản người dùng được tạo ra, các yêu cầu cần phải được cung cấp cho cơ sở dữ liệu SQL Azure, bao gồm số lượng cơ sở dữ liệu cần thiết, kích thước cơ sở dữ liệu, v.v...
-
-2. Server
-
-Máy chủ SQL Azure là đối tượng giúp tương tác giữa tài khoản và cơ sở dữ liệu. Sau khi tài khoản được đăng ký, cơ sở dữ liệu được cấu hình sử dụng máy chủ SQL Azure. Các thiết lập khác như thiết lập tường lửa và gán tên miền (DNS) cũng được cấu hình trong máy chủ SQL Azure.
-
-3. Database
-
-Cơ sở dữ liệu SQL Azure lưu trữ tất cả dữ liệu theo cách tương tự như bất kỳ cơ sở dữ liệu SQL Server tại chỗ. Mặc dù lưu trữ bằng công nghệ đám mây, cơ sở dữ liệu SQL Azure có tất cả các chức năng của một RDBMS bình thường như table, view, query, function, thiết lập bảo mật, v.v...
-
-Ngoài những đối tượng cốt lõi thì còn một đối tượng bổ sung trong SQL Azure. Đối tượng này là công nghệ Đồng bộ dữ liệu SQL Azure. Công nghệ Đồng bộ dữ liệu SQL Azure được xây dựng trên Microsoft Sync Framework và cơ sở dữ liệu SQL Azure.
-
-SQL Azure Data Sync giúp đồng bộ hóa dữ liệu trên SQL Server cục bộ với các dữ liệu trên SQL Azure như được trình bày trong hình dưới:
-
-Data Sync còn có khả năng quản lý dữ liệu giúp chia sẻ dữ liệu dễ dàng giữa các cơ sở dữ liệu SQL khác nhau. Data Sync không chỉ được sử dụng để đồng bộ hóa tại chỗ với SQL Azure, mà còn để đồng bộ hóa một tài khoản SQL Azure với tài khoản khác.
-
-### 💥  Các lợi ích của SQL Azure
-
-1. Chi phí thấp hơn
-
-SQL Azure cung cấp một số hàm tương tự như trên SQL Server tại chỗ với chi phí thấp hơn so với SQL Server tại chỗ. Ngoài ra, khi SQL Azure trên nền tảng đám mây, nó có thể được truy cập từ bất kỳ vị trí nào. Do đó, không có thêm chi phí cần thiết để phát triển một cơ sở hạ tầng CNTT chuyên dụng và phòng ban để quản lý cơ sở dữ liệu.
-
-2. Sử dụng TDS
-
-TDS được sử dụng trong các cơ sở dữ liệu SQL Server tại chỗ cho các thư viện máy khách. Do đó, hầu hết các nhà phát triển đã quen thuộc với TDS và cách sử dụng tiện ích này. Cùng một loại giao diện TDS được sử dụng trong SQL Azure để xây dựng các thư viện máy khách. Do đó, các nhà phát triển làm việc trên SQL Azure dễ dàng hơn
-
-3. Biện pháp chuyển đổi dự phòng tự động
-
-SQL Azure lưu trữ nhiều bản sao dữ liệu trên các vị trí vật lý khác nhau. Thậm chí khi có lỗi phần cứng do sử dụng nhiều hoặc tải quá mức, SQL Azure giúp duy trì các hoạt động kinh doanh bằng cách cung cấp khả năng sẵn sàng của dữ liệu thông qua các địa điểm vật lý khác.
-
-4. Tính linh hoạt trong việc sử dụng dịch vụ
-
-Ngay cả các tổ chức nhỏ cũng có thể sử dụng SQL Azure bởi mô hình định giá cho SQL Azure được dựa trên khả năng lưu trữ được tổ chức sử dụng. Nếu tổ chức cần lưu trữ nhiều hơn, giá có thể thay đổi cho phù hợp với nhu cầu. Điều này giúp các tổ chức có được sự linh hoạt trong việc đầu tư tùy thuộc vào việc sử dụng dịch vụ.
-
-5. Hỗ trợ Transact-SQL
-
-Do SQL Azure hoàn toàn dựa trên mô hình cơ sở dữ liệu quan hệ, nó cũng hỗ trợ các hoạt động và truy vấn Transact-SQL. Khái niệm này cũng tương tự như hoạt động của các SQL Server tại chỗ. Do đó, các quản trị viên không cần bất kỳ đào tạo hoặc hỗ trợ bổ sung nào để sử dụng SQL Azure
-
-### 💥  Sự khác biệt giữa SQL Azure và SQL Server
-
-Một số khác biệt quan trọng khác giữa SQL Azure và SQL Server phía khách hàng như sau:
-
-- Các công cụ – SQL Server phía khách hàng cung cấp một số công cụ để theo dõi và quản lý. Tất cả những công cụ này có thể không được hỗ trợ bởi SQL Azure bởi có một số tập hợp công cụ hạn chế có sẵn trong phiên bản này
-- Sao lưu – Sao lưu và phục hồi chức năng phải được hỗ trợ trong SQL Server phía khách hàng để khắc phục thảm họa. Đối với SQL Azure, do tất cả các dữ liệu là trên nền tảng điện toán đám mây, sao lưu và phục hồi là không cần thiết
-- Câu lệnh USE – Câu lệnh USE không được SQL Azure hỗ trợ. Do đó, người dùng không thể chuyển đổi giữa các cơ sở dữ liệu trong SQL Azure so với SQL Server phía khách hàng.
-- Xác thực – SQL Azure chỉ hỗ trợ xác thực SQL Server và SQL Server phía khách hàng hỗ trợ cả xác thực SQL Server và xác thực của Windows
-Hỗ trợ Transact-SQL – Không phải tất cả các chức năng - Transact-SQL đều được SQL Azure hỗ trợ
-Tài khoản và đăng nhập – Trong SQL Azure, các tài khoản quản trị được tạo ra trong cổng thông tin quản lý Azure. Do đó, không có thông tin đăng nhập người dùng mức thể hiện cấp riêng biệt
-- Tường lửa – Các thiết lập tường lửa cho các cổng và địa chỉ IP cho phép có thể được quản lý trên máy chủ vật lý cho SQL Server phía khách hàng. Bởi cơ sở dữ liệu SQL Azure có mặt trên điện toán đám mây, xác thực thông qua các thông tin đăng nhập là phương pháp duy nhất để xác minh người dùng
+![kill process](img/lock-3.png)
 
 
 ## 💛 Review Homeworks
