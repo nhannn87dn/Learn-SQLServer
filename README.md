@@ -22,20 +22,21 @@
 4. Day 04
 
 - Session 08 - Accessing Data : SELECT
-- Session 09 - Advanced Queries and Joins - Part 1: GROUP BY, HAVING, GROUPING SETS
+- Session 07 - Azure SQL
 
 
 5. Day 05
 
+- Session 09 - Advanced Queries and Joins - Part 1: GROUP BY, HAVING, GROUPING SETS
 - Session 09 - Advanced Queries and Joins - Part 2: JOINs
-- Session 14 - Transactions
+
 
 
 6. Day 06
 
 - Session 13 - Programming Transact-SQL - User Functions, Window Functions
 - Session 15 - Error Handing
-- Session 07 - Azure SQL
+- Session 14 - Transactions
 
 7. Day 07
 

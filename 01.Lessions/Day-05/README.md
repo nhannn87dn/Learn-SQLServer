@@ -1,5 +1,572 @@
 # Day 5
 
+
+
+## 💛 Session 09- Advanced Queries and Joins - Part 1
+
+### 💥 GROUP BY với WHERE
+
+Mục đích của GROUP BY là nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột. Khi kết hợp với WHERE, GROUP BY sẽ nhóm các bản ghi thỏa mãn điều kiện của WHERE.
+
+
+Ví dụ: Liệt kê danh sách giảm giá của những sản phẩm có giá trên 2000
+
+```sql
+SELECT 
+  discount, 
+  COUNT(product_id) AS Total --- Đếm dựa vào ID và đặt tên là Total
+FROM products
+WHERE price > 20000
+GROUP BY discount
+ORDER BY discount ASC
+```
+
+Câu lệnh sẽ chạy mệnh đề WHERE trước, lọc ra những sản phẩm có giá > 2000 trước khi đem đi GROUP BY
+
+---
+
+### 💥 GROUP BY với NULL
+
+Khi bạn sử dụng mệnh đề GROUP BY và có giá trị NULL trong cột được nhóm, các bản ghi với giá trị NULL sẽ được gom vào một nhóm duy nhất. Điều này có nghĩa là tất cả các bản ghi có giá trị NULL trong cột được nhóm sẽ tồn tại trong một nhóm riêng biệt.
+
+Ví dụ: Lấy danh sách thành phố của khách hàng đã đặt hàng.
+
+```sql
+SELECT shipping_city
+FROM orders
+GROUP BY shipping_city
+ORDER BY shipping_city
+```
+
+Bạn sẽ thấy giá trị NULL được liệt kê ra ở đầu danh sách.
+
+---
+
+### 💥 GROUP BY với ALL
+
+Trong SQL Server, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng, bao gồm cả các bản ghi trùng lặp. Điều này có nghĩa là tất cả các bản ghi sẽ được coi là cùng một nhóm.
+
+Dưới đây là một ví dụ để hiểu cách sử dụng mệnh đề GROUP BY ALL trong SQL Server:
+
+Giả sử bạn có một bảng "Orders" với các cột "order_id", "customer_id" và "order_amount". Bạn muốn tính tổng số lượng đơn hàng và tổng số tiền cho tất cả các đơn hàng, bao gồm cả các đơn hàng trùng lặp:
+
+```sql
+SELECT order_id, customer_id, SUM(order_amount) AS TotalAmount
+FROM orders
+GROUP BY ALL order_id, customer_id;
+```
+
+Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "orders". Kết quả trả về sẽ bao gồm tất cả các cặp order_id và customer_id có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp order_id và customer_id sẽ được tính bằng hàm SUM(TotalAmount).
+
+Lưu ý rằng mệnh đề GROUP BY ALL không phổ biến và thường không được sử dụng trong các trường hợp thông thường. Nó cung cấp một cách để xử lý các bản ghi trùng lặp trong quá trình nhóm dữ liệu.
+
+---
+
+### 💥 GROUPING SETS
+
+là một cú pháp mở rộng của mệnh đề GROUP BY để cho phép bạn `nhóm dữ liệu theo nhiều tập hợp khác nhau trong một câu truy vấn duy nhất`. Nó cho phép bạn tạo các kết quả tổng hợp từ các nhóm dữ liệu khác nhau một cách thuận tiện.
+
+Với GROUPING SETS, bạn có thể chỉ định một danh sách các cột hoặc biểu thức nhóm để tạo các tập hợp nhóm khác nhau. Cú pháp của GROUPING SETS như sau:
+
+```sql
+SELECT 
+    column1, column2, ..., aggregate_function(column)
+FROM table
+GROUP BY 
+    GROUPING SETS (column1, column2, ..., ())
+```
+
+Tìm hiểu qua ví dụ
+
+Tạo một table mới `dbo.sales_summary`
+
+```sql
+SELECT
+    b.brand_name AS brand,
+    c.category_name AS category,
+    p.model_year,
+    round(
+        SUM (
+            i.quantity * i.price * (1 - i.discount)
+        ),
+        0
+    ) sales INTO dbo.sales_summary
+FROM
+    dbo.order_items i
+INNER JOIN dbo.products p ON p.product_id = i.product_id
+INNER JOIN dbo.brands b ON b.brand_id = p.brand_id
+INNER JOIN dbo.categories c ON c.category_id = p.category_id
+GROUP BY
+    b.brand_name,
+    c.category_name,
+    p.model_year
+ORDER BY
+    b.brand_name,
+    c.category_name,
+    p.model_year;
+```
+Bạn sẽ nhận được một bảng dữ liệu tổng hợp doanh thu theo `brand`, `categories` và `year_model`
+
+![grou-set](img/SQL-Server-GROUPING-SETS-sample-table.png)
+
+Ví dụ: Từ đó hãy, Truy vấn trả về số tiền bán được nhóm theo thương hiệu và danh mục:
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand,
+    category
+ORDER BY
+    brand,
+    category;
+```
+
+Tương tự vậy: Chỉ nhóm theo `brand`
+
+```sql
+SELECT
+    brand,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand
+ORDER BY
+    brand;
+```
+
+Tương tự vậy: Chỉ nhóm theo `categories`
+
+```sql
+SELECT
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    category
+ORDER BY
+    category;
+```
+Và một nhóm tổng hợp: tổng doanh thu của tất cả `brand` và `categories`
+
+```sql
+SELECT
+    SUM (sales) sales
+FROM
+    dbo.sales_summary;
+```
+
+Như vậy chúng ta có 4 nhóm dữ liệu:
+
+```sql
+(brand, category)
+(brand)
+(category)
+()
+```
+Để có một báo cáo tổng hợp thông tin 4 nhóm trên bạn có thể dùng mệnh đề `UNION ALL` để nối lại như sau:
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand,
+    category
+UNION ALL
+SELECT
+    brand,
+    NULL,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand
+UNION ALL
+SELECT
+    NULL,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    category
+UNION ALL
+SELECT
+    NULL,
+    NULL,
+    SUM (sales)
+FROM
+    dbo.sales_summary
+ORDER BY brand, category;
+```
+
+==> Nhược điểm: Câu lênh truy vấn dài, phức tạp, hiệu suất truy vấn chậm
+
+==> Bạn có thể fix vấn đề này bằng cách dùng GROUP với `GROUPING SETS`
+
+```sql
+SELECT
+	brand,
+	category,
+	SUM (sales) sales
+FROM
+	dbo.sales_summary
+GROUP BY
+	GROUPING SETS (
+		(brand, category),
+		(brand),
+		(category),
+		()
+	)
+ORDER BY
+	brand,
+	category;
+```
+Hàm GROUPING cho biết liệu một cột được chỉ định trong mệnh đề GROUP BY có được tổng hợp hay không. Nó trả về 1 nếu được tổng hợp hoặc 0 nếu không được tổng hợp trong tập kết quả.
+
+```sql
+SELECT
+    GROUPING(brand) grouping_brand,
+    GROUPING(category) grouping_category,
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    sales.sales_summary
+GROUP BY
+    GROUPING SETS (
+        (brand, category),
+        (brand),
+        (category),
+        ()
+    )
+ORDER BY
+    brand,
+    category;
+```
+
+Giá trị trong cột grouping_brand cho biết hàng có được tổng hợp hay không, 1 nghĩa là số tiền bán hàng được tổng hợp theo thương hiệu, 0 có nghĩa là số tiền bán hàng không được tổng hợp theo thương hiệu. Khái niệm tương tự được áp dụng cho cột grouping_category.
+
+---
+
+### 💥 GROUP BY với CUBE
+
+Cú pháp CUBE sẽ tạo ra tất cả các tổ hợp có thể của các cột được chỉ định, bao gồm các nhóm theo từng cột riêng lẻ, các nhóm con của từng cột, các nhóm con của các tổ hợp cột, và tổng hợp toàn bộ dữ liệu.
+
+Hay nói dễ hiểu hơn `CUBE` là cú pháp ngắn gọn để làm `GROUPING SETS`
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function (c4)
+FROM
+    table_name
+GROUP BY
+    GROUPING SETS (
+        (d1,d2,d3), 
+        (d1,d2),
+        (d1,d3),
+        (d2,d3),
+        (d1),
+        (d2),
+        (d3), 
+        ()
+     );
+```
+Rất dài dòng, thay vì thế dùng ngay `CUBE`
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function (c4)
+FROM
+    table_name
+GROUP BY
+    CUBE (d1, d2, d3); -- Rút gọn lại còn 1 dòng
+```
+
+Từ ví dụ trên có thể rút gọn lại, cho kết quả giống nhau
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    CUBE(brand, category)
+ORDER BY
+	brand,
+	category;
+```
+
+
+---
+
+
+### 💥 GROUP BY với ROLLUP
+
+ROLLUP là một mệnh đề con của mệnh đề GROUP BY cung cấp cách viết tắt để xác định nhiều nhóm nhóm. Không giống như mệnh đề con CUBE, ROLLUP không tạo ra tất cả các tập hợp nhóm có thể có dựa trên các cột thứ nguyên; CUBE tạo ra một tập hợp con trong số đó.
+
+Khi tạo các tập hợp nhóm, ROLLUP giả định một hệ thống phân cấp giữa các cột thứ nguyên và chỉ tạo các tập hợp nhóm dựa trên hệ thống phân cấp này.
+
+ROLLUP thường được sử dụng để tạo subtotals và totals cho mục đích báo cáo.
+
+`CUBE (d1,d2,d3)` định nghĩa ra `8` grouping sets:
+
+```sql
+(d1, d2, d3)
+(d1, d2)
+(d2, d3)
+(d1, d3)
+(d1)
+(d2)
+(d3)
+()
+```
+Trong khi `ROLLUP(d1,d2,d3)` tạo `4` grouping sets, theo cấu trúc phân cấp d1 > d2> d3
+
+```sql
+(d1, d2, d3)
+(d1, d2)
+(d1)
+()
+```
+
+Cú pháp:
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function(c4)
+FROM
+    table_name
+GROUP BY
+    ROLLUP (d1, d2, d3);
+```
+
+Nối tiếp ví dụ trên 
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    ROLLUP(brand, category);
+```
+Kết quả được canh theo cột brand:  brand > category
+
+---
+
+### 💥 GROUP BY WITH Aggregate Function
+
+Khi kết hợp với các hàm tổng hợp như COUNT, SUM, AVG, MIN, MAX, GROUP BY sẽ nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột và tính toán các hàm tổng hợp trên các nhóm này.
+
+#### 🔹 COUNT
+
+Dùng để đếm số lượng bản ghi trong một nhóm.
+
+```sql
+-- Đếm số lượng sản phẩm theo từng loại giá
+SELECT
+    price,
+    COUNT(product_id) AS 'NumberOfProducts'
+FROM products
+GROUP BY price
+```
+
+#### 🔹 SUM
+
+Dùng để tính tổng các giá trị trong một cột.
+
+```sql
+-- Tính tổng số lượng tồn kho theo từng nhóm category_id
+SELECT
+    category_id, 
+    SUM(Stock) AS 'total_stock'
+FROM products
+GROUP BY category_id
+```
+
+#### 🔹 MIN
+
+Dùng để lấy giá trị nhỏ nhất của các giá trị trong một cột.
+
+```sql
+-- Hiển thị sản phẩm có giá thấp nhất theo từng nhóm category_id
+SELECT
+    category_id, 
+    MIN(price) AS 'min_price'
+FROM products
+GROUP BY category_id
+```
+
+#### 🔹 MIN
+
+Dùng để lấy giá trị lớn nhất của các giá trị trong một cột.
+
+```sql
+-- Hiển thị sản phẩm có giá cao nhất theo từng nhóm category_id
+SELECT
+    category_id, 
+    MAX(price) AS 'max_price'
+FROM products
+GROUP BY category_id
+```
+
+---
+
+### 💥 Sub Query
+
+Subquery (hoặc còn gọi là inner query hoặc nested query) là một câu truy vấn SELECT được nhúng bên trong một câu truy vấn khác. Nó cho phép bạn sử dụng kết quả của một câu truy vấn như là một tập dữ liệu đầu vào cho câu truy vấn chính.
+
+Ví dụ: Liệt kê danh sách danh mục kèm số lượng sản phẩm có trong danh mục đó
+
+
+```sql
+SELECT
+  c.*, (SELECT COUNT(product_id) FROM dbo.products AS P WHERE p.category_id = c.product_id) AS 'number_product'
+FROM dbo.categories AS c
+```
+
+Ví dụ, bạn có thể sử dụng subquery để tìm tất cả các khách hàng có đơn hàng với tổng giá trị lớn hơn một ngưỡng nào đó:
+
+```sql
+SELECT customer_name
+FROM dbo.customers
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM dbo.orders
+    GROUP BY customer_id
+    HAVING SUM(order_amount) > 1000
+)
+```
+
+Ví dụ: Lấy thông tin đơn hàng của tất cả khách hàng ở `New York`
+
+```sql
+SELECT
+    order_id,
+    order_date,
+    customer_id
+FROM
+    dbo.orders
+WHERE
+    customer_id IN (
+        SELECT
+            customer_id
+        FROM
+            dbo.customers
+        WHERE
+            city = 'New York'
+    )
+ORDER BY
+    order_date DESC;
+```
+
+Để có hiệu suất truy vấn cao hơn, khuyến nghị nên chuyển subquery thành JOIN trong các trường hợp nhất định. Lý do là các hệ quản lý cơ sở dữ liệu thường tối ưu hóa truy vấn JOIN và có thể sử dụng các chỉ mục và kỹ thuật tham gia để tìm kiếm và kết hợp dữ liệu hiệu quả.
+
+#### 🔹 Sub Query and ANY
+
+Cú pháp
+
+```sql
+scalar_expression comparison_operator ANY (subquery)
+```
+
+- scalar_expression: biểu thức giá trị đơn
+- comparison_operator: toán tử so sánh
+- subquery: trả về một danh sách (v1, v2, … vn). `ANY` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với MỘT TRONG các giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
+
+Ví dụ
+
+```sql
+SELECT
+    product_name,
+    price
+FROM
+    dbo.products
+WHERE
+    -- Nếu price >= với bất kì giá trị nào
+    -- trong kết quả SELECT thì WHERE thực thi
+    price >= ANY (
+        SELECT
+            AVG (price)
+        FROM
+            production.products
+        GROUP BY
+            brand_id
+    )
+```
+
+
+#### 🔹 Sub Query and ALL
+
+ALL có cách dùng tương tự nhưng khác một chỗ là khi dùng `ALL` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với TẤT CẢ giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
+
+
+#### 🔹 Sub Query and EXISTS, NOT EXISTS 
+
+Cú pháp
+
+```sql
+WHERE [NOT] EXISTS (subquery)
+```
+EXISTS trả về `TRUE` nếu `subquery` trả về kết quả; ngược lại trả về `FALSE`.
+
+NOT EXISTS phủ định của EXISTS
+
+Ví dụ: Lấy thông tin khách hàng, có đơn hàng mua vào năm 2017.
+
+```sql
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    city
+FROM
+    dbo.customers c
+WHERE
+    EXISTS (
+        -- Đi tìm những khách hàng mua hàng năm 2017
+        SELECT
+            customer_id
+        FROM
+            dbo.orders o
+        WHERE
+            o.customer_id = c.customer_id
+        AND YEAR (order_date) = 2017
+    )
+ORDER BY
+    first_name,
+    last_name;
+```
+
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-subquery/
+
+
+
+
 ## 💛 Session 09- Advanced Queries and Joins - Part 2
 
 ### 💥 JOINs
@@ -394,301 +961,3 @@ FROM
 
 ---
 
-## 💛 Session 14 - Transactions
-
-### 💥 Transaction là gì?
-
-Transaction là một tập hợp các hoạt động được thực hiện như một đơn vị không thể chia rời. Mục tiêu chính của transaction là đảm bảo tính toàn vẹn và nhất quán của dữ liệu trong cơ sở dữ liệu trong quá trình thực hiện các hoạt động.
-
-Transaction được sử dụng để thực hiện các thay đổi dữ liệu trong cơ sở dữ liệu, bao gồm cả việc chèn, cập nhật và xóa dữ liệu. Một transaction bao gồm ít nhất hai hoặc nhiều hơn các hoạt động dữ liệu và được xem là một đơn vị làm việc hoàn chỉnh.
-
-Nếu một hoặc nhiều hoạt động trong transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ được phục hồi về trạng thái ban đầu.
-
-Transaction được xác định bằng ba tính chất ACID:
-
-1. Atomicity (Toàn vẹn): Transaction được coi là một đơn vị toàn vẹn không thể chia rời. Nếu một phần của transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ trở về trạng thái ban đầu.
-
-2. Consistency (Nhất quán): Một transaction phải đảm bảo rằng dữ liệu sẽ được đưa về trạng thái nhất quán sau khi hoàn thành. Nếu dữ liệu không tuân thủ các ràng buộc hoặc quy tắc, transaction sẽ bị hủy.
-
-3. Isolation (Cô lập): Mỗi transaction phải thực hiện một cách cô lập và không bị tác động bởi các transaction khác đang thực hiện đồng thời. Điều này đảm bảo tính nhất quán của dữ liệu và tránh xảy ra xung đột.
-
-4. Durability (Bền vững): Một khi một transaction đã được hoàn thành thành công, các thay đổi dữ liệu phải được lưu trữ vĩnh viễn và không bị mất trong trường hợp xảy ra sự cố hệ thống.
-
-Trong SQL Server hoạt động theo các chế độ giao dịch sau:
-
-- Transaction tự động xác nhận (Autocommit transactions)
-- Mỗi câu lệnh riêng lẻ được coi là một giao dịch.
-
-Các ứng dụng của transaction:
-
-- Transaction được sử dụng để đảm bảo tính toàn vẹn của dữ liệu trong các ứng dụng doanh nghiệp.
-- Transaction có thể được sử dụng để thực hiện các thao tác như: chuyển tiền, thanh toán hóa đơn, đặt hàng, ...
-
----
-
-### 💥  Các lệnh quản lý transaction
-
-- **BEGIN TRANSACTION** : Dùng để bắt đầu một transaction.
-
-- **COMMIT TRANSACTION** : Dùng để xác nhận toàn bộ một transaction.
-
-- **COMMIT WORK** : Dùng để đánh đấu kết thúc của transaction.
-
-- **SAVE TRANSACTION** : Dùng để tạo một savepoint trong transaction.
-
-- **ROLLBACK WORK** : Dùng để hủy bỏ một transaction.
-
-- **ROLLBACK TRANSACTION** : Dùng để hủy bỏ toàn bộ một transaction.
-
-- **ROLLBACK TRANSACTION [SavepointName]** : Dùng để hủy bỏ một savepoint trong transaction
-
----
-
-Xem Thêm: <https://learn.microsoft.com/en-us/sql/t-sql/language-elements/begin-transaction-transact-sql?view=sql-server-ver16>
-
-### 💥 Cách sử dụng transaction
-
-Để bắt đầu một transaction bạn sử dụng từ khóa `BEGIN TRANSACTION` hoặc `BEGIN TRAN`
-
-```sql
--- Bước 1:  start a transaction
-BEGIN TRANSACTION; -- or BEGIN TRAN
-
--- Bước 2:  Các câu lênh truy vấn bắt đầu ở đây INSERT, UPDATE, and DELETE
-
--- =====================
--- Chạy xong các câu lệnh trên thì bạn kết thúc TRANSACTION với 1 trong 2 hình thức.
--- =====================
-
--- Bước 3 -  1. commit the transaction
--- Để xác nhận thay đổi dữ liệu
-COMMIT;
-
--- Bước 3 - 2. rollback -- Hồi lại những thay đổi trong những câu lệnh truy vấn ở trên. (Hủy ko thực hiện nữa, trả lại trạng thái ban đầu lúc chưa chạy)
-ROLLBACK;
-```
-
-Về bản chất các câu lệnh truy vấn trên nó chưa được ghi nhận thay đổi vào dữ liệu thật mà nó tạo ra dữ liệu tạm trước.
-
-Sau đó dựa vào Bước 3, chờ bạn quyết định như thế nào với dữ liệu tạm đó, thì nó mới chính thức đi cập nhật thay đổi với dữ liệu thật.
-
-Ví dụ: Tạo 2 bảng mới `invoices` và `invoice_items`
-
-```sql
--- Hóa đơn
-CREATE TABLE invoices (
-  id int IDENTITY(1,1) PRIMARY KEY,
-  customer_id int NOT NULL,
-  total decimal(10, 2) NOT NULL DEFAULT 0 CHECK (total >= 0)
-);
--- Chi tiết các mục ghi vào hóa đơn
-CREATE TABLE invoice_items (
-  id int IDENTITY(1,1),
-  invoice_id int NOT NULL,
-  item_name varchar(100) NOT NULL,
-  amount decimal(18, 2) NOT NULL CHECK (amount >= 0),
-  tax decimal(4, 2) NOT NULL CHECK (tax >= 0),
-  PRIMARY KEY (id, invoice_id),
-  FOREIGN KEY (invoice_id) REFERENCES invoices (id)
- ON UPDATE CASCADE
- ON DELETE CASCADE
-);
-```
-
-Bây giờ chúng ta tạo một `TRANSACTION` thực hiện thêm mới dữ liệu vào cho 2 table cùng lúc:
-
-```sql
--- Bước 1
-BEGIN TRANSACTION; -- or BEGIN TRAN
--- Bước 2
--- Thêm vào invoices
-INSERT INTO dbo.invoices (customer_id, total)
-VALUES (100, 0);
--- Thêm vào invoice_items
- INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Keyboard', 70, 0.08),
-       (1, 'Mouse', 50, 0.08);
--- Thay đổi dữ liệu cho record đã chèn vào invoices
-UPDATE dbo.invoices
-SET total = (SELECT
-  SUM(amount * (1 + tax))
-FROM invoice_items
-WHERE invoice_id = 1);
-
---Bước 3: xác nhận cho phép thay đổi dữ liệu
-COMMIT TRANSACTION; -- or COMMIT
-```
-
-Kết quả của một tập hợp các câu lệnh truy vấn trên:
-
-- Nếu 1 trong 3 câu lệnh THẤT BẠI ==> Tất cả sẽ đều THẤT BẠI, trả lại trạng thái ban đầu.
-- Nếu cả 3 THÀNH CÔNG ==> TRANSACTION thành công, dữ liệu được cập nhật.
-
-Lưu ý Để đúng như phần lý thuyết bạn nên kiểm tra lại cấu hình `XACT_ABORT`:
-
-- Khi "SET XACT_ABORT ON" được thiết lập, nếu một lỗi xảy ra trong một giao dịch, nó sẽ tự động kết thúc giao dịch đó và rollback (hoàn tác) tất cả các thay đổi đã được thực hiện trong giao dịch. Điều này đảm bảo tính toàn vẹn dữ liệu và giúp tránh tình trạng dữ liệu không nhất quán.
-
-- Khi "SET XACT_ABORT OFF" (giá trị mặc định) được thiết lập, một lỗi trong một giao dịch không đảm bảo sẽ kết thúc giao dịch tự động. Trong trường hợp này, các lệnh trong giao dịch có thể tiếp tục thực hiện sau khi xảy ra lỗi, và phải thực hiện rollback thủ công để hoàn tác các thay đổi.
-
-Bạn có thể TEST trường hợp thất bại với câu lệnh INSERT bị lỗi
-
-```sql
---Check dữ liệu của 2 table trước khi thực hiện
-select * from invoices
-select * from invoice_items
-
--- Bước 1
-BEGIN TRANSACTION; -- or BEGIN TRAN
--- Bước 2
--- Thêm vào invoices
-INSERT INTO dbo.invoices (customer_id, total)
-VALUES (100, 0);
---Trường ID đã khai báo IDENTITY nên bạn không thể khai báo chi tiết giá trị của id khi thêm mới
---Câu lệnh này sẽ gây lỗi IDENTITY_INSERT is set to OFF
- INSERT INTO dbo.invoice_items (id, invoice_id, item_name, amount, tax)
-VALUES (3, 1, 'Keyboard v2 ', 70, 0.08),
-       (4, 1, 'Mouse v2 ', 50, 0.08);
--- Thay đổi dữ liệu cho record đã chèn vào invoices
-UPDATE dbo.invoices
-SET total = (SELECT
-  SUM(amount * (1 + tax))
-FROM invoice_items
-WHERE invoice_id = 1);
-
---Bước 3: xác nhận cho phép thay đổi dữ liệu
-COMMIT TRANSACTION; -- or COMMIT
-
-
---Check dữ liệu của 2 table SAU khi thực hiện
-select * from invoices
-select * from invoice_items
-```
-
-Bạn có thể kiểm tra dữ liệu, Chỉ cần 1 trong 3 câu lệnh bị lỗi thì toàn bộ transaction sẽ bị hủy.
-
-
-Ví dụ 2:
-
-```sql
--- Bước 1
-BEGIN TRANSACTION;
--- Bước 2
--- Thêm vào invoice_items
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Headphone', 80, 0.08),
-       (1, 'Mainboard', 30, 0.08);
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'TochPad', 20, 0.08),
-       (1, 'Camera', 90, 0.08);
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Wifi', 120, 0.08),
-       (1, 'Bluetooth', 20, 0.08);
-
---Bước 3: xác nhận HỦY thay đổi dữ liệu
-ROLLBACK TRANSACTION;
-```
-
-- Các câu lệnh ở Bước 2: vẫn chạy, và đưa vào dữ liệu tạm
-- Đến Bước 3, gặp câu lệnh `ROLLBACK` thì dữ liệu tạm bị HỦY, việc INSERT dữ liệu không được ghi nhận.
-
-Ví dụ 3:
-
-```sql
--- Bước 1
-BEGIN TRANSACTION;
--- Bước 2
--- Thêm vào invoice_items
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Headphone', 80, 0.08),
-       (1, 'Mainboard', 30, 0.08);
-
-SAVE TRANSACTION Savepoint1
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'TochPad', 20, 0.08),
-       (1, 'Camera', 90, 0.08);
-
-ROLLBACK TRANSACTION Savepoint1
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Wifi', 120, 0.08),
-       (1, 'Bluetooth', 20, 0.08);
-
---Bước 3: xác nhận cho phép thay đổi dữ liệu
-COMMIT TRANSACTION
-```
-
-`SAVE TRANSACTION` - Nó cho phép lưu lại trạng thái hiện tại của transaction và tiếp tục thực hiện các hoạt động trong transaction. Nếu sau đó có lỗi xảy ra, bạn có thể sử dụng lệnh ROLLBACK để hủy bỏ toàn bộ transaction hoặc sử dụng lệnh ROLLBACK TRANSACTION để hủy bỏ đến điểm đã được lưu trữ bởi SAVE TRANSACTION.
-
----
-
-### 💥 Locks
-
-Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm soát truy cập và sửa đổi dữ liệu trong quá trình thực hiện các giao dịch. Khi một giao dịch yêu cầu truy cập vào dữ liệu, SQL Server áp dụng các locks trên dữ liệu tương ứng để đảm bảo tính nhất quán và độc lập của dữ liệu trong môi trường đa người dùng.
-
-Có nhiều loại lock khác nhau trong SQL Server, bao gồm:
-
-1. Shared Lock (Shared Read Lock):
-   - Được sử dụng khi giao dịch muốn đọc (truy vấn) dữ liệu.
-   - Nhiều shared locks có thể được áp dụng trên cùng một dữ liệu.
-   - Shared locks không ngăn được các shared locks khác trên cùng một dữ liệu.
-   - Shared locks không cho phép exclusive lock được áp dụng lên dữ liệu.
-
-2. Exclusive Lock (Write Lock):
-   - Được sử dụng khi giao dịch muốn thay đổi (ghi) dữ liệu.
-   - Không thể có bất kỳ shared locks hoặc exclusive locks khác trên cùng một dữ liệu.
-   - Exclusive locks ngăn cả shared locks và exclusive locks khác.
-
-3. Update Lock:
-   - Được sử dụng trong các trường hợp cần đảm bảo rằng dữ liệu không được đọc hoặc chỉnh sửa trong quá trình thực hiện giao dịch.
-   - Update locks được nâng cấp thành exclusive lock khi giao dịch cần thực hiện các thay đổi.
-
-4. Intent Lock:
-   - Là các locks nhỏ hơn được áp dụng trên các cấu trúc dữ liệu phức tạp hơn như bảng, trang, phân vùng.
-   - Intent locks đại diện cho ý định của giao dịch để áp dụng shared locks hoặc exclusive locks trên các đối tượng con của cấu trúc dữ liệu.
-
-5. Schema Lock:
-   - Được sử dụng khi giao dịch thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
-
-SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các giao dịch đồng thời.
-
-Ví dụ giả lập tình trạng Lock trong thực tế có thể xảy ra làm TREO CPU
-
-1. Mở một cùng lúc 2 cửa sổ Query như sau
-
-![lock](img/lock.png)
-
-- Cửa sổ 1: chạy lệnh UPDATE số dư của người a
-- Cửa sổ 2: Xóa người a
-
-2. Bạn thực hiện tuần từ 1 xong đến 2. Bạn sẽ thấy trạng thái `Executing query...` xoay miết không ngừng. ==> Transaction này đã bị TREO.
-
-Lí do là bên cửa sổ 1. Transaction đã chạy rồi, nhưng không có lệnh để đóng transaction lại. ==> Thể hiện transaction chưa thực hiện xong.
-
-==> Đó là hiện tượng LOCKED
-
-
-Làm sao để xử lý Lock để Server không bị ĐƠ (Quá tải CPU)
-
-Bạn hãy mở thêm một instance Server mới
-
-1. Kích phải lên instance chọn `Activity Monitor`
-
-![lock process](img/lock-2.png)
-
-2. Xổ mục Processes ra để xem danh sách các tiến trình đang chạy
-3. Tại mục 3, click đúp 2 lần vào cột `Blocked by` để sắp xếp giảm dần.
-
-Như hình bạn thấy dòng `Session ID` 64 đang lock một session có giá trị 53.
-
-Bạn có thể click phải lên các dòng và chọn `Detail` để xem chi tiết câu lệnh SQL đang thực hiện.
-
-4. Để xử lí LOCK bạn có thể thực hiện `Kill Process` bằng cách click phải lên dòng bị lock. Trong trường hợp trên thì dòng `53` bị lock bởi `64`. Sau đó chọn `Kill Process`
-
-5. Quay lại màn hình truy vấn trước đó. Bạn sẽ thấy cửa số 2 đã có trạng thái `disconect`. Kết nối này bị đóng.
-
-![kill process](img/lock-3.png)
