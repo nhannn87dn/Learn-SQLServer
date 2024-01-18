@@ -164,3 +164,30 @@ GROUP BY
 HAVING COUNT (order_id) >= 2
 ORDER BY
     customer_id;
+
+-- lấy tất thông tin từ table customers đổ vào table customersBackup2019
+SELECT * INTO customersBackup2019
+FROM customers;
+--1. Muốn đổ data từ kết quả truy vấn vào bảng
+--2. Backup 1 table
+
+select * from customersBackup2019
+
+select * from orders
+SELECT GETDATE() 
+INSERT orders (
+customer_id,
+order_date
+)
+VALUES (
+259,
+GETDATE()
+)
+
+SELECT RIGHT('SQL Tutorial', 3) AS ExtractString;
+
+select * FROM products
+
+-- ngẩu nhiên 5% trong tổng số records của products
+SELECT TOP 5 PERCENT * 
+FROM products
