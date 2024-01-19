@@ -516,6 +516,53 @@ BEGIN
 END
 ```
 
+---
+
+#### 🔹 Stored procedure Có RETURN
+
+Stored procedure (thủ tục lưu trữ) trong SQL có thể trả về một giá trị duy nhất. Điều này thường được sử dụng để trả về một mã trạng thái cho ứng dụng gọi stored procedure.
+
+Để tạo một stored procedure trả về giá trị, bạn sử dụng từ khóa `RETURN` trong thân của stored procedure. Ví dụ:
+
+```sql
+CREATE PROCEDURE CheckOrderStatus
+    @OrderId INT
+AS
+BEGIN
+    IF EXISTS(SELECT 1 FROM Orders WHERE OrderId = @OrderId)
+        RETURN 1 -- Order exists
+    ELSE
+        RETURN 0 -- Order does not exist
+END;
+```
+
+Để gọi stored procedure này và nhận giá trị trả về, bạn có thể sử dụng câu lệnh sau:
+
+```sql
+DECLARE @Status INT
+EXEC @Status = CheckOrderStatus 12345
+SELECT @Status as Status
+```
+
+Trong đó, `12345` là ID của đơn hàng bạn muốn kiểm tra. Giá trị trả về sẽ được lưu trong biến `@Status`.
+
+Lưu ý rằng, một stored procedure chỉ có thể trả về một giá trị duy nhất và kiểu dữ liệu của giá trị trả về phải là `INT`. Nếu bạn muốn trả về nhiều giá trị hoặc các kiểu dữ liệu khác, bạn nên sử dụng tham số OUTPUT.
+
+Xem thêm: https://learn.microsoft.com/vi-vn/sql/relational-databases/stored-procedures/return-data-from-a-stored-procedure?view=sql-server-ver16
+
+---
+
+#### 🔹 Xem Cấu trúc của Stored procedure
+
+
+```sql
+EXEC sp_helptext N'dbo.uspLogError';  
+--Hoặc
+SELECT OBJECT_DEFINITION (OBJECT_ID(N'dbo.uspLogError'));
+```
+
+
+---
 
 ### 💥 Querying Metadata
 

@@ -247,3 +247,11 @@ FROM sys.views
 
 SELECT *
 FROM sys.procedures
+
+
+SELECT  
+    *
+FROM 
+    sys.triggers  
+WHERE 
+    type = 'TR';
