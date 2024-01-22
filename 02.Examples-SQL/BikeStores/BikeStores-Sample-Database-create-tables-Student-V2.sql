@@ -1,0 +1,100 @@
+
+-- create tables
+CREATE TABLE dbo.Categories
+(
+	CategoryId INT NOT NULL,
+	CategoryName NVARCHAR(255) NOT NULL,
+	Description NVARCHAR(500) NULL
+);
+
+CREATE TABLE dbo.Brands
+(
+	BrandId INT NOT NULL,
+	BrandName NVARCHAR(255) NOT NULL,
+	Description NVARCHAR(500) NULL
+);
+
+CREATE TABLE dbo.Products
+(
+	ProductId INT NOT NULL,
+	ProductName NVARCHAR(255) NOT NULL,
+	BrandId INT NOT NULL,
+	CategoryId INT NOT NULL,
+	ModelYear SMALLINT NOT NULL,
+	Price DECIMAL(18, 2) NOT NULL DEFAULT 0,
+	Discount DECIMAL(4, 2) NOT NULL DEFAULT 0,
+	Description NVARCHAR(MAX) NULL
+);
+CREATE TABLE dbo.Customers
+(
+	CustomerId INT NOT NULL,
+	FirstName NVARCHAR(255) NOT NULL,
+	LastName NVARCHAR(255) NOT NULL,
+	Phone VARCHAR(25) NOT NULL,
+	Email VARCHAR(150) NOT NULL,
+	Birthday DATE NULL,
+	Street NVARCHAR(255) NOT NULL,
+	City NVARCHAR(50) NOT NULL,
+	State NVARCHAR(50) NOT NULL,
+	ZipCode VARCHAR(5) NULL
+);
+
+CREATE TABLE dbo.Stores
+(
+	StoreId INT NOT NULL,
+	StoreName NVARCHAR(255) NOT NULL,
+	Phone VARCHAR(25) NULL,
+	Email VARCHAR(255) NULL,
+	Street NVARCHAR(255) NULL,
+	City NVARCHAR(255) NULL,
+	State NVARCHAR(50) NULL,
+	ZipCode VARCHAR(5) NULL
+);
+
+CREATE TABLE dbo.Staffs
+(
+	StaffId INT NOT NULL,
+	FirstName NVARCHAR(50) NOT NULL,
+	LastName NVARCHAR(50) NOT NULL,
+	Email VARCHAR(255) NOT NULL,
+	Phone VARCHAR(25) NOT NULL,
+	Active TINYINT NOT NULL,
+	StoreId INT NOT NULL,
+	ManagerId INT NULL
+);
+
+CREATE TABLE dbo.Orders
+(
+	OrderId INT NOT NULL,
+	CustomerId INT NOT NULL,
+	OrderStatus TINYINT NOT NULL,
+	OrderDate DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	RequiredDate DATETIME2 NOT NULL,
+	ShippedDate DATETIME2 NULL,
+	StoreId INT NOT NULL,
+	StaffId INT NOT NULL,
+	OrderNote NVARCHAR(500) NULL,
+	ShippingAddress NVARCHAR(500) NULL,
+	ShippingCity NVARCHAR(50) NULL,
+	PaymentType TINYINT NOT NULL,
+	OrderAmount DECIMAL(18, 2) NOT NULL
+);
+
+CREATE TABLE dbo.OrderItems
+(
+	OrderId INT NOT NULL,
+	ItemId INT NOT NULL,
+	ProductId INT NOT NULL,
+	Quantity INT NOT NULL,
+	Price DECIMAL(18, 2) NOT NULL,
+	Discount DECIMAL(4, 2) NOT NULL DEFAULT 0
+);
+
+CREATE TABLE dbo.Stocks
+(
+	StoreId INT NOT NULL,
+	ProductId INT NOT NULL,
+	Quantity INT NULL DEFAULT 0
+);
+
+
