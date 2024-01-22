@@ -369,6 +369,59 @@ EXEC sp_helpindex 'customer_index';
 SELECT * FROM dbo.customer_index
 ```
 
+### 💥 Check thời gian thực hiện truy vấn
+
+Trong SQL Server, bạn có thể sử dụng các câu lệnh và chức năng để kiểm tra thời gian thực hiện của một truy vấn ==> Để lựa chọn xem cách nào cho hiệu suất TỐI ƯU HƠN.
+
+
+Dưới đây là một số phương pháp phổ biến để làm điều này:
+
+1. Kiểm tra thời gian và tài nguyên của một truy vấn:
+   
+     ```sql
+      --Để xem thời gian thực hiện truy vấn
+      SET STATISTICS TIME ON;
+      --Để xem tài nguyên thực hiện truy vấn
+      SET STATISTICS IO ON;
+      -- Truy vấn SQL của bạn ở đây
+      -- ....
+
+      --Tắt đi sau khi truy vấn thực hiện
+      SET STATISTICS TIME OFF;
+      SET STATISTICS IO OFF;
+     ```
+   
+
+2. Sử dụng hàm GETDATE():
+   - Trước khi thực thi truy vấn, ghi lại thời điểm bắt đầu bằng cách sử dụng hàm GETDATE():
+     ```sql
+     DECLARE @StartTime DATETIME;
+     SET @StartTime = GETDATE();
+     ```
+   - Sau khi thực thi truy vấn, ghi lại thời điểm kết thúc:
+     ```sql
+     DECLARE @EndTime DATETIME;
+     SET @EndTime = GETDATE();
+     ```
+   - Để tính thời gian thực hiện, sử dụng phép tính:
+     ```sql
+     DECLARE @ExecutionTime FLOAT;
+     SET @ExecutionTime = DATEDIFF(MILLISECOND, @StartTime, @EndTime) / 1000.0;
+     PRINT 'Execution Time: ' + CAST(@ExecutionTime AS NVARCHAR(20)) + ' seconds';
+     ```
+
+3. Sử dụng Dynamic Management Views (DMV):
+   - DMV là các bảng hệ thống trong SQL Server cung cấp thông tin về hệ thống và các hoạt động diễn ra trong nó.
+   - Bạn có thể sử dụng DMV sys.dm_exec_requests để kiểm tra thời gian thực hiện của một truy vấn:
+     ```sql
+     SELECT start_time, total_elapsed_time
+     FROM sys.dm_exec_requests
+     WHERE session_id = @@SPID;
+     ```
+   - Trong kết quả, cột start_time là thời điểm bắt đầu thực hiện truy vấn và cột total_elapsed_time là tổng thời gian đã trôi qua tính bằng mili giây.
+
+Lưu ý rằng cách thức và chi tiết cụ thể để kiểm tra thời gian thực hiện có thể thay đổi tùy thuộc vào phiên bản SQL Server và cấu hình hệ thống. Vì vậy, hãy kiểm tra tài liệu và tài nguyên thích hợp của Microsoft hoặc phiên bản SQL Server bạn đang sử dụng để biết thêm chi tiết.
+
 
 ### 💥  Cấu trúc B-TREE
 
@@ -457,7 +510,7 @@ Lưu ý: Bạn cũng có thể tạo bằng giao diện đồ họa, bằng các
 Quay trở lại với vụ dụ trên. Bây giờ bạn đánh `clustered index` trên trường customer_id.
 
 - Bạn sẽ có được một bảng dữ liệu được đánh số thứ tự rõ ràng.
-- Những dòng dữ liệu trong bảng được gom nhóm lại với nhau tạo thành page, một page có kích thước 8KB và tùy thuộc vào kích thước của mỗi dòng mà chứa được số lượng tương ứng. Giả dụ bảng NhanVien trên có kích thước 2000 bytes cho mỗi dòng, nên mỗi page sẽ chứa được 4 dòng như hình bên dưới.
+- Những dòng dữ liệu trong bảng được gom nhóm lại với nhau tạo thành page, một page có kích thước 8KB và tùy thuộc vào kích thước của mỗi dòng mà chứa được số lượng tương ứng. Giả dụ bảng Customers trên có kích thước 2000 bytes cho mỗi dòng, nên mỗi page sẽ chứa được 4 dòng như hình bên dưới.
 
 ![index](img/b-tree-index.png)
 
@@ -846,58 +899,6 @@ XML index được sử dụng trong các ứng dụng liên quan đến dữ li
 
 Lưu ý: Trước khi thực hiện các thay đổi trên index, hãy đảm bảo rằng bạn có quyền thực hiện các câu lệnh CREATE, ALTER và DROP trên cơ sở dữ liệu và bảng tương ứng. Hãy cẩn thận khi xóa hoặc đổi tên index, vì nó có thể ảnh hưởng đến hiệu suất và tính khả dụng của cơ sở dữ liệu.
 
-#### 🔹 Check thời gian thực hiện truy vấn
-
-Trong SQL Server, bạn có thể sử dụng các câu lệnh và chức năng để kiểm tra thời gian thực hiện của một truy vấn ==> Để lựa chọn xem cách nào cho hiệu suất TỐI ƯU HƠN.
-
-
-Dưới đây là một số phương pháp phổ biến để làm điều này:
-
-1. Kiểm tra thời gian và tài nguyên của một truy vấn:
-   
-     ```sql
-      --Để xem thời gian thực hiện truy vấn
-      SET STATISTICS TIME ON;
-      --Để xem tài nguyên thực hiện truy vấn
-      SET STATISTICS IO ON;
-      -- Truy vấn SQL của bạn ở đây
-      -- ....
-
-      --Tắt đi sau khi truy vấn thực hiện
-      SET STATISTICS TIME OFF;
-      SET STATISTICS IO OFF;
-     ```
-   
-
-2. Sử dụng hàm GETDATE():
-   - Trước khi thực thi truy vấn, ghi lại thời điểm bắt đầu bằng cách sử dụng hàm GETDATE():
-     ```sql
-     DECLARE @StartTime DATETIME;
-     SET @StartTime = GETDATE();
-     ```
-   - Sau khi thực thi truy vấn, ghi lại thời điểm kết thúc:
-     ```sql
-     DECLARE @EndTime DATETIME;
-     SET @EndTime = GETDATE();
-     ```
-   - Để tính thời gian thực hiện, sử dụng phép tính:
-     ```sql
-     DECLARE @ExecutionTime FLOAT;
-     SET @ExecutionTime = DATEDIFF(MILLISECOND, @StartTime, @EndTime) / 1000.0;
-     PRINT 'Execution Time: ' + CAST(@ExecutionTime AS NVARCHAR(20)) + ' seconds';
-     ```
-
-3. Sử dụng Dynamic Management Views (DMV):
-   - DMV là các bảng hệ thống trong SQL Server cung cấp thông tin về hệ thống và các hoạt động diễn ra trong nó.
-   - Bạn có thể sử dụng DMV sys.dm_exec_requests để kiểm tra thời gian thực hiện của một truy vấn:
-     ```sql
-     SELECT start_time, total_elapsed_time
-     FROM sys.dm_exec_requests
-     WHERE session_id = @@SPID;
-     ```
-   - Trong kết quả, cột start_time là thời điểm bắt đầu thực hiện truy vấn và cột total_elapsed_time là tổng thời gian đã trôi qua tính bằng mili giây.
-
-Lưu ý rằng cách thức và chi tiết cụ thể để kiểm tra thời gian thực hiện có thể thay đổi tùy thuộc vào phiên bản SQL Server và cấu hình hệ thống. Vì vậy, hãy kiểm tra tài liệu và tài nguyên thích hợp của Microsoft hoặc phiên bản SQL Server bạn đang sử dụng để biết thêm chi tiết.
 
 #### 🔹 Lợi ích việc đánh indexs
 
