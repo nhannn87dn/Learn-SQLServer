@@ -33,7 +33,7 @@ SELECT
     Quantity * i.Price AS sales
 FROM
     dbo.Orders AS o
-INNER JOIN dbo.OrderItem AS i
+INNER JOIN Odbo.OrderItems AS i
     ON o.OrderId = i.OrderId
 INNER JOIN dbo.Products AS p
     ON p.ProductId = i.ProductId;
@@ -83,7 +83,7 @@ SELECT
     Quantity * i.Price AS sales
 FROM
     dbo.Orders AS o
-INNER JOIN dbo.OrderItem AS i
+INNER JOIN Odbo.OrderItems AS i
     ON o.OrderId = i.OrderId
 INNER JOIN dbo.Products AS p
     ON p.ProductId = i.ProductId;
@@ -139,7 +139,7 @@ SELECT
     (i.Quantity * i.Price) AS sales
 FROM
     dbo.Orders AS o
-INNER JOIN dbo.OrderItem AS i
+INNER JOIN Odbo.OrderItems AS i
     ON o.OrderId = i.OrderId
 INNER JOIN dbo.Products AS p
     ON p.ProductId = i.ProductId;
@@ -208,7 +208,7 @@ SELECT
     (i.Quantity * i.Price) AS sales
 FROM
     dbo.Orders AS o
-INNER JOIN dbo.OrderItem AS i
+INNER JOIN Odbo.OrderItems AS i
     ON o.OrderId = i.OrderId
 INNER JOIN dbo.Products AS p
     ON p.ProductId = i.ProductId;
@@ -233,7 +233,7 @@ SELECT
     (i.Quantity * i.Price) AS sales
 FROM
     dbo.Orders AS o
-INNER JOIN dbo.OrderItem AS i
+INNER JOIN Odbo.OrderItems AS i
     ON o.OrderId = i.OrderId
 INNER JOIN dbo.Products AS p
     ON p.ProductId = i.ProductId;
@@ -257,7 +257,7 @@ SELECT
     (i.Quantity * i.Price) AS sales
 FROM
     dbo.Orders AS o
-INNER JOIN dbo.OrderItem AS i
+INNER JOIN Odbo.OrderItems AS i
     ON o.OrderId = i.OrderId
 INNER JOIN dbo.Products AS p
     ON p.ProductId = i.ProductId
