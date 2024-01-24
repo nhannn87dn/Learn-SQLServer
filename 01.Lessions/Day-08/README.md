@@ -124,58 +124,63 @@ Dùng để chuyển một đối tượng JSON thành một bảng. Ví dụ: C
 SELECT * FROM OPENJSON('{"name": "John", "age": 30}')
 ```
 
+
 #### 🔹 Các vị dụ thao tác với dữ liệu JSON
 
 Trong SQL Server, bạn có thể thực hiện các thao tác thêm mới, sửa, xóa và cập nhật dữ liệu JSON bằng cách sử dụng các hàm và toán tử JSON tích hợp. Dưới đây là các ví dụ về cách thực hiện các thao tác này.
 
 1. Thêm mới dữ liệu JSON:
-   Để thêm mới dữ liệu JSON vào một cột kiểu dữ liệu JSON trong SQL Server, bạn có thể sử dụng toán tử `JSON_MODIFY()` hoặc hàm `JSON_VALUE()`. Ví dụ:
 
-   ````sql
-   -- Thêm mới một đối tượng JSON vào cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.name', 'John', '$.age', 25)
 
-   -- Thêm mới một mảng JSON vào cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, 'append $', JSON_QUERY('{"name": "John", "age": 25}'))
+```sql
+  CREATE TABLE People (
+      ID INT PRIMARY KEY,
+      Info NVARCHAR(MAX)
+  )
+
+  DECLARE @info NVARCHAR(MAX)
+  SET @info = N'{
+    "firstName": "Nguyễn",
+    "lastName": "Thảo",
+    "age": 25,
+    "address": {
+      "StreetAddress": "290/58 Nơ Trang Long",
+      "City": "Việt Nam",
+      "State": "VN",
+      "postalCode": "76000"
+    },
+    "PhoneNumber": [
+      {"type": "home","number": "212 555-1234"},
+      {"type": "fax","number": "646 555-4567"}
+    ]
+  }'
+  INSERT INTO People (Info) VALUES (@info)
+
    ```
 
-2. Sửa dữ liệu JSON:
-   Để sửa đổi các giá trị trong dữ liệu JSON, bạn có thể sử dụng toán tử `JSON_MODIFY()`. Ví dụ:
+2. Truy vấn dữ liệu JSON
 
-   ````sql
-   -- Sửa đổi giá trị của thuộc tính 'name' trong cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.name', 'Jane')
-   WHERE ID = 1
-   ```
+Bạn có thể sử dụng các hàm như JSON_VALUE, JSON_QUERY để trích xuất giá trị từ chuỗi JSON2. Ví dụ, để lấy địa chỉ và kỹ năng từ cột JSON trong bảng People, bạn có thể sử dụng câu lệnh sau:
 
-3. Xóa dữ liệu JSON:
-   Để xóa một thuộc tính hoặc một phần tử trong dữ liệu JSON, bạn có thể sử dụng toán tử `JSON_MODIFY()` hoặc hàm `JSON_REMOVE()`. Ví dụ:
+```sql
+SELECT 
+  JSON_VALUE(Info, '$.address.StreetAddress') AS Street,
+  JSON_QUERY(Info, '$.skills') AS Skills
+FROM People
+WHERE ISJSON(Info) > 0
 
-   ````sql
-   -- Xóa thuộc tính 'name' trong cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.name', NULL)
-   WHERE ID = 1
+```
 
-   -- Xóa phần tử thứ hai trong một mảng JSON
-   UPDATE YourTable
-   SET jsonData = JSON_REMOVE(jsonData, '$[1]')
-   WHERE ID = 1
-   ```
+3. Update dữ liệu JSON
 
-4. Cập nhật dữ liệu JSON:
-   Để cập nhật dữ liệu JSON, bạn có thể kết hợp các phép toán JSON như `JSON_MODIFY()`, `JSON_VALUE()`, và các toán tử SQL thông thường như `UPDATE`, `SET`, và `WHERE`. Ví dụ:
+Ví dụ đổi `age` thành 36
 
-   ````sql
-   -- Cập nhật giá trị của thuộc tính 'age' trong cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.age', JSON_VALUE(jsonData, '$.age') + 1)
-   WHERE ID = 1
-   ```
+```sql
+UPDATE People
+SET Info = JSON_MODIFY(Info, '$.age', 36)
+WHERE ID = 1
 
+```
 
 
 ---
