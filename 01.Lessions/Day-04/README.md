@@ -76,9 +76,9 @@ Lưu ý rằng không phải tất cả các thành phần đều bắt buộc t
 
 #### 🔹 SELECT * - Lấy tất cả
 
-Lấy tất cả các column từ table `categories`
+Lấy tất cả các column từ table `Customers`
 ```sql
-SELECT * FROM [dbo].[categories]
+SELECT * FROM [dbo].[Customers]
 ```
 
 Lưu ý: Khi chạy thực tế, hạn chế dùng cách này vì nó có thể dẫn đến lổ hỏng bảo mật: https://www.w3schools.com/sql/sql_injection.asp
@@ -86,18 +86,18 @@ Lưu ý: Khi chạy thực tế, hạn chế dùng cách này vì nó có thể 
 
 #### 🔹 SELECT cụ thể columns cần lấy
 
-Ví dụ: Lấy Column Id, first_name, last_name từ table `customers`
+Ví dụ: Lấy Column Id, FirstName, LastName từ table `Customers`
 
 ```sql
-SELECT [customer_id], [first_name], [last_name] FROM [dbo].[customers]
+SELECT [CustomerId], [FirstName], [LastName] FROM [dbo].[Customers]
 ```
 
 #### 🔹 SELECT với một biểu thức
 
-Ví dụ: Dựa vào first_name, last_name hãy tạo một cột FullName khi lấy.
+Ví dụ: Dựa vào FirstName, LastName hãy tạo một cột FullName khi lấy.
 
 ```sql
-SELECT [customer_id], [first_name], [last_name], [first_name] + ' ' + [last_name] AS FullName FROM [dbo].[categories]
+SELECT [CustomerId], [FirstName], [LastName], [FirstName] + ' ' + [LastName] AS FullName FROM [dbo].[Customers]
 ```
 
 - Nối 2 cột bằng toán tử +
@@ -136,7 +136,7 @@ Thứ tự thực hiện
 Tìm những sản phẩm có giá bán >= 50.000
 
 ```sql
-SELECT * FROM products WHERE price >= 500000
+SELECT * FROM dbo.Products WHERE Price >= 500000
 ```
 
 **Ví dụ với toán tử AND**
@@ -147,19 +147,11 @@ Cú pháp:
 boolean_expression AND boolean_expression
 ```
 
-Bảng kết quả kết hợp 2 vế:
-
-|         | TRUE    | FALSE | UNKNOWN |
-|---------|---------|-------|---------|
-| TRUE    | TRUE    | FALSE | UNKNOWN |
-| FALSE   | FALSE   | FALSE | FALSE   |
-| UNKNOWN | UNKNOWN | FALSE | UNKNOWN |
-
 
 Tìm những sản phẩm có giá bán >= 20.000 và <= 50.000
 
 ```sql
-SELECT * FROM products WHERE price >= 200000 AND price <= 500000
+SELECT * FROM dbo.Products WHERE Price >= 200000 AND Price <= 500000
 ```
 
 **Ví dụ với toán tử OR**
@@ -170,19 +162,11 @@ Cú pháp:
 boolean_expression OR boolean_expression    
 ```
 
-Bảng kết quả kết hợp 2 vế:
 
-|         | TRUE | FALSE   | UNKNOWN |
-|---------|------|---------|---------|
-| TRUE    | TRUE | TRUE    | TRUE    |
-| FALSE   | TRUE | FALSE   | UNKNOWN |
-| UNKNOWN | TRUE | UNKNOWN | UNKNOWN |
-
-
-Ví dụ: Tìm những sản phẩm có discount = 10 hoặc 20
+Ví dụ: Tìm những sản phẩm có Discount = 10 hoặc 20
 
 ```sql
-SELECT * FROM products WHERE discount = 10 OR discount = 20
+SELECT * FROM dbo.Products WHERE Discount = 10 OR Discount = 20
 ```
 
 
@@ -192,7 +176,7 @@ SELECT * FROM products WHERE discount = 10 OR discount = 20
 Ví dụ: Tìm những sản phẩm được nhập mô tả Description (Tức khác NULL)
 
 ```sql
-SELECT * FROM products WHERE Description IS NOT NULL
+SELECT * FROM dbo.Products WHERE Description IS NOT NULL
 ```
 
 **Ví dụ với toán tử IN**
@@ -201,9 +185,9 @@ SELECT * FROM products WHERE Description IS NOT NULL
 Ví dụ: Tìm những sản phẩm thuộc danh mục có ID 2 hoặc 3
 
 ```sql
-SELECT * FROM products WHERE category_id IN (2,3)
+SELECT * FROM dbo.Products WHERE CategoryId IN (2,3)
 --Câu lệnh trên tương đương với toán tử OR
-SELECT * FROM products WHERE category_id = 2 OR category_id = 3
+SELECT * FROM dbo.Products WHERE CategoryId = 2 OR CategoryId = 3
 ```
 
 
@@ -224,20 +208,20 @@ Ví dụ: Tìm những đơn đặt hàng từ 2016-01-01 - 2016-05-01
 
 ```sql
 SELECT *
-FROM orders
-WHERE order_date BETWEEN '2016-01-01' AND '2016-03-01';
+FROM dbo.Orders
+WHERE OrderDate BETWEEN '2016-01-01' AND '2016-03-01';
 
 
 --- Chuyển đổi chuỗi sang kiểu ngày
 SELECT *
-FROM orders
-WHERE order_date BETWEEN CONVERT(DATE, '2016-01-01') AND CONVERT(DATE, '2016-03-01');
+FROM dbo.Orders
+WHERE OrderDate BETWEEN CONVERT(DATE, '2016-01-01') AND CONVERT(DATE, '2016-03-01');
 
 
 --- Ép kiểu: chuỗi --> Date
 SELECT *
-FROM orders
-WHERE order_date BETWEEN CAST('2016-01-01' AS DATE) AND CAST('2016-03-01' AS DATE);
+FROM dbo.Orders
+WHERE OrderDate BETWEEN CAST('2016-01-01' AS DATE) AND CAST('2016-03-01' AS DATE);
 ```
 
 **Ví dụ với toán tử LIKE**
@@ -246,8 +230,8 @@ Ví dụ: Tìm tên khách hàng có số điện thoại đuôi 678
 
 ```sql
 SELECT *
-FROM customers
-WHERE phone LIKE '%478'
+FROM Customers
+WHERE Phone LIKE '%478'
 ```
 
 Dưới đây là một bảng giải thích các ký tự đại diện (wildcard) phổ biến được sử dụng với LIKE:
@@ -285,44 +269,44 @@ Thứ tự thực hiện
 ![where order](img/SQL-Server-SELECT-from-where-select-order-by.png)
 
 
-Ví dụ: Sắp xếp tất cả các khách hàng theo `first_name` tăng dần:
+Ví dụ: Sắp xếp tất cả các khách hàng theo `FirstName` tăng dần:
 
 ```sql
 SELECT
-    first_name,
-    last_name
+    FirstName,
+    LastName
 FROM
-    customers
+    Customers
 ORDER BY
-    first_name; --Mặc định không set thì là ASC
+    FirstName; --Mặc định không set thì là ASC
 ```
 
-Ví dụ: Sắp xếp tất cả các khách hàng theo `first_name` giảm dần:
+Ví dụ: Sắp xếp tất cả các khách hàng theo `FirstName` giảm dần:
 
 ```sql
 SELECT
-    first_name,
-    last_name
+    FirstName,
+    LastName
 FROM
-    customers
+    Customers
 ORDER BY
-    first_name DESC;
+    FirstName DESC;
 ```
 
 
-Ví dụ: Sắp xếp theo thành phố, first_name, last_name
+Ví dụ: Sắp xếp theo thành phố, FirstName, LastName
 
 ```sql
 -- Sắp xếp theo nhiều column
 SELECT
-    city,
-    first_name,
-    last_name
+    City,
+    FirstName,
+    LastName
 FROM
-   customers
+   Customers
 ORDER BY
-    city,
-    first_name;
+    City,
+    FirstName;
 ```
 
 #### 🔹 SELECT với mệnh đề OFFSET-FETCH
@@ -345,26 +329,26 @@ Ví dụ: Truy vấn tất cả các sản phẩm và bỏ qua 10 hàng đầu t
 
 ```sql
 SELECT
-    product_name,
-    price
+    ProductName,
+    Price
 FROM
-    dbo.products
+    dbo.Products
 ORDER BY
-    price,
-    product_name 
+    Price,
+    ProductName 
 OFFSET 10 ROWS;
 ```
 Ví dụ: bỏ qua 10 hàng đầu tiên, và lấy 10 dòng tiếp theo:
 
 ```sql
 SELECT
-    product_name,
-    price
+    ProductName,
+    Price
 FROM
-    dbo.products
+    dbo.Products
 ORDER BY
-    price,
-    product_name 
+    Price,
+    ProductName 
 OFFSET 10 ROWS 
 FETCH NEXT 10 ROWS ONLY;
 ```
@@ -379,17 +363,17 @@ Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-offset
 Dùng để loại bỏ các giá trị trùng lặp trong kết quả truy vấn.
 
 ```sql
---- Lấy danh sách city từ Table customers
-SELECT city
-FROM customers
-ORDER BY city ASC
+--- Lấy danh sách City từ Table Customers
+SELECT City
+FROM Customers
+ORDER BY City ASC
 ---
 --- Kết quả trùng lặp các giá trị và bạn muốn khử trùng lặp thì dùng DISTINCT
 ---
 
-SELECT DISTINCT city
-FROM customers
-ORDER BY city ASC
+SELECT DISTINCT City
+FROM Customers
+ORDER BY City ASC
 ```
 
 
@@ -397,15 +381,15 @@ Nếu bạn chỉ định nhiều cột, mệnh đề DISTINCT sẽ đánh giá 
 
 ```sql
 SELECT 
-	city, 
-	state, 
-	zip_code
+	City, 
+	State, 
+	ZipCode
 FROM 
-	customers
+	Customers
 GROUP BY 
-	city, state, zip_code
+	City, State, ZipCode
 ORDER BY
-	city, state, zip_code;
+	City, State, ZipCode;
 ```
 
 Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-select-distinct/
@@ -414,19 +398,19 @@ Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-select
 
 Mệnh đề SELECT TOP được sử dụng để chỉ định số lượng bản ghi cần trả về.
 
-Ví dụ: Lấy 10 bản ghi đầu tiên trong kết quả trả về table products
+Ví dụ: Lấy 10 bản ghi đầu tiên trong kết quả trả về table dbo.Products
 
 ```sql
 SELECT TOP 10 * 
-FROM products
+FROM dbo.Products
 ```
 
-Ví dụ lấy 5% số lượng bản từ table products
+Ví dụ lấy 5% số lượng bản từ table dbo.Products
 
 ```sql
 --- Ngẩu nhiên --> Mang tính tương đối
 SELECT TOP 5 PERCENT * 
-FROM products
+FROM dbo.Products
 ```
 
 #### 🔹 SELECT với mệnh đề WITH TIES
@@ -436,9 +420,9 @@ Mệnh đề WITH TIES được sử dụng trong câu lệnh ORDER BY của SQL
 Khi sử dụng WITH TIES, các hàng có giá trị "ràng buộc" sẽ được bao gồm trong kết quả cuối cùng của câu lệnh ORDER BY, chứ không chỉ có các hàng có giá trị duy nhất.
 
 ```sql
-SELECT TOP 10 WITH TIES product_id, name, price 
-FROM products
-ORDER BY price DESC
+SELECT TOP 10 WITH TIES ProductId, ProductName, Price 
+FROM dbo.Products
+ORDER BY Price DESC
 ```
 
 
@@ -456,56 +440,56 @@ Thứ tự thực hiện
 
 
 
-Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần.
+Ví dụ: Lấy tất cả các mức giảm giá Discount của sản phẩm theo thứ tự tăng dần.
 
 ```sql
-SELECT discount
-FROM products
-GROUP BY discount
-ORDER BY discount ASC
+SELECT Discount
+FROM dbo.Products
+GROUP BY Discount
+ORDER BY Discount ASC
 --- Câu lệnh này tương đương bạn dùng DISTINCT
 ```
 
-Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó.
+Ví dụ: Lấy tất cả các mức giảm giá Discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó.
 
 
 ```sql
 SELECT 
-  discount, 
+  Discount, 
   COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
-FROM products
-GROUP BY discount
-ORDER BY discount ASC
+FROM dbo.Products
+GROUP BY Discount
+ORDER BY Discount ASC
 ```
 
-Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó. Chỉ lấy những mức discount >= 5
+Ví dụ: Lấy tất cả các mức giảm giá Discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó. Chỉ lấy những mức Discount >= 5
 
 ```sql
 SELECT 
-  discount, 
+  Discount, 
   COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
-FROM products
-GROUP BY discount
-HAVING discount >= 5 --- Lọc sau khi nhóm xong
-ORDER BY discount ASC
+FROM dbo.Products
+GROUP BY Discount
+HAVING Discount >= 5 --- Lọc sau khi nhóm xong
+ORDER BY Discount ASC
 ```
 
 Ví dụ: Thống kê số lượng đơn hàng khách hàng đã mua theo năm.
 
 ```sql
 SELECT
-    customer_id,
-    YEAR (order_date),
-    COUNT (order_id) order_count
+    CustomerId,
+    YEAR (OrderDate),
+    COUNT (OrderId) order_count
 FROM
-    orders
+    dbo.Orders
 GROUP BY
-    customer_id,
-    YEAR (order_date)
+    CustomerId,
+    YEAR (OrderDate)
 HAVING
-    COUNT (order_id) >= 2
+    COUNT (OrderId) >= 2
 ORDER BY
-    customer_id;
+    CustomerId;
 ```
 
 
@@ -514,8 +498,8 @@ ORDER BY
 Dùng để tạo bảng mới từ kết quả truy vấn
 
 ```sql
-SELECT * INTO customersBackup2019
-FROM customers;
+SELECT * INTO CustomersBackup2019
+FROM Customers;
 ```
 
 Bạn có thể tận dụng tính năng này để backup một table
