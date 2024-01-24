@@ -25,18 +25,18 @@ Ví dụ: Câu lệnh bên dưới trả về doanh số bán ra của mỗi s�
 
 ```sql
 SELECT
-    year(order_date) AS y,
-    month(order_date) AS m,
-    day(order_date) AS d,
-    p.product_id,
-    product_name,
-    quantity * i.price AS sales
+    year(OrderDate) AS y,
+    month(OrderDate) AS m,
+    day(OrderDate) AS d,
+    p.ProductId,
+    ProductName,
+    Quantity * i.Price AS sales
 FROM
-    dbo.orders AS o
-INNER JOIN dbo.order_items AS i
-    ON o.order_id = i.order_id
-INNER JOIN dbo.products AS p
-    ON p.product_id = i.product_id;
+    dbo.Orders AS o
+INNER JOIN dbo.OrderItem AS i
+    ON o.OrderId = i.OrderId
+INNER JOIN dbo.Products AS p
+    ON p.ProductId = i.ProductId;
 ```
 
 Và lần tới bạn lại muốn dùng lại kết quả truy vấn trê, hay thành viên trong TEAM của bạn cũng muốn dùng kết quả đó. Thì bạn có thể lưu thành file SQLQuery rồi thực thi. `Nhưng với cách này khi bạn backup data thì câu lệnh truy vấn không được kèm theo`.
@@ -75,18 +75,18 @@ Từ ví dụ trên bạn tạo view như sau:
 CREATE VIEW dbo.v_daily_sales --đặt tên với prefix v_
 AS
 SELECT
-    year(order_date) AS y,
-    month(order_date) AS m,
-    day(order_date) AS d,
-    p.product_id,
-    product_name,
-    quantity * i.price AS sales
+    year(OrderDate) AS y,
+    month(OrderDate) AS m,
+    day(OrderDate) AS d,
+    p.ProductId,
+    ProductName,
+    Quantity * i.Price AS sales
 FROM
-    dbo.orders AS o
-INNER JOIN dbo.order_items AS i
-    ON o.order_id = i.order_id
-INNER JOIN dbo.products AS p
-    ON p.product_id = i.product_id;
+    dbo.Orders AS o
+INNER JOIN dbo.OrderItem AS i
+    ON o.OrderId = i.OrderId
+INNER JOIN dbo.Products AS p
+    ON p.ProductId = i.ProductId;
 --- ==> Kết quả nó tạo ra một table ảo, chứa kết quả của câu lệnh truy vấn SELECT
 ```
 Sau đó bạn tái sử dụng kết quả truy vấn bằng cách:
@@ -100,7 +100,7 @@ SELECT
 FROM 
     dbo.v_daily_sales
 ORDER BY
-    y, m, d, product_name;
+    y, m, d, ProductName;
 ```
 
 Lưu ý: Câu lệnh SELECT trong View bạn không sử dụng mệnh ORDER BY để sắp xếp trước kết quả trả về.
@@ -130,19 +130,19 @@ Sử dụng từ khóa `ALTER VIEW`
 ALTER VIEW dbo.v_daily_sales 
 AS
 SELECT
-    year(order_date) AS y,
-    month(order_date) AS m,
-    day(order_date) AS d,
-    p.product_id,
-    p.product_name,
-    p.discount,
-    (i.quantity * i.price) AS sales
+    year(OrderDate) AS y,
+    month(OrderDate) AS m,
+    day(OrderDate) AS d,
+    p.ProductId,
+    p.ProductName,
+    p.Discount,
+    (i.Quantity * i.Price) AS sales
 FROM
-    dbo.orders AS o
-INNER JOIN dbo.order_items AS i
-    ON o.order_id = i.order_id
-INNER JOIN dbo.products AS p
-    ON p.product_id = i.product_id;
+    dbo.Orders AS o
+INNER JOIN dbo.OrderItem AS i
+    ON o.OrderId = i.OrderId
+INNER JOIN dbo.Products AS p
+    ON p.ProductId = i.ProductId;
 ```
 
 Xem Doc: https://learn.microsoft.com/en-us/sql/relational-databases/views/modify-views?view=sql-server-ver16
@@ -199,19 +199,19 @@ CREATE VIEW dbo.v_daily_sales
 WITH SCHEMABINDING -- ràng buộc cấu trúc với các table tham chiếu
 AS
 SELECT
-    year(order_date) AS y,
-    month(order_date) AS m,
-    day(order_date) AS d,
-    p.product_id,
-    p.product_name,
-    p.discount,
-    (i.quantity * i.price) AS sales
+    year(OrderDate) AS y,
+    month(OrderDate) AS m,
+    day(OrderDate) AS d,
+    p.ProductId,
+    p.ProductName,
+    p.Discount,
+    (i.Quantity * i.Price) AS sales
 FROM
-    dbo.orders AS o
-INNER JOIN dbo.order_items AS i
-    ON o.order_id = i.order_id
-INNER JOIN dbo.products AS p
-    ON p.product_id = i.product_id;
+    dbo.Orders AS o
+INNER JOIN dbo.OrderItem AS i
+    ON o.OrderId = i.OrderId
+INNER JOIN dbo.Products AS p
+    ON p.ProductId = i.ProductId;
 ```
 
 **WITH ENCRYPTION**
@@ -224,19 +224,19 @@ CREATE VIEW dbo.v_daily_sales
 WITH ENCRYPTION -- Mã hóa, ko cho xem cấu trúc của VIEW
 AS
 SELECT
-    year(order_date) AS y,
-    month(order_date) AS m,
-    day(order_date) AS d,
-    p.product_id,
-    p.product_name,
-    p.discount,
-    (i.quantity * i.price) AS sales
+    year(OrderDate) AS y,
+    month(OrderDate) AS m,
+    day(OrderDate) AS d,
+    p.ProductId,
+    p.ProductName,
+    p.Discount,
+    (i.Quantity * i.Price) AS sales
 FROM
-    dbo.orders AS o
-INNER JOIN dbo.order_items AS i
-    ON o.order_id = i.order_id
-INNER JOIN dbo.products AS p
-    ON p.product_id = i.product_id;
+    dbo.Orders AS o
+INNER JOIN dbo.OrderItem AS i
+    ON o.OrderId = i.OrderId
+INNER JOIN dbo.Products AS p
+    ON p.ProductId = i.ProductId;
 ```
 
 **WITH CHECK OPTION**
@@ -248,20 +248,20 @@ WITH CHECK OPTION là một cấu hình được sử dụng trong câu lệnh C
 CREATE VIEW dbo.v_daily_sales
 AS
 SELECT
-    p.product_id,
-    p.product_name,
-    p.discount,
-    year(order_date) AS y,
-    month(order_date) AS m,
-    day(order_date) AS d,
-    (i.quantity * i.price) AS sales
+    p.ProductId,
+    p.ProductName,
+    p.Discount,
+    year(OrderDate) AS y,
+    month(OrderDate) AS m,
+    day(OrderDate) AS d,
+    (i.Quantity * i.Price) AS sales
 FROM
-    dbo.orders AS o
-INNER JOIN dbo.order_items AS i
-    ON o.order_id = i.order_id
-INNER JOIN dbo.products AS p
-    ON p.product_id = i.product_id
-WHERE p.discount > 0.05 -- Nếu không thõa mãn WHERE thì VIEW sẽ không chạy được
+    dbo.Orders AS o
+INNER JOIN dbo.OrderItem AS i
+    ON o.OrderId = i.OrderId
+INNER JOIN dbo.Products AS p
+    ON p.ProductId = i.ProductId
+WHERE p.Discount > 0.05 -- Nếu không thõa mãn WHERE thì VIEW sẽ không chạy được
 WITH CHECK OPTION;
 ```
 
@@ -271,7 +271,7 @@ Khi đó bạn select từ view
 SELECT * FROM dbo.v_daily_sales
 ```
 
-Kết quả trả về là những records có `discount` > 0.05;
+Kết quả trả về là những records có `Discount` > 0.05;
 
 Nhưng bây giờ bạn đi thay đổi dữ liệu của VIEW bằng cách:
 
@@ -279,12 +279,12 @@ Ví dụ:
 
 ```sql
 --Update
-UPDATE dbo.v_daily_sales SET discount = 0.04 WHERE discount = 0.05
+UPDATE dbo.v_daily_sales SET Discount = 0.04 WHERE Discount = 0.05
 --Hoăc Insert mới 1 record
 INSERT dbo.v_daily_sales (
-    product_id,
-    product_name,
-    discount,
+    ProductId,
+    ProductName,
+    Discount,
     y,
     m,
     d,
@@ -301,7 +301,7 @@ INSERT dbo.v_daily_sales (
 ```
 
 
-Giã sử câu lệnh UPDATE và INSERT trên chạy được thì nó làm cho cột `discount` trong VIEW có chứa những giá trị < `0.05`. Khi đó mệnh đề WHERE của VIEW sẽ không chạy được vì không thõa điệu kiện. Vì `0.04` không thể > `0.05`.
+Giã sử câu lệnh UPDATE và INSERT trên chạy được thì nó làm cho cột `Discount` trong VIEW có chứa những giá trị < `0.05`. Khi đó mệnh đề WHERE của VIEW sẽ không chạy được vì không thõa điệu kiện. Vì `0.04` không thể > `0.05`.
 
 Chính vì thế, mà VIEW sẽ ngăn không cho câu lệnh UPDATE, INSERT trên thực thi, để đảm bảo VIEW luôn luôn có tính khả dụng để CHẠY.
 
@@ -367,12 +367,12 @@ CREATE PROCEDURE usp_ProductList -- đặt tên với prefix usp_
 AS
 BEGIN
     SELECT 
-        product_name, 
-        price
+        ProductName, 
+        Price
     FROM 
-        dbo.products
+        dbo.Products
     ORDER BY 
-        product_name;
+        ProductName;
 END;
 ```
 Sau khi tạo xong bạn có thể thấy store được lưu ở `Programmability > Stored Procedures`
@@ -389,21 +389,21 @@ EXEC usp_ProductList
 
 #### 🔹 Tạo Store có tham số đầu vào
 
-Ví dụ: Lấy danh sách sản phẩm có model_year > 2018
+Ví dụ: Lấy danh sách sản phẩm có ModelYear > 2018
 
 ```sql
-CREATE PROCEDURE usp_FindProductsByModelYear(@model_year INT)
+CREATE PROCEDURE usp_FindProductsByModelYear(@ModelYear INT)
 AS
 BEGIN
     SELECT
-        product_name,
-        price
+        ProductName,
+        Price
     FROM 
-        dbo.products
+        dbo.Products
     WHERE
-        model_year >= @model_year
+        ModelYear >= @ModelYear
     ORDER BY
-        price;
+        Price;
 END;
 --Sử dụng Store khi có tham số
 EXEC uspFindProductsByModelYear 2018;
@@ -421,7 +421,7 @@ CREATE PROCEDURE usp_TotalOrderByRangeDate (
 )
 AS
 BEGIN
-  SELECT @Total = COUNT(*) FROM orders WHERE CAST(order_date AS DATE)  BETWEEN @FromDate AND @ToDate
+  SELECT @Total = COUNT(*) FROM Orders WHERE CAST(OrderDate AS DATE)  BETWEEN @FromDate AND @ToDate
 END;
 --Sử dụng
 DECLARE @TotalOrders INT;
@@ -439,14 +439,14 @@ ALTER PROCEDURE usp_ProductList -- đặt tên với prefix usp_
 AS
 BEGIN
     SELECT 
-        product_id, --thêm mới
-        product_name, --thêm mới
-        price,
-        discount
+        ProductId, --thêm mới
+        ProductName, --thêm mới
+        Price,
+        Discount
     FROM 
-        dbo.products
+        dbo.Products
     ORDER BY 
-        product_id;
+        ProductId;
 END;
 ```
 
@@ -471,10 +471,10 @@ WITH ENCRYPTION
   @ToDate DATETIME
 AS
 BEGIN
-  SELECT o.*, od.product_id, od.quantity, od.price, od.discount
-  FROM orders AS o
-    INNER JOIN order_items AS od ON o.order_id = od.order_id
-  WHERE o.order_date BETWEEN @FromDate AND @ToDate
+  SELECT o.*, od.ProductId, od.Quantity, od.Price, od.Discount
+  FROM Orders AS o
+    INNER JOIN OrderItem AS od ON o.OrderId = od.OrderId
+  WHERE o.OrderDate BETWEEN @FromDate AND @ToDate
 END
 ```
 
@@ -489,10 +489,10 @@ WITH RECOMPILE
   @ToDate DATETIME
 AS
 BEGIN
-  SELECT o.*, od.product_id, od.quantity, od.price, od.discount
-  FROM orders AS o
-    INNER JOIN order_items AS od ON o.order_id = od.order_id
-  WHERE o.order_date BETWEEN @FromDate AND @ToDate
+  SELECT o.*, od.ProductId, od.Quantity, od.Price, od.Discount
+  FROM Orders AS o
+    INNER JOIN OrderItem AS od ON o.OrderId = od.OrderId
+  WHERE o.OrderDate BETWEEN @FromDate AND @ToDate
 END
 ```
 
@@ -509,10 +509,10 @@ WITH EXECUTE AS 'dbo'
   @ToDate DATETIME
 AS
 BEGIN
-  SELECT o.*, od.product_id, od.quantity, od.price, od.discount
-  FROM orders AS o
-    INNER JOIN order_items AS od ON o.order_id = od.order_id
-  WHERE o.order_date BETWEEN @FromDate AND @ToDate
+  SELECT o.*, od.ProductId, od.Quantity, od.Price, od.Discount
+  FROM Orders AS o
+    INNER JOIN OrderItem AS od ON o.OrderId = od.OrderId
+  WHERE o.OrderDate BETWEEN @FromDate AND @ToDate
 END
 ```
 
@@ -659,54 +659,54 @@ Thay vì thế chúng ta có thể tạo một Trigger thực hiện cập nhậ
 ```sql
 
 CREATE TRIGGER trg_OrderItems_Update_ProductStock
-ON order_items
+ON OrderItem
 AFTER INSERT
 AS
 BEGIN
-    UPDATE stocks
-        SET quantity = s.quantity - i.quantity
+    UPDATE Stocks
+        SET Quantity = s.Quantity - i.Quantity
     FROM
-       stocks as s
-    INNER JOIN inserted AS i ON s.product_id = i.product_id
-	INNER JOIN orders AS o ON o.order_id = i.order_id AND o.store_id = s.store_id;
+       Stocks as s
+    INNER JOIN inserted AS i ON s.ProductId = i.ProductId
+	INNER JOIN Orders AS o ON o.OrderId = i.OrderId AND o.StoreId = s.StoreId;
 END;
 ```
 
-Ví dụ 2: Tạo một trigger AFTER để ngăn chặn việc cập nhật / xóa đơn hàng khi đơn hàng (orders) có trạng thái order_status = 4 (COMPLETED)
+Ví dụ 2: Tạo một trigger AFTER để ngăn chặn việc cập nhật / xóa đơn hàng khi đơn hàng (Orders) có trạng thái OrderStatus = 4 (COMPLETED)
 
 
 ```sql
 CREATE TRIGGER trg_Orders_Prevent_UpdateDelete
-ON orders
+ON Orders
 AFTER UPDATE, DELETE -- Ngăn cách nhau bởi dấy phẩu khi có nhiều action
 AS
 BEGIN
-    IF EXISTS (SELECT * FROM inserted WHERE [order_status] = 4)
+    IF EXISTS (SELECT * FROM inserted WHERE [OrderStatus] = 4)
     BEGIN
         PRINT 'Cannot update order having status = 4 (COMPLETED).'
-        ROLLBACK -- Hủy lệnh UPDATE trước đó vào orders
+        ROLLBACK -- Hủy lệnh UPDATE trước đó vào Orders
     END
 
-    IF EXISTS (SELECT * FROM deleted WHERE [order_status] = 4)
+    IF EXISTS (SELECT * FROM deleted WHERE [OrderStatus] = 4)
     BEGIN
         PRINT 'Cannot delete order having status = 4 (COMPLETED).'
-        ROLLBACK -- Hủy lệnh DELETE trước đó vào orders
+        ROLLBACK -- Hủy lệnh DELETE trước đó vào Orders
     END
 END;
 ```
 
-Ví dụ 3: Tạo một trigger AFTER để ngăn chặn việc cập nhật / thêm mới / xóa chi tiết đơn hàng (orders) có trạng thái order_status = 4 (COMPLETED)
+Ví dụ 3: Tạo một trigger AFTER để ngăn chặn việc cập nhật / thêm mới / xóa chi tiết đơn hàng (Orders) có trạng thái OrderStatus = 4 (COMPLETED)
 
 ```sql
 CREATE OR ALTER TRIGGER trg_OrderItems_Prevent_InsertUpdateDelete
-ON order_items
+ON OrderItem
 AFTER INSERT, UPDATE, DELETE
 AS
 BEGIN
     IF EXISTS (
         SELECT * FROM
-        inserted AS oi INNER JOIN dbo.orders AS o ON oi.order_id = o.order_id
-        WHERE [order_status] = 4
+        inserted AS oi INNER JOIN dbo.Orders AS o ON oi.OrderId = o.OrderId
+        WHERE [OrderStatus] = 4
     )
     BEGIN
         PRINT 'Cannot insert or update order details having order''s status = 4 (COMPLETED).'
@@ -715,7 +715,7 @@ BEGIN
 
     IF EXISTS (
         SELECT * FROM
-        deleted AS oi INNER JOIN dbo.orders AS o ON oi.order_id = o.order_id
+        deleted AS oi INNER JOIN dbo.Orders AS o ON oi.OrderId = o.OrderId
     )
     BEGIN
         PRINT 'Cannot delete order details having order''s status = 4 (COMPLETED).'

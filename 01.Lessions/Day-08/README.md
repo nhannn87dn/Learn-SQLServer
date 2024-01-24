@@ -79,8 +79,8 @@ Dùng để chuyển kết quả của một câu lệnh SELECT thành một đ�
 ```sql
 SELECT
     O.*,
-    (SELECT * FROM customers AS C WHERE O.customer_id = C.customer_id FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS customer,
-    (SELECT * FROM staffs AS S WHERE O.staff_id = S.staff_id FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS staffs
+    (SELECT * FROM Customers AS C WHERE O.CustomerId = C.CustomerId FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS Customer,
+    (SELECT * FROM Staffs AS S WHERE O.StaffId = S.StaffId FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS Staffs
 FROM orders AS O
 ```
 
@@ -94,10 +94,10 @@ SELECT JSON_VALUE('{"name": "John", "age": 30}', '$.name') AS name
 
 #### 🔹 Hàm JSON_QUERY
 
-Dùng để trích xuất một đối tượng JSON từ một đối tượng JSON. Ví dụ: Trích xuất đối tượng JSON `{"name": "John", "age": 30} từ đối tượng JSON {"name": "John", "age": 30, "address": {"street": "123 Main St.", "city": "New York"}}`
+Dùng để trích xuất một đối tượng JSON từ một đối tượng JSON. Ví dụ: Trích xuất đối tượng JSON `{"name": "John", "age": 30} từ đối tượng JSON {"name": "John", "age": 30, "address": {"Street": "123 Main St.", "City": "New York"}}`
 
 ```sql
-SELECT JSON_QUERY('{"name": "John", "age": 30, "address": {"street": "123 Main St.", "city": "New York"}}', '$.address') AS address
+SELECT JSON_QUERY('{"name": "John", "age": 30, "address": {"Street": "123 Main St.", "City": "New York"}}', '$.address') AS address
 ```
 
 #### 🔹 Hàm JSON_MODIFY
@@ -129,52 +129,57 @@ SELECT * FROM OPENJSON('{"name": "John", "age": 30}')
 Trong SQL Server, bạn có thể thực hiện các thao tác thêm mới, sửa, xóa và cập nhật dữ liệu JSON bằng cách sử dụng các hàm và toán tử JSON tích hợp. Dưới đây là các ví dụ về cách thực hiện các thao tác này.
 
 1. Thêm mới dữ liệu JSON:
-   Để thêm mới dữ liệu JSON vào một cột kiểu dữ liệu JSON trong SQL Server, bạn có thể sử dụng toán tử `JSON_MODIFY()` hoặc hàm `JSON_VALUE()`. Ví dụ:
 
-   ````sql
-   -- Thêm mới một đối tượng JSON vào cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.name', 'John', '$.age', 25)
 
-   -- Thêm mới một mảng JSON vào cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, 'append $', JSON_QUERY('{"name": "John", "age": 25}'))
+```sql
+  CREATE TABLE People (
+      ID INT PRIMARY KEY,
+      Info NVARCHAR(MAX)
+  )
+
+  DECLARE @info NVARCHAR(MAX)
+  SET @info = N'{
+    "firstName": "Nguyễn",
+    "lastName": "Thảo",
+    "age": 25,
+    "address": {
+      "StreetAddress": "290/58 Nơ Trang Long",
+      "City": "Việt Nam",
+      "State": "VN",
+      "postalCode": "76000"
+    },
+    "PhoneNumber": [
+      {"type": "home","number": "212 555-1234"},
+      {"type": "fax","number": "646 555-4567"}
+    ]
+  }'
+  INSERT INTO People (Info) VALUES (@info)
+
    ```
 
-2. Sửa dữ liệu JSON:
-   Để sửa đổi các giá trị trong dữ liệu JSON, bạn có thể sử dụng toán tử `JSON_MODIFY()`. Ví dụ:
+2. Truy vấn dữ liệu JSON
 
-   ````sql
-   -- Sửa đổi giá trị của thuộc tính 'name' trong cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.name', 'Jane')
-   WHERE ID = 1
-   ```
+Bạn có thể sử dụng các hàm như JSON_VALUE, JSON_QUERY để trích xuất giá trị từ chuỗi JSON2. Ví dụ, để lấy địa chỉ và kỹ năng từ cột JSON trong bảng People, bạn có thể sử dụng câu lệnh sau:
 
-3. Xóa dữ liệu JSON:
-   Để xóa một thuộc tính hoặc một phần tử trong dữ liệu JSON, bạn có thể sử dụng toán tử `JSON_MODIFY()` hoặc hàm `JSON_REMOVE()`. Ví dụ:
+```sql
+SELECT 
+  JSON_VALUE(Info, '$.address.StreetAddress') AS Street,
+  JSON_QUERY(Info, '$.skills') AS Skills
+FROM People
+WHERE ISJSON(Info) > 0
 
-   ````sql
-   -- Xóa thuộc tính 'name' trong cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.name', NULL)
-   WHERE ID = 1
+```
 
-   -- Xóa phần tử thứ hai trong một mảng JSON
-   UPDATE YourTable
-   SET jsonData = JSON_REMOVE(jsonData, '$[1]')
-   WHERE ID = 1
-   ```
+3. Update dữ liệu JSON
 
-4. Cập nhật dữ liệu JSON:
-   Để cập nhật dữ liệu JSON, bạn có thể kết hợp các phép toán JSON như `JSON_MODIFY()`, `JSON_VALUE()`, và các toán tử SQL thông thường như `UPDATE`, `SET`, và `WHERE`. Ví dụ:
+Ví dụ đổi `age` thành 36
 
-   ````sql
-   -- Cập nhật giá trị của thuộc tính 'age' trong cột 'jsonData'
-   UPDATE YourTable
-   SET jsonData = JSON_MODIFY(jsonData, '$.age', JSON_VALUE(jsonData, '$.age') + 1)
-   WHERE ID = 1
-   ```
+```sql
+UPDATE People
+SET Info = JSON_MODIFY(Info, '$.age', 36)
+WHERE ID = 1
+
+```
 
 
 
@@ -343,26 +348,26 @@ Các loại indexs mà SQL Server hỗ trợ: https://learn.microsoft.com/en-us/
 Trước khi đi vào từng loại index hãy tạo một table để như sau:
 
 ```sql
--- Tạo cấu trúc bảng customers_test
-CREATE TABLE dbo.customers_test (
-	[customer_id] [int]  NOT NULL,
-	[first_name] [nvarchar](255) NOT NULL,
-	[last_name] [nvarchar](255) NOT NULL,
-	[phone] [varchar](25) NOT NULL,
-	[email] [varchar](150) NOT NULL,
-	[birthday] [date] NULL,
-	[street] [nvarchar](255) NOT NULL,
-	[city] [nvarchar](50) NOT NULL,
-	[state] [nvarchar](50) NOT NULL,
-	[zip_code] [varchar](5) NULL,
+-- Tạo cấu trúc bảng customer_index
+CREATE TABLE dbo.customer_index (
+	[CustomerId] [int]  NOT NULL,
+	[FirstName] [nvarchar](255) NOT NULL,
+	[LastName] [nvarchar](255) NOT NULL,
+	[Phone] [varchar](25) NOT NULL,
+	[Email] [varchar](150) NOT NULL,
+	[Birthday] [date] NULL,
+	[Street] [nvarchar](255) NOT NULL,
+	[City] [nvarchar](50) NOT NULL,
+	[State] [nvarchar](50) NOT NULL,
+	[ZipCode] [varchar](5) NULL,
 );
 -- Xõa dữ liệu nếu có
 DELETE FROM dbo.customer_index
--- Đổ dữ liệu từ table customers, sắp xếp theo birthday
+-- Đổ dữ liệu từ table Customers, sắp xếp theo Birthday
 INSERT INTO dbo.customer_index
-SELECT [customer_id], [first_name], [last_name], [phone], [email],
-       CONVERT(date, [birthday], 103), [street], [city], [state], [zip_code]
-FROM dbo.customers ORDER BY [birthday],[first_name];
+SELECT [CustomerId], [FirstName], [LastName], [Phone], [Email],
+       CONVERT(date, [Birthday], 103), [Street], [City], [State], [ZipCode]
+FROM dbo.Customers ORDER BY [Birthday],[FirstName];
 --Check xem có index không
 EXEC sp_helpindex 'customer_index';
 -- Xem dữ liệu hiện tại
@@ -444,19 +449,19 @@ Các đặc điểm của B-Tree Index:
 - Các dòng không được sắp xếp theo thứ tự nào cả
 
 
-==> Dữ liệu mẫu `customers_test` trên chính là cấu trúc Heap. Tập dữ liệu không có thứ tự.
+==> Dữ liệu mẫu `customer_index` trên chính là cấu trúc Heap. Tập dữ liệu không có thứ tự.
 
 ![heap](img/customer-index.png)
 
-Nhìn vào bảng dữ liệu trong hình dưới đây và bạn hãy trả lời truy vấn "tìm nhân viên có customer_id bằng 5". Bạn sẽ làm thế nào?
-- Bạn sẽ phải tìm trong bảng dữ liệu trên: duyệt qua từng dòng và tìm customer_id = 5.
-- Nếu dòng dữ liệu của customer_id = 5 nằm ở vị trí thứ 2 - 3 thì nhanh chóng tìm thấy nó.
+Nhìn vào bảng dữ liệu trong hình dưới đây và bạn hãy trả lời truy vấn "tìm nhân viên có CustomerId bằng 5". Bạn sẽ làm thế nào?
+- Bạn sẽ phải tìm trong bảng dữ liệu trên: duyệt qua từng dòng và tìm CustomerId = 5.
+- Nếu dòng dữ liệu của CustomerId = 5 nằm ở vị trí thứ 2 - 3 thì nhanh chóng tìm thấy nó.
 - Nhưng nếu nó nằm ở cuối cùng của bảng dữ liệu thì sao ? Bạn sẽ phải mất một ít thời gian, `chi phí thực hiện` việc tìm kiếm đó.
 
 Test một câu lệnh truy vấn
 
 ```sql
-SELECT customer_id FROM dbo.customers_index WHERE customer_id = 5
+SELECT CustomerId FROM dbo.customer_index WHERE CustomerId = 5
 ```
 
 Xem chiến lược thực thi và phân tích bạn sẽ thấy:
@@ -497,8 +502,8 @@ Ví dụ
 
 ```sql
 --Tạo clustered index
-CREATE CLUSTERED INDEX CIX_customers_index_id
-ON customers_index (customer_id ASC);
+CREATE CLUSTERED INDEX CIX_customer_index_id
+ON customer_index (CustomerId ASC);
 ```
 
 Sau khi tạo xong bạn có thể nó được lưu ở tại mục indexs của chính table đó
@@ -507,19 +512,19 @@ Sau khi tạo xong bạn có thể nó được lưu ở tại mục indexs củ
 
 Lưu ý: Bạn cũng có thể tạo bằng giao diện đồ họa, bằng cách click chuột phải lên mục `indexs` --> Chọn `New Index` --> chọn loại index muốn tạo.
 
-Quay trở lại với vụ dụ trên. Bây giờ bạn đánh `clustered index` trên trường customer_id.
+Quay trở lại với vụ dụ trên. Bây giờ bạn đánh `clustered index` trên trường CustomerId.
 
 - Bạn sẽ có được một bảng dữ liệu được đánh số thứ tự rõ ràng.
 - Những dòng dữ liệu trong bảng được gom nhóm lại với nhau tạo thành page, một page có kích thước 8KB và tùy thuộc vào kích thước của mỗi dòng mà chứa được số lượng tương ứng. Giả dụ bảng Customers trên có kích thước 2000 bytes cho mỗi dòng, nên mỗi page sẽ chứa được 4 dòng như hình bên dưới.
 
 ![index](img/b-tree-index.png)
 
-- Do vậy để tìm kiếm customer_id = 5. hệ thống sẽ dễ đang dự đoán được `5` ở vị trí nào.
+- Do vậy để tìm kiếm CustomerId = 5. hệ thống sẽ dễ đang dự đoán được `5` ở vị trí nào.
 
 Test một câu lệnh truy vấn trên:
 
 ```sql
-SELECT customer_id FROM dbo.customers_index WHERE customer_id = 5
+SELECT CustomerId FROM dbo.customer_index WHERE CustomerId = 5
 ```
 
 Xem chiến lược thực thi và phân tích bạn sẽ thấy:
@@ -559,10 +564,10 @@ ON table_name(column_list);
 
 Cũng Quay lại với vị dụ trên.
 
-Bây giờ, nếu câu truy vấn muốn tìm khách hàng theo `phone` thì thế nào? liệu index ở phần trước có giúp được không?
+Bây giờ, nếu câu truy vấn muốn tìm khách hàng theo `Phone` thì thế nào? liệu index ở phần trước có giúp được không?
 
 ```sql
-SELECT customer_id, phone FROM dbo.customers_index WHERE phone = '0968411372'
+SELECT CustomerId, Phone FROM dbo.customer_index WHERE Phone = '0968411372'
 ```
 
 Kế hoạch thưc thi:
@@ -577,21 +582,21 @@ Xem chi tiết chiến lược thực thi:
 
 Qua đó thấy chí phí cao hơn, và nó phải tìm tất cả các dòng.
 
-Vậy thử hỏi bạn có thể tạo thêm một `clustered index` cho cột `phone` như đã tạo với `customer_id` không ? Hiển nhiên là không vì SQL Server không cho phép bạn tạo hơn 1 clustered index trên một table.
+Vậy thử hỏi bạn có thể tạo thêm một `clustered index` cho cột `Phone` như đã tạo với `CustomerId` không ? Hiển nhiên là không vì SQL Server không cho phép bạn tạo hơn 1 clustered index trên một table.
 
 Bạn có thể tối ưu bằng cách tạo `non-clustered index`
 
-- Để có thể sắp xếp `phone`  mà không làm mất đi thứ tự tập dữ liệu theo `customer_id`. SQL Server nhân bản dữ liệu của bảng  thành một tập khác rồi tổ chức sắp xếp index theo `phone` ==> Dung lượng Database sẽ phìn to lên.
+- Để có thể sắp xếp `Phone`  mà không làm mất đi thứ tự tập dữ liệu theo `CustomerId`. SQL Server nhân bản dữ liệu của bảng  thành một tập khác rồi tổ chức sắp xếp index theo `Phone` ==> Dung lượng Database sẽ phìn to lên.
 - Việc nhân bản này chỉ thực hiện trên các cột được chỉ định trong câu lệnh tạo `non-clustered index`
 
 ```sql
-CREATE UNIQUE NONCLUSTERED INDEX UIX_customer_index_phone ON customers_index (phone)
+CREATE UNIQUE NONCLUSTERED INDEX UIX_customer_index_Phone ON customer_index (Phone)
 ```
 
 Sau đó chạy lại truy vấn
 
 ```sql
-SELECT customer_id, phone FROM dbo.customers_index WHERE phone = '0968411372'
+SELECT CustomerId, Phone FROM dbo.customer_index WHERE Phone = '0968411372'
 ```
 
 Kế hoạch thưc thi đã khác, sử dụng NonClustered:
@@ -603,18 +608,18 @@ Chi tiết ra:
 - Estimated Opertator Cost: Chi phí thực thi (0.00032831) 
 - ...Rows to be Read: 1 dòng
 
-Ví dụ tiếp: Bạn cần lấy thêm `first_name` như sau thì sao ? Không lẻ lại đi tạo một `nonclustered index` cho trường first_name nữa ? KHÔNG NÊN !!!
+Ví dụ tiếp: Bạn cần lấy thêm `FirstName` như sau thì sao ? Không lẻ lại đi tạo một `nonclustered index` cho trường FirstName nữa ? KHÔNG NÊN !!!
 
 ```sql
-SELECT customer_id, phone, first_name FROM dbo.customers_index WHERE phone = '0968411372'
+SELECT CustomerId, Phone, FirstName FROM dbo.customer_index WHERE Phone = '0968411372'
 ```
 
-Phân tích chiến lược thực thi khi có thêm `first_name`
+Phân tích chiến lược thực thi khi có thêm `FirstName`
 
 ![plan](img/query-plan.png)
 
-- Đâu tiên: Bạn cần lấy `customer_id`, `phone`, `first_name`. SQL Server sẽ truy cập đến `nonclustered index để` để lấy dữ liệu, nhưng không có cột first_name.
-- Tiếp theo: Lúc này nó dùng `customer_id`  để quay về `clustered index ` lấy thêm cột `first_name` của dòng tương ứng. Hành động này gọi là key lookup và nó tốn chi phí để thực hiện nên tổng chi phí chung của câu truy vấn sẽ tăng lên.
+- Đâu tiên: Bạn cần lấy `CustomerId`, `Phone`, `FirstName`. SQL Server sẽ truy cập đến `nonclustered index để` để lấy dữ liệu, nhưng không có cột FirstName.
+- Tiếp theo: Lúc này nó dùng `CustomerId`  để quay về `clustered index ` lấy thêm cột `FirstName` của dòng tương ứng. Hành động này gọi là key lookup và nó tốn chi phí để thực hiện nên tổng chi phí chung của câu truy vấn sẽ tăng lên.
 
 Bạn có thể rê chuột lên `Nested Loops` xem kết quản chung sau khi gộp 2 hành đồng lại.
 
@@ -628,9 +633,9 @@ Bạn có thể rê chuột lên `Nested Loops` xem kết quản chung sau khi g
 
 Covering index là khi nonclustered index có thể thỏa mãn tất cả các cột cần select của một câu truy vấn.
 
-Với trường hợp trên bạn có 2 cách để nhét thêm `first_name` vào nonclustered index. Một là thêm nó vào dữ liệu ở node lá (leaf node). Hai là cho nó tham gia vào danh sách index key {phone, firt_name}
+Với trường hợp trên bạn có 2 cách để nhét thêm `FirstName` vào nonclustered index. Một là thêm nó vào dữ liệu ở node lá (leaf node). Hai là cho nó tham gia vào danh sách index key {Phone, firt_name}
 
-Bằng cách sử dụng mệnh đề INCLUDE khi tạo nonclustered index. Chúng ta có thể chỉ định những cột nào sẽ được thêm vào index đó. Script dưới đây xóa index hiện có và tạo lại để thêm cột `first_name` vào
+Bằng cách sử dụng mệnh đề INCLUDE khi tạo nonclustered index. Chúng ta có thể chỉ định những cột nào sẽ được thêm vào index đó. Script dưới đây xóa index hiện có và tạo lại để thêm cột `FirstName` vào
 
 Chạy lại truy vấn xem chiến lược thực thi
 
@@ -665,7 +670,7 @@ ON table_name(column_list);
 Bạn cần truy vấn
 
 ```sql
-SELECT customer_id, email FROM dbo.customers_index WHERE email = 'monika.berg@gmail.com'
+SELECT CustomerId, Email FROM dbo.customer_index WHERE Email = 'monika.berg@gmail.com'
 ```
 
 Chạy truy vấn xem chiến lược thực thi
@@ -676,14 +681,14 @@ Chạy truy vấn xem chiến lược thực thi
 - Estimated Opertator Cost: Chi phí thực thi (0.0256122) 
 - ...Rows to be Read: 1445 dòng
 
-Ta thấy nó không tận dụng được Clustered index đã đánh trên trường customer_id. Nên phải tìm tất cả các dòng.
+Ta thấy nó không tận dụng được Clustered index đã đánh trên trường CustomerId. Nên phải tìm tất cả các dòng.
 
-Đặc tính email là duy nhất, nên bạn có thể đánh chỉ mục `unique` cho trường email.
+Đặc tính Email là duy nhất, nên bạn có thể đánh chỉ mục `unique` cho trường Email.
 
 
 ```sql
-CREATE UNIQUE INDEX UIX_customers_index_email
-ON dbo.customers_index(email);
+CREATE UNIQUE INDEX UIX_customer_index_Email
+ON dbo.customer_index(Email);
 ```
 
 Chạy lại truy vấn xem chiến lược thực thi
@@ -698,18 +703,18 @@ Chạy lại truy vấn xem chiến lược thực thi
 Trường hợp bạn cần WHERE thêm các trường khác như:
 
 ```sql
-SELECT customer_id, email, first_name, last_name FROM dbo.customers_index WHERE email = 'monika.berg@gmail.com' AND first_name = 'Monika' AND last_name = 'Berg'
+SELECT CustomerId, Email, FirstName, LastName FROM dbo.customer_index WHERE Email = 'monika.berg@gmail.com' AND FirstName = 'Monika' AND LastName = 'Berg'
 ```
 
-Bạn có thể nhét thêm `first_name`, `last_name` và nonclureds index cùng với email như sau:
+Bạn có thể nhét thêm `FirstName`, `LastName` và nonclureds index cùng với Email như sau:
 
 ```sql
-CREATE UNIQUE INDEX UIX_customers_index_email
-ON dbo.customers_index(email)
-INCLUDE(first_name,last_name);
+CREATE UNIQUE INDEX UIX_customer_index_Email
+ON dbo.customer_index(Email)
+INCLUDE(FirstName,LastName);
 ```
 
-- `first_name,last_name` là danh sách các cột khác (không phải các cột chỉ mục) mà bạn muốn bao gồm trong chỉ mục để cung cấp các dữ liệu bổ sung cho truy vấn. Các cột này không được sắp xếp và không tham gia vào việc tìm kiếm theo.
+- `FirstName,LastName` là danh sách các cột khác (không phải các cột chỉ mục) mà bạn muốn bao gồm trong chỉ mục để cung cấp các dữ liệu bổ sung cho truy vấn. Các cột này không được sắp xếp và không tham gia vào việc tìm kiếm theo.
 
 
 ### 💥  Full-text
@@ -747,8 +752,8 @@ Columnstore index thường được sử dụng trong các hệ thống quản 
 Ví dụ: Thông kê số lượng bán ra theo từng sản phẩm
 
 ```sql
-SELECT product_id, SUM(quantity) FROM order_items
-GROUP BY product_id
+SELECT ProductId, SUM(Quantity) FROM OrderItems
+GROUP BY ProductId
 ```
 
 Phân tích kế hoạch thực thi
@@ -762,8 +767,8 @@ Phân tích kế hoạch thực thi
 Tạo index kết hợp 
 
 ```sql
-CREATE COLUMNSTORE INDEX IX_order_items_productID_quantity_ColumnStore
-ON order_items (product_id,quantity);
+CREATE COLUMNSTORE INDEX IX_OrderItems_productID_Quantity_ColumnStore
+ON OrderItems (ProductId,Quantity);
 ```
 
 Chạy lại truy vấn xem chiến lược thực thi
@@ -791,10 +796,10 @@ Khi tạo filtered index, bạn chỉ định một điều kiện WHERE để c
 Ví dụ
 
 ```sql
-CREATE INDEX ix_cust_phone
-ON dbo.customers(phone)
-INCLUDE (first_name, last_name)
-WHERE phone IS NOT NULL;
+CREATE INDEX ix_cust_Phone
+ON dbo.Customers(Phone)
+INCLUDE (FirstName, LastName)
+WHERE Phone IS NOT NULL;
 ```
 
 Lợi ích chính của filtered index bao gồm:
