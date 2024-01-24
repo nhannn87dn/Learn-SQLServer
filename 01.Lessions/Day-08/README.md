@@ -343,8 +343,8 @@ Các loại indexs mà SQL Server hỗ trợ: https://learn.microsoft.com/en-us/
 Trước khi đi vào từng loại index hãy tạo một table để như sau:
 
 ```sql
--- Tạo cấu trúc bảng customers_test
-CREATE TABLE dbo.customers_test (
+-- Tạo cấu trúc bảng customer_index
+CREATE TABLE dbo.customer_index (
 	[customer_id] [int]  NOT NULL,
 	[first_name] [nvarchar](255) NOT NULL,
 	[last_name] [nvarchar](255) NOT NULL,
