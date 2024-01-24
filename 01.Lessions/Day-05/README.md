@@ -13,12 +13,12 @@ Ví dụ: Liệt kê danh sách giảm giá của những sản phẩm có giá 
 
 ```sql
 SELECT 
-  discount, 
-  COUNT(product_id) AS Total --- Đếm dựa vào ID và đặt tên là Total
-FROM products
-WHERE price > 20000
-GROUP BY discount
-ORDER BY discount ASC
+  Discount, 
+  COUNT(ProductId) AS Total --- Đếm dựa vào ID và đặt tên là Total
+FROM Products
+WHERE Price > 20000
+GROUP BY Discount
+ORDER BY Discount ASC
 ```
 
 Câu lệnh sẽ chạy mệnh đề WHERE trước, lọc ra những sản phẩm có giá > 2000 trước khi đem đi GROUP BY
@@ -32,10 +32,10 @@ Khi bạn sử dụng mệnh đề GROUP BY và có giá trị NULL trong cột 
 Ví dụ: Lấy danh sách thành phố của khách hàng đã đặt hàng.
 
 ```sql
-SELECT shipping_city
-FROM orders
-GROUP BY shipping_city
-ORDER BY shipping_city
+SELECT ShippingCity
+FROM Orders
+GROUP BY ShippingCity
+ORDER BY ShippingCity
 ```
 
 Bạn sẽ thấy giá trị NULL được liệt kê ra ở đầu danh sách.
@@ -48,15 +48,15 @@ Trong SQL Server, mệnh đề GROUP BY ALL được sử dụng để áp dụn
 
 Dưới đây là một ví dụ để hiểu cách sử dụng mệnh đề GROUP BY ALL trong SQL Server:
 
-Giả sử bạn có một bảng "Orders" với các cột "order_id", "customer_id" và "order_amount". Bạn muốn tính tổng số lượng đơn hàng và tổng số tiền cho tất cả các đơn hàng, bao gồm cả các đơn hàng trùng lặp:
+Giả sử bạn có một bảng "Orders" với các cột "OrderId", "CustomerId" và "OrderAmount". Bạn muốn tính tổng số lượng đơn hàng và tổng số tiền cho tất cả các đơn hàng, bao gồm cả các đơn hàng trùng lặp:
 
 ```sql
-SELECT order_id, customer_id, SUM(order_amount) AS TotalAmount
-FROM orders
-GROUP BY ALL order_id, customer_id;
+SELECT OrderId, CustomerId, SUM(OrderAmount) AS TotalAmount
+FROM Orders
+GROUP BY ALL OrderId, CustomerId;
 ```
 
-Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "orders". Kết quả trả về sẽ bao gồm tất cả các cặp order_id và customer_id có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp order_id và customer_id sẽ được tính bằng hàm SUM(TotalAmount).
+Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "Orders". Kết quả trả về sẽ bao gồm tất cả các cặp OrderId và CustomerId có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp OrderId và CustomerId sẽ được tính bằng hàm SUM(TotalAmount).
 
 Lưu ý rằng mệnh đề GROUP BY ALL không phổ biến và thường không được sử dụng trong các trường hợp thông thường. Nó cung cấp một cách để xử lý các bản ghi trùng lặp trong quá trình nhóm dữ liệu.
 
@@ -82,30 +82,30 @@ Tạo một table mới `dbo.sales_summary`
 
 ```sql
 SELECT
-    b.brand_name AS brand,
-    c.category_name AS category,
-    p.model_year,
+    b.BrandName AS brand,
+    c.CategoryName AS category,
+    p.ModelYear,
     round(
         SUM (
-            i.quantity * i.price * (1 - i.discount)
+            i.Quantity * i.Price * (1 - i.Discount)
         ),
         0
     ) sales INTO dbo.sales_summary
 FROM
-    dbo.order_items i
-INNER JOIN dbo.products p ON p.product_id = i.product_id
-INNER JOIN dbo.brands b ON b.brand_id = p.brand_id
-INNER JOIN dbo.categories c ON c.category_id = p.category_id
+    dbo.OrderItems i
+INNER JOIN dbo.Products p ON p.ProductId = i.ProductId
+INNER JOIN dbo.Brands b ON b.BrandId = p.BrandId
+INNER JOIN dbo.Categories c ON c.CategoryId = p.CategoryId
 GROUP BY
-    b.brand_name,
-    c.category_name,
-    p.model_year
+    b.BrandName,
+    c.CategoryName,
+    p.ModelYear
 ORDER BY
-    b.brand_name,
-    c.category_name,
-    p.model_year;
+    b.BrandName,
+    c.CategoryName,
+    p.ModelYear;
 ```
-Bạn sẽ nhận được một bảng dữ liệu tổng hợp doanh thu theo `brand`, `categories` và `year_model`
+Bạn sẽ nhận được một bảng dữ liệu tổng hợp doanh thu theo `brand`, `Categories` và `year_model`
 
 ![grou-set](img/SQL-Server-GROUPING-SETS-sample-table.png)
 
@@ -140,7 +140,7 @@ ORDER BY
     brand;
 ```
 
-Tương tự vậy: Chỉ nhóm theo `categories`
+Tương tự vậy: Chỉ nhóm theo `Categories`
 
 ```sql
 SELECT
@@ -153,7 +153,7 @@ GROUP BY
 ORDER BY
     category;
 ```
-Và một nhóm tổng hợp: tổng doanh thu của tất cả `brand` và `categories`
+Và một nhóm tổng hợp: tổng doanh thu của tất cả `brand` và `Categories`
 
 ```sql
 SELECT
@@ -242,7 +242,7 @@ SELECT
     category,
     SUM (sales) sales
 FROM
-    sales.sales_summary
+    dbo.sales_summary
 GROUP BY
     GROUPING SETS (
         (brand, category),
@@ -389,10 +389,10 @@ Dùng để đếm số lượng bản ghi trong một nhóm.
 ```sql
 -- Đếm số lượng sản phẩm theo từng loại giá
 SELECT
-    price,
-    COUNT(product_id) AS 'NumberOfProducts'
-FROM products
-GROUP BY price
+    Price,
+    COUNT(ProductId) AS 'NumberOfProducts'
+FROM Products
+GROUP BY Price
 ```
 
 #### 🔹 SUM
@@ -400,12 +400,12 @@ GROUP BY price
 Dùng để tính tổng các giá trị trong một cột.
 
 ```sql
--- Tính tổng số lượng tồn kho theo từng nhóm category_id
+-- Tính tổng số lượng tồn kho theo từng nhóm CategoryId
 SELECT
-    category_id, 
+    CategoryId, 
     SUM(Stock) AS 'total_stock'
-FROM products
-GROUP BY category_id
+FROM Products
+GROUP BY CategoryId
 ```
 
 #### 🔹 MIN
@@ -413,12 +413,12 @@ GROUP BY category_id
 Dùng để lấy giá trị nhỏ nhất của các giá trị trong một cột.
 
 ```sql
--- Hiển thị sản phẩm có giá thấp nhất theo từng nhóm category_id
+-- Hiển thị sản phẩm có giá thấp nhất theo từng nhóm CategoryId
 SELECT
-    category_id, 
-    MIN(price) AS 'min_price'
-FROM products
-GROUP BY category_id
+    CategoryId, 
+    MIN(Price) AS 'min_Price'
+FROM Products
+GROUP BY CategoryId
 ```
 
 #### 🔹 MIN
@@ -426,12 +426,12 @@ GROUP BY category_id
 Dùng để lấy giá trị lớn nhất của các giá trị trong một cột.
 
 ```sql
--- Hiển thị sản phẩm có giá cao nhất theo từng nhóm category_id
+-- Hiển thị sản phẩm có giá cao nhất theo từng nhóm CategoryId
 SELECT
-    category_id, 
-    MAX(price) AS 'max_price'
-FROM products
-GROUP BY category_id
+    CategoryId, 
+    MAX(Price) AS 'max_Price'
+FROM Products
+GROUP BY CategoryId
 ```
 
 ---
@@ -445,20 +445,20 @@ Ví dụ: Liệt kê danh sách danh mục kèm số lượng sản phẩm có t
 
 ```sql
 SELECT
-  c.*, (SELECT COUNT(product_id) FROM dbo.products AS P WHERE p.category_id = c.product_id) AS 'number_product'
-FROM dbo.categories AS c
+  c.*, (SELECT COUNT(ProductId) FROM dbo.Products AS P WHERE p.CategoryId = c.ProductId) AS 'number_product'
+FROM dbo.Categories AS c
 ```
 
 Ví dụ, bạn có thể sử dụng subquery để tìm tất cả các khách hàng có đơn hàng với tổng giá trị lớn hơn một ngưỡng nào đó:
 
 ```sql
-SELECT customer_name
-FROM dbo.customers
-WHERE customer_id IN (
-    SELECT customer_id
-    FROM dbo.orders
-    GROUP BY customer_id
-    HAVING SUM(order_amount) > 1000
+SELECT CustomerName
+FROM dbo.Customers
+WHERE CustomerId IN (
+    SELECT CustomerId
+    FROM dbo.Orders
+    GROUP BY CustomerId
+    HAVING SUM(OrderAmount) > 1000
 )
 ```
 
@@ -466,22 +466,22 @@ Ví dụ: Lấy thông tin đơn hàng của tất cả khách hàng ở `New Yo
 
 ```sql
 SELECT
-    order_id,
-    order_date,
-    customer_id
+    OrderId,
+    OrderDate,
+    CustomerId
 FROM
-    dbo.orders
+    dbo.Orders
 WHERE
-    customer_id IN (
+    CustomerId IN (
         SELECT
-            customer_id
+            CustomerId
         FROM
-            dbo.customers
+            dbo.Customers
         WHERE
-            city = 'New York'
+            City = 'New York'
     )
 ORDER BY
-    order_date DESC;
+    OrderDate DESC;
 ```
 
 Để có hiệu suất truy vấn cao hơn, khuyến nghị nên chuyển subquery thành JOIN trong các trường hợp nhất định. Lý do là các hệ quản lý cơ sở dữ liệu thường tối ưu hóa truy vấn JOIN và có thể sử dụng các chỉ mục và kỹ thuật tham gia để tìm kiếm và kết hợp dữ liệu hiệu quả.
@@ -502,20 +502,20 @@ Ví dụ
 
 ```sql
 SELECT
-    product_name,
-    price
+    ProductName,
+    Price
 FROM
-    dbo.products
+    dbo.Products
 WHERE
-    -- Nếu price >= với bất kì giá trị nào
+    -- Nếu Price >= với bất kì giá trị nào
     -- trong kết quả SELECT thì WHERE thực thi
-    price >= ANY (
+    Price >= ANY (
         SELECT
-            AVG (price)
+            AVG (Price)
         FROM
-            production.products
+            dbo.Products
         GROUP BY
-            brand_id
+            BrandId
     )
 ```
 
@@ -540,26 +540,26 @@ Ví dụ: Lấy thông tin khách hàng, có đơn hàng mua vào năm 2017.
 
 ```sql
 SELECT
-    customer_id,
-    first_name,
-    last_name,
-    city
+    CustomerId,
+    FirstName,
+    LastName,
+    City
 FROM
-    dbo.customers c
+    dbo.Customers c
 WHERE
     EXISTS (
         -- Đi tìm những khách hàng mua hàng năm 2017
         SELECT
-            customer_id
+            CustomerId
         FROM
-            dbo.orders o
+            dbo.Orders o
         WHERE
-            o.customer_id = c.customer_id
-        AND YEAR (order_date) = 2017
+            o.CustomerId = c.CustomerId
+        AND YEAR (OrderDate) = 2017
     )
 ORDER BY
-    first_name,
-    last_name;
+    FirstName,
+    LastName;
 ```
 
 Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-subquery/
@@ -630,22 +630,22 @@ Ví dụ: Lấy danh sách sản phẩm bao gồm tên sản phẩm, danh mục 
 
 ```sql
 SELECT
-    product_name,
-    category_name,
-    price
+    ProductName,
+    CategoryName,
+    Price
 FROM
-    dbo.products p
-INNER JOIN dbo.categories c 
-    ON c.category_id = p.category_id -- mối quan hệ giữ 2 bảng
+    dbo.Products p
+INNER JOIN dbo.Categories c 
+    ON c.CategoryId = p.CategoryId -- mối quan hệ giữ 2 bảng
 ORDER BY
-    product_name DESC;
+    ProductName DESC;
 ```
 
 Kết quả
 
 ![query inner join](img/SQL-Server-Inner-Join-example.png)
 
-Bảng `products` có trường khóa ngoại `category_id`, dựa vào đó bạn móc nối với Bảng `categories` để lấy tên danh mục dựa vào khóa chính  `category_id`
+Bảng `Products` có trường khóa ngoại `CategoryId`, dựa vào đó bạn móc nối với Bảng `Categories` để lấy tên danh mục dựa vào khóa chính  `CategoryId`
 
 #### 🔹 OUTER JOIN
 
@@ -677,43 +677,43 @@ Phép nối Left Join được biểu diễn với sơ đồ  Venn diagram
 
 ![innner join](img/Join-Left-Join.png)
 
-Ví dụ: Dựa vào mối quan hệ giữ `order_items` và `products` ==> Một sản phẩm có thể nằm trong nhiều đơn hàng
+Ví dụ: Dựa vào mối quan hệ giữ `OrderItems` và `Products` ==> Một sản phẩm có thể nằm trong nhiều đơn hàng
 
-![item-products](img/products-order_items.png)
+![item-Products](img/Products-OrderItems.png)
 
 Hãy đưa ra thống kê sản phẩm thuộc đơn hàng nào ?
 
 ```sql
 SELECT
-    product_name,
-    order_id
+    ProductName,
+    OrderId
 FROM
-    dbo.products p
-LEFT JOIN dbo.order_items o ON o.product_id = p.product_id
+    dbo.Products p
+LEFT JOIN dbo.OrderItems o ON o.ProductId = p.ProductId
 ORDER BY
-    order_id;
+    OrderId;
 ```
 
 Dựa vào qua hệ giữa 3 bảng sau: Bạn có thể lấy thêm nhiều thông tin hơn, bằng cách kết hợp hơn 1 phép LEFT JOIN.
 
-![item-products](img/orders-order_items-products.png)
+![item-Products](img/Orders-OrderItems-Products.png)
 
 Hãy đưa ra thống kê sản phẩm thuộc đơn hàng nào, kèm ngày bán ra ?
 
 ```sql
 SELECT
-    p.product_name,
-    o.order_id,
-    i.item_id,
-    o.order_date
+    p.ProductName,
+    o.OrderId,
+    i.ItemId,
+    o.OrderDate
 FROM
-    production.products p
- LEFT JOIN sales.order_items i
-  ON i.product_id = p.product_id
- LEFT JOIN sales.orders o
-  ON o.order_id = i.order_id
+    production.Products p
+ LEFT JOIN dbo.OrderItems i
+  ON i.ProductId = p.ProductId
+ LEFT JOIN dbo.Orders o
+  ON o.OrderId = i.OrderId
 ORDER BY
-    order_id;
+    OrderId;
 ```
 
 #### 🔹 RIGHT JOIN
@@ -777,21 +777,21 @@ FROM table_name t1
 JOIN table_name t2 ON t1.column = t2.column;
 ```
 
-Cùng quan sát table `staffs` chúng ta thấy có trường manager_id, là khóa ngoại nằm tham chiếu tới chính table `staffs`
+Cùng quan sát table `Staffs` chúng ta thấy có trường ManagerId, là khóa ngoại nằm tham chiếu tới chính table `Staffs`
 
-![self join](img/staffs.png)
+![self join](img/Staffs.png)
 
 Bạn có thể hiểu trong mô hình cây quản lý nhân sự: cấp trên <==> cấp dưới
 
-Dựa vào trường `manager_id` dễ dàng tìm ra ai là quản lý của một người
+Dựa vào trường `ManagerId` dễ dàng tìm ra ai là quản lý của một người
 
 ```sql
 SELECT
-    e.first_name + ' ' + e.last_name employee,
-    m.first_name + ' ' + m.last_name manager
+    e.FirstName + ' ' + e.LastName employee,
+    m.FirstName + ' ' + m.LastName manager
 FROM
-    dbo.staffs e
-LEFT JOIN dbo.staffs m ON m.staff_id = e.manager_id
+    dbo.Staffs e
+LEFT JOIN dbo.Staffs m ON m.StaffId = e.ManagerId
 ORDER BY
     manager;
 ```
@@ -846,16 +846,16 @@ Ví dụ: Thống kê doanh thu bán ra theo nhân viên trong năm 2018
 -- Truy vấn và tạo bảng ảo
 WITH cte_sales_amounts (staff, sales, year) AS (
     SELECT    
-        first_name + ' ' + last_name, 
-        SUM(quantity * price * (1 - discount)),
-        YEAR(order_date)
+        FirstName + ' ' + LastName, 
+        SUM(quantity * Price * (1 - Discount)),
+        YEAR(OrderDate)
     FROM    
-        dbo.orders o
-    INNER JOIN dbo.order_items i ON i.order_id = o.order_id
-    INNER JOIN dbo.staffs s ON s.staff_id = o.staff_id
+        dbo.Orders o
+    INNER JOIN dbo.OrderItems i ON i.OrderId = o.OrderId
+    INNER JOIN dbo.Staffs s ON s.StaffId = o.StaffId
     GROUP BY 
-        first_name + ' ' + last_name,
-        year(order_date)
+        FirstName + ' ' + LastName,
+        year(OrderDate)
 )
 -- Câu lệnh SELECT này phải thực hiện đồng thời với câu lệnh trên.
 SELECT
@@ -889,30 +889,30 @@ Khi sử dụng UNION trong câu lệnh SQL, dưới đây là một số lưu �
 
 1. Hiệu suất: UNION có thể tạo ra một tập kết quả lớn và tốn tài nguyên. Hãy đảm bảo rằng sử dụng UNION chỉ khi cần thiết và kiểm tra hiệu suất của câu lệnh của bạn.
 
-Ví dụ: Nếu kết quả truy vấn thông tin từ table `staffs` và `customer` thành một danh sách:
+Ví dụ: Nếu kết quả truy vấn thông tin từ table `Staffs` và `customer` thành một danh sách:
 
 ```sql
 SELECT
-    first_name, last_name
-FROM dbo.staffs
+    FirstName, LastName
+FROM dbo.Staffs
 UNION --Loại bỏ giá trị trùng lặp sau khi kết hợp
 SELECT
-    first_name, last_name
+    FirstName, LastName
 FROM
-    dbo.customers;
+    dbo.Customers;
 ```
 
 Câu lệnh trên sẽ loại bỏ những records trùng lặp. Nếu bạn không muốn loại bỏ records trùng thì dùng `UNION ALL`
 
 ```sql
 SELECT
-    first_name, last_name
-FROM dbo.staffs
+    FirstName, LastName
+FROM dbo.Staffs
 UNION ALL -- Giữ giá trị trùng lặp sau khi kết hợp
 SELECT
-    first_name, last_name
+    FirstName, LastName
 FROM
-    dbo.customers;
+    dbo.Customers;
 ```
 
 #### 🔹 INTERSECT
@@ -921,22 +921,22 @@ Dùng để lấy các bản ghi chung của 2 hoặc nhiều câu lệnh SELECT
 
 ![SQL-Server-INTERSECT-Illustration](img/SQL-Server-INTERSECT-Illustration.png)
 
-Ví dụ có `order_items` và `products` ==> cả 2 đều cho trường product_id.
+Ví dụ có `OrderItems` và `Products` ==> cả 2 đều cho trường ProductId.
 
-![o-p](img/products-order_items.png)
+![o-p](img/Products-OrderItems.png)
 
 Dựa vào đó bạn có thể: Lấy ra danh sách những sản phẩm ĐÃ được bán ra.
 
 ```sql
 SELECT
-    product_id
+    ProductId
 FROM
-    dbo.products
+    dbo.Products
 INTERSECT
 SELECT
-    product_id
+    ProductId
 FROM
-    dbo.order_items;
+    dbo.OrderItems;
 ```
 
 #### 🔹 EXCEPT
@@ -949,14 +949,14 @@ Dựa vào đó bạn có thể: Lấy ra danh sách những sản phẩm CHƯA 
 
 ```sql
 SELECT
-    product_id
+    ProductId
 FROM
-    dbo.products
+    dbo.Products
 EXCEPT
 SELECT
-    product_id
+    ProductId
 FROM
-    dbo.order_items;
+    dbo.OrderItems;
 ```
 
 ---

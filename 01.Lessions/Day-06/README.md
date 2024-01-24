@@ -36,31 +36,31 @@ DECLARE @variable_name data_type [= value]
 Ví dụ:
 
 ```sql
-DECLARE @model_year AS SMALLINT;
+DECLARE @ModelYear AS SMALLINT;
 -- Hoặc khai báo nhiều biến trong 1 câu lệnh
-DECLARE @model_year SMALLINT, 
-        @product_name VARCHAR(MAX);
+DECLARE @ModelYear SMALLINT, 
+        @ProductName VARCHAR(MAX);
 ```
 
 #### 🔹  Gán giá trị cho Biến
 
 ```sql
-SET @model_year = 2018;
+SET @ModelYear = 2018;
 ```
 
 #### 🔹 Sử dụng Biến
 
 ```sql
 SELECT
-    product_name,
-    model_year,
-    price 
+    ProductName,
+    ModelYear,
+    Price 
 FROM 
-    dbo.products
+    dbo.Products
 WHERE 
-    model_year = @model_year
+    ModelYear = @ModelYear
 ORDER BY
-    product_name;
+    ProductName;
 ```
 
 Bạn có thể gán giá trị cho biến với một kết quả truy vấn
@@ -71,7 +71,7 @@ SET @product_count = (
     SELECT 
         COUNT(*) 
     FROM 
-        dbo.products 
+        dbo.Products 
 );
 ```
 
@@ -90,11 +90,11 @@ PRINT @product_count;
 
 Synonyms trong SQL Server là một đối tượng CSDL được sử dụng để tạo ra một tên định danh thay thế cho một đối tượng khác trong cùng CSDL hoặc CSDL khác. Synonym cho phép bạn tham chiếu đến một đối tượng bằng một tên ngắn gọn và dễ nhớ, thay vì sử dụng tên đối tượng đầy đủ và phức tạp.
 
-Ví dụ, để tạo một synonym có tên "ctm" để tham chiếu đến bảng "dbo.customers" trong cùng CSDL:
+Ví dụ, để tạo một synonym có tên "ctm" để tham chiếu đến bảng "dbo.Customers" trong cùng CSDL:
 
 ```sql
 CREATE SYNONYM ctm
-FOR dbo.customers;
+FOR dbo.Customers;
 
 -- Sau đó bạn có thể sử dụng
 SELECT * FROM ctm --tên ngắn hơn
@@ -134,16 +134,16 @@ Ví dụ:
 ```sql
 BEGIN
     SELECT
-        product_id,
-        product_name
+        ProductId,
+        ProductName
     FROM
-        dbo.products
+        dbo.Products
     WHERE
-        price > 100000;
+        Price > 100000;
 
     IF @@ROWCOUNT = 0
         -- In giá trị ra cửa sổ message
-        PRINT 'No product with price greater than 100000 found';
+        PRINT 'No product with Price greater than 100000 found';
 END
 
 ```
@@ -168,12 +168,12 @@ BEGIN
     DECLARE @sales INT;
 
     SELECT 
-        @sales = SUM(price * quantity)
+        @sales = SUM(Price * Quantity)
     FROM
-        dbo.order_items AS i
-        INNER JOIN dbo.orders o ON o.order_id = i.order_id
+        dbo.OrderItem AS i
+        INNER JOIN dbo.Orders o ON o.OrderId = i.OrderId
     WHERE
-        YEAR(order_date) = 2018;
+        YEAR(OrderDate) = 2018;
 
     SELECT @sales;
 
@@ -346,7 +346,7 @@ CREATE OR ALTER FUNCTION [schema_name.]function_name (parameter_list)
         END
 ```
 
-Ví dụ: Viết 1 function trả về FullName dựa vào  FirstName và LastName từ bảng customers
+Ví dụ: Viết 1 function trả về FullName dựa vào  FirstName và LastName từ bảng Customers
 
 ```sql
 -- Dùng từ khóa CREATE FUNCTION
@@ -369,14 +369,14 @@ Sử dụng
 
 
 ```sql
-SELECT dbo.udsf_GetFullName(first_name, last_name) AS full_name
-FROM dbo.customers
+SELECT dbo.udsf_GetFullName(FirstName, LastName) AS full_name
+FROM dbo.Customers
 ```
 
 Ví dụ: Viết 1 function trả về thành tiền sản phẩm
 
 ```sql
-CREATE FUNCTION udsf_GetAmountProduct(@Price money, @Discount decimal(18, 2), @Quantity decimal(18, 2))
+CREATE FUNCTION udsf_GetAmountProduct(@Price decimal(18, 2), @Discount decimal(18, 2), @Quantity decimal(18, 2))
 RETURNS decimal(18, 2)
 AS
 BEGIN
@@ -387,8 +387,8 @@ END
 Sử dụng:
 
 ```sql
-SELECT dbo.udsf_GetAmountProduct(price, discount, quantity) AS total_amount
-FROM dbo.order_items
+SELECT dbo.udsf_GetAmountProduct(Price, Discount, Quantity) AS total_amount
+FROM dbo.OrderItem
 ```
 
 
@@ -422,7 +422,7 @@ DROP FUNCTION [schema_name.]function_name;
 **Table-valued Functions**: nó nhận đầu vào và trả về một bảng (table)
 
 
-Ví dụ: Viết một Table-valued Functions trả về danh sách các sản phẩm có giảm giá (discount > 0)
+Ví dụ: Viết một Table-valued Functions trả về danh sách các sản phẩm có giảm giá (Discount > 0)
 
 
 ```sql
@@ -432,8 +432,8 @@ AS
 RETURN
 (
     SELECT *
-    FROM dbo.products
-    WHERE discount > 0
+    FROM dbo.Products
+    WHERE Discount > 0
 )
 ```
 
@@ -515,11 +515,11 @@ SELECT
         WHEN 3 THEN 'Rejected'
         WHEN 4 THEN 'Completed'
     END AS order_status, 
-    COUNT(order_id) order_count
+    COUNT(OrderId) order_count
 FROM    
-    sales.orders
+    sales.Orders
 WHERE 
-    YEAR(order_date) = 2018
+    YEAR(OrderDate) = 2018
 GROUP BY 
     order_status;
 ```
@@ -547,30 +547,30 @@ Ví dụ:
 
 ```sql
 SELECT    
-    o.order_id, 
-    SUM(quantity * price) order_value,
+    o.OrderId, 
+    SUM(Quantity * Price) order_value,
     CASE
-        WHEN SUM(quantity * price) <= 500 
+        WHEN SUM(Quantity * Price) <= 500 
             THEN 'Very Low'
-        WHEN SUM(quantity * price) > 500 AND 
-            SUM(quantity * price) <= 1000 
+        WHEN SUM(Quantity * Price) > 500 AND 
+            SUM(Quantity * Price) <= 1000 
             THEN 'Low'
-        WHEN SUM(quantity * price) > 1000 AND 
-            SUM(quantity * price) <= 5000 
+        WHEN SUM(Quantity * Price) > 1000 AND 
+            SUM(Quantity * Price) <= 5000 
             THEN 'Medium'
-        WHEN SUM(quantity * price) > 5000 AND 
-            SUM(quantity * price) <= 10000 
+        WHEN SUM(Quantity * Price) > 5000 AND 
+            SUM(Quantity * Price) <= 10000 
             THEN 'High'
-        WHEN SUM(quantity * price) > 10000 
+        WHEN SUM(Quantity * Price) > 10000 
             THEN 'Very High'
     END order_priority
 FROM    
-    dbo.orders o
-INNER JOIN sales.order_items i ON i.order_id = o.order_id
+    dbo.Orders o
+INNER JOIN sales.OrderItem i ON i.OrderId = o.OrderId
 WHERE 
-    YEAR(order_date) = 2018
+    YEAR(OrderDate) = 2018
 GROUP BY 
-    o.order_id;
+    o.OrderId;
 
 ```
 
@@ -590,18 +590,18 @@ Ví dụ thực tế:
 
 ```sql
 SELECT 
-    first_name, 
-    last_name, 
-    COALESCE(phone,'N/A') phone, 
-    email
+    FirstName, 
+    LastName, 
+    COALESCE(Phone,'N/A') Phone, 
+    Email
 FROM 
-    dbo.customers
+    dbo.Customers
 ORDER BY 
-    first_name, 
-    last_name;
+    FirstName, 
+    LastName;
 ```
 
-Trường phone nếu NULL thì trả về 'N/A', còn không thì lấy chính nó.
+Trường Phone nếu NULL thì trả về 'N/A', còn không thì lấy chính nó.
 
 Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-coalesce/
 
@@ -1006,7 +1006,7 @@ BEGIN TRANSACTION;
 -- Thêm vào invoice_items
 
 INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Headphone', 80, 0.08),
+VALUES (1, 'HeadPhone', 80, 0.08),
        (1, 'Mainboard', 30, 0.08);
 
 INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
@@ -1033,7 +1033,7 @@ BEGIN TRANSACTION;
 -- Thêm vào invoice_items
 
 INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Headphone', 80, 0.08),
+VALUES (1, 'HeadPhone', 80, 0.08),
        (1, 'Mainboard', 30, 0.08);
 
 SAVE TRANSACTION Savepoint1
