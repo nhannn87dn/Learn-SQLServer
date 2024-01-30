@@ -50,11 +50,15 @@ Khai thác yêu cầu khách hàng thực tế ==> Chuyển thành Database
 
 Tình huống:
 
-- Chủ khách sạn muốn số hóa việc quản lý phòng, đặt phòng khách sạn muốn:
-  - Quản lý phòng: Xem được danh sách phòng khách sạn đang có, bao gồm số lượng phòng cho mỗi loại phòng, phòng nào đang trống...
-  - Quản lý Danh mục phòng: Ví dụ phòng Standard, Superior, Deluxe, Suite
-  - Đặt phòng: Quản lí đơn đặt phòng
-  - Quản lý nhân viên: Danh sách nhân viên
+- Chủ cửa hàng bán đồ công nghệ đặt hàng làm một hệ thống quản lý bán hàng. Bạn hãy đưa ra ý tưởng mô hình hóa quản lý bán hàng.
 
-Hãy vẽ sơ đồ E.R.D và chuẩn hóa thành chuẩn 3NF
+Gợi ý làm theo các bước:
+
+- Cần những thực thế nào ?
+- Thực thể đó có thuộc tính nào ?
+- Môi quan hệ giữa các thực thể đó là gì ?
+
+
+
+==> Chuẩn hóa dữ liệu thành chuẩn 3NF, sau đó vẻ sơ đồ E-R để thể hiện mối quan hệ giữa các thực thể.
 

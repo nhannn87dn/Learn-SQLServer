@@ -15,18 +15,22 @@ Mục đích chính của việc chuẩn hóa cơ sở dữ liệu là tránh s�
 
 Có thể đạt được các mối quan hệ này bằng cách sử dụng `khóa chính`, `khóa ngoại` và `khóa tổng hợp`.
 
+Để làm được việc này, khóa chính trong một bảng, chẳng hạn như nhân viên_wages, có liên quan đến giá trị từ một bảng khác, chẳng hạn như dữ liệu nhân viên.
 
-- Khóa chính là cột xác định duy nhất các hàng dữ liệu trong bảng đó. Đó là mã định danh duy nhất như ID nhân viên, ID sinh viên, số nhận dạng cử tri (VIN), v.v.
+N.B.: Khóa chính là cột xác định duy nhất các hàng dữ liệu trong bảng đó. Đó là mã định danh duy nhất như ID nhân viên, ID sinh viên, số nhận dạng cử tri (VIN), v.v.
 
-- Khóa ngoại là trường liên quan đến khóa chính trong bảng khác.
+Khóa ngoại là trường liên quan đến khóa chính trong bảng khác.
 
-- Khóa tổng hợp giống như khóa chính nhưng thay vì có một cột, nó có nhiều cột.
+Khóa tổng hợp giống như khóa chính nhưng thay vì có một cột, nó có nhiều cột.
 
-### 💥 1NF 2NF and 3NF là gì ?
+### 💥 Các bước phân tích, thiết kế CSDL
 
-1NF, 2NF, and 3NF là một trong các kiểu chuẩn hóa dữ liệu. Chúng có tên gọi chuẩn là: first normal form, second normal form, và third normal form.
+Trong thiết kế CSDL SQL Server, các khái niệm Normal 1 (1NF), Normal 2 (2NF) và Normal 3 (3NF) liên quan đến quy tắc bảo toàn tính nguyên vẹn dữ liệu trong quá trình lưu trữ và truy xuất dữ liệu. 
 
-Ngoài ra còn có các chuẩn như: 4NF (fourth normal form) và  5NF (fifth normal form) . Thậm chí còn có 6NF (sixth normal form), nhưng dạng bình thường phổ biến nhất mà bạn sẽ thấy là 3NF (third normal form).
+Các nguyên tắc chuẩn hóa giúp tăng tính nhất quán, hiệu quả và dễ quản lý cho CSDL SQL Server, giúp tránh các vấn đề như sự lặp lại dữ liệu, phụ thuộc phi chức năng và không nhất quán dữ liệu.
+
+---
+
 
 
 #### 🔹 First Normal Form – 1NF
@@ -61,16 +65,14 @@ Khi đạt được chuẩn 2NF thì nó sẽ loại bỏ các nhóm lặp lại
 
 ---
 
-### 💥 Ví dụ
+### 💥 Xét ví dụ (Normalization)
 
-Có một bảng dữ liệu thô chưa được chuẩn hóa như sau:
-
-| employee_id | name  | job_code | job       | state_code | home_state |
-|------------|-------|------------|---------------------|------------|------------|
-| E001       | Alice | J01,   J02 | Chef,   Waiter      | 26         | Michigan   |
-| E002       | Bob   | J02,   J03 | Waiter,   Bartender | 56         | Wyoming    |
-| E003       | Alice | J01        | Chef                | 56         | Wyomin     |
-
+| EmployeeId | ProjectId | ProjectName       | EmployeeName | Grade | Salary |
+|------------|-----------|-------------------|--------------|-------|--------|
+| 142        | 113, 124  | BLUE STAR, MAGNUM | John         | A     | 20,000 |
+| 168        | 113       | BLUE STAR         | James        | B     | 15,000 |
+| 263        | 113       | BLUE STAR         | Andrew       | C     | 10,000 |
+| 109        | 124       | MAGNUM            | Bob          | C     | 10,000 |
 
 Bảng trên bao gồm các điểm dị thường sau:
 
@@ -79,95 +81,182 @@ Bảng trên bao gồm các điểm dị thường sau:
 - Updation Anomaly
 - Redundancy / Duplication / Repetition
 
+---
 
-Phân tích:
+#### 🔹 Điểm dị thường về INSERTION
 
-- Giá trị tại mỗi ô chưa phải là giá trị đơn
-- Đã có khóa chính
+- Cột "ProjectId" trong hàng đầu tiên có giá trị "113, 124". Điều này chỉ ra rằng một nhân viên có thể tham gia vào nhiều dự án (113 và 124). Tuy nhiên, trong các hàng tiếp theo, cột "ProjectId" chỉ chứa một giá trị duy nhất cho mỗi hàng. Điều này tạo ra sự không nhất quán trong dữ liệu khi INSERT vào bảng.
+- Cột "ProjectName" trong hàng đầu tiên có giá trị "BLUE STAR, MAGNUM", chỉ ra rằng dự án này có tên gồm hai phần "BLUE STAR" và "MAGNUM". Tuy nhiên, trong các hàng tiếp theo, cột "ProjectName" chỉ chứa một tên dự án duy nhất cho mỗi hàng. Điều này cũng tạo ra sự không nhất quán trong dữ liệu khi INSERT vào bảng.
 
-Để đạt được chuẩn 1NF bạn cần xử lý lại thành:
+>LƯU Ý
+Điểm dị thường INSERTION trên liên quan đến việc chèn (INSERT) dữ liệu vào bảng, khi các giá trị của cột "ProjectId" và "ProjectName" không được đồng nhất cho các hàng tương ứng. Điều này cần được sửa chữa để đảm bảo tính nhất quán và chuẩn hóa dữ liệu trong cơ sở dữ liệu.
 
-| employee_id | name  | job_code | job       | state_code | home_state |
-|-------------|-------|----------|-----------|------------|------------|
-| E001        | Alice | J01      | Chef     | 26         | Michigan   |
-| E001        | Alice | J02      | Waiter    | 26         | Michigan   |
-| E002        | Bob   | J02      | Waiter    | 56         | Wyoming    |
-| E002        | Bob   | J03      | Bartender | 56         | Wyoming    |
-| E003        | Alice | J01      | Chef      | 56         | Wyoming    |
+---
 
+#### 🔹Điểm dị thường về DELETION
 
-Nhưng ngay cả khi bạn chỉ biết `employee_id` của một người, bạn vẫn có thể xác định tên, `home_state` và `state_code` của họ (vì họ là cùng một người). Điều này có nghĩa là tên, `home_state` và `state_code` phụ thuộc vào `employee_id` (là một phần của khóa chính composite).
+- Nếu bạn muốn xóa thông tin về một dự án cụ thể, ví dụ như dự án có "ProjectId" là 113, việc xóa dự án này sẽ không chỉ xóa hàng chứa dự án này mà còn ảnh hưởng đến các hàng khác. Ví dụ, nếu bạn xóa hàng chứa dự án có "ProjectId" là 113, thì hàng của nhân viên James và Andrew cũng sẽ bị xóa vì cả hai nhân viên này đều tham gia dự án 113. Điều này gây ra sự không nhất quán và mất mát dữ liệu trong bảng.
+- Nếu bạn muốn xóa thông tin về một nhân viên cụ thể, việc xóa nhân viên này cũng sẽ ảnh hưởng đến các hàng khác. Ví dụ, nếu bạn xóa hàng chứa thông tin về nhân viên James, thì hàng của dự án có "ProjectId" là 113 cũng sẽ bị xóa vì nhân viên James tham gia dự án 113. Điều này cũng dẫn đến sự không nhất quán và mất mát dữ liệu trong bảng.
 
-Chúng ta còn thấy sự dư thừa về dữ liệu: 56 và Wyoming
+>LƯU Ý:
+Điểm dị thường DELETION trên liên quan đến việc xóa dữ liệu trong bảng, khi việc xóa một hàng có thể ảnh hưởng đến các hàng khác trong bảng. Điều này cần được xử lý một cách thích hợp để đảm bảo tính nhất quán và bảo toàn dữ liệu trong cơ sở dữ liệu.
 
-Do đó, bảng này không đạt chuẩn 2NF. Chúng ta nên tách chúng thành một bảng riêng biệt để đạt chuẩn 2NF.
+---
 
-**📰 Bảng employee_roles**
+#### 🔹 Điểm dị thường về UPDATION
 
-| employee_id | job_code |
-|-------------|----------|
-| E001        | J01      |
-| E001        | J02      |
-| E002        | J02      |
-| E002        | J03      |
-| E003        | J01      |
+- Cột "ProjectId": Điểm dị thường ở đây là cập nhật giá trị của cột "ProjectId" trong một hàng. Vì cột "ProjectId" trong bảng ghi đầu tiên chứa giá trị "113, 124", việc cập nhật giá trị này thành một giá trị duy nhất sẽ gây ra sự không nhất quán trong dữ liệu. Nếu chỉ cập nhật "ProjectId" thành một giá trị duy nhất, ví dụ như 113 hoặc 124, thì thông tin về việc nhân viên tham gia vào nhiều dự án sẽ bị mất.
+- Cột "ProjectName": Điểm dị thường ở đây là cập nhật giá trị của cột "ProjectName" trong một hàng. Vì cột "ProjectName" trong bảng ghi đầu tiên chứa giá trị "BLUE STAR, MAGNUM", việc cập nhật giá trị này thành một tên dự án duy nhất sẽ gây ra sự không nhất quán trong dữ liệu. Nếu chỉ cập nhật "ProjectName" thành một tên dự án duy nhất, ví dụ như "BLUE STAR" hoặc "MAGNUM", thì thông tin về việc một dự án có nhiều tên sẽ bị mất.
 
-**📰 Bảng employees**
+>LƯU Ý:
+Điểm dị thường UPDATION trên liên quan đến việc cập nhật dữ liệu trong bảng, khi cập nhật giá trị của các cột "ProjectId" và "ProjectName" có thể gây ra sự không nhất quán và mất mát thông tin trong dữ liệu. Điều này cần được xử lý một cách cẩn thận để đảm bảo tính nhất quán và bảo toàn dữ liệu trong cơ sở dữ liệu.
 
-| employee_id | name  | state_code | home_state |
-|-------------|-------|------------|------------|
-| E001        | Alice | 26         | Michigan   |
-| E002        | Bob   | 56         | Wyoming    |
-| E003        | Alice | 56         | Wyoming    |
+---
 
-**📰 Bảng jobs**
+#### 🔹Điểm dị thường về REPEATION
 
-| job_code | job       |
-|----------|-----------|
-| J01      | Chef      |
-| J02      | Waiter    |
-| J03      | Bartender |
+- Cột "ProjectId" và "ProjectName" trong bảng trên chứa các giá trị lặp lại. Ví dụ, dự án có "ProjectId" là 113 và 124 có tên là "BLUE STAR, MAGNUM". Điều này dẫn đến sự lặp lại dữ liệu trong bảng.
+- Cột "Grade" tương ứng với Salary trong bảng trên cũng chứa các giá trị lặp lại. Ví dụ, nhân viên có "EmployeeId" là 109 và 263 đều có "Grade" là C và đều là 10,000. Điều này dẫn đến sự lặp lại dữ liệu trong bảng.
 
+---
 
-`home_state` hiện tại phụ thuộc vào `state_code`. Vì vậy, nếu bạn biết `state_code`, bạn có thể tìm giá trị của `home_state`.
+### 💥 First Normal Form (1NF)
 
-Để tiến xa hơn, chúng ta nên tách chúng thành một bảng riêng biệt khác để đạt chuẩn 3NF.
+*   Để đảm bảo tính nhất quán và chuẩn hóa dữ liệu trong cơ sở dữ liệu, các điểm dị thường INSERTION, DELETION và UPDATION cần được xử lý một cách thích hợp. Để làm được điều này, bảng cần được chuyển đổi thành First Normal Form (1NF).
+    
+*   Để đạt được 1NF, bảng cần thỏa mãn các điều kiện sau:
+    
+    *   Các giá trị trong mỗi cột phải là giá trị đơn (Atomic value).
+    *   Các giá trị trong mỗi cột cùng một kiểu dữ liệu (Data type).
+    *   Các hàng trong bảng phải có một `khóa chính duy nhất` để xác định một cách duy nhất mỗi hàng dữ liệu trong bảng.
 
 
-**📰 Bảng employee_roles**
+Để đạt được 1NF, nếu có một trường có giá trị lặp lại trong một hàng dữ liệu, ta cần chia thành các bảng riêng biệt và tạo quan hệ giữa chúng bằng cách sử dụng khóa chính và khóa ngoại.
 
-| employee_id | job_code |
-|-------------|----------|
-| E001        | J01      |
-| E001        | J02      |
-| E002        | J02      |
-| E002        | J03      |
-| E003        | J01      |
-
-**📰 Bảng employees**
-
-| employee_id | name  | state_code |
-|-------------|-------|------------|
-| E001        | Alice | 26         |
-| E002        | Bob   | 56         |
-| E003        | Alice | 56         |
+Mục tiêu của chuẩn 1NF là loại bỏ các phần tử đa trị (multivalued) và lặp lại (repeating) trong bảng dữ liệu, giúp tăng tính nhất quán và hiệu quả trong việc truy xuất dữ liệu.
 
 
-**📰 Bảng states**
+*   Cách làm như sau:
+    
+ Ở bảng trên, cột "ProjectId" chứa nhiều giá trị phân tách bằng dấu phẩy. Để đạt chuẩn 1NF, ta cần tách cột này thành các hàng riêng biệt.
 
-| state_code | home_state |
-|------------|------------|
-| 26         | Michigan   |
-| 56         | Wyoming    |
+ | EmployeeId | ProjectId | ProjectName | EmployeeName | Grade | Salary |
+|------------|-----------|-------------|--------------|-------|--------|
+| 142        | 113       | BLUE STAR   | John         | A     | 20,000 |
+| 142        | 124       | MAGNUM      | John         | A     | 20,000 |
+| 168        | 113       | BLUE STAR   | James        | B     | 15,000 |
+| 263        | 113       | BLUE STAR   | Andrew       | C     | 10,000 |
+| 109        | 124       | MAGNUM      | Bob          | C     | 10,000 |
 
-**📰 Bảng jobs**
 
-| job_code | job       |
-|----------|-----------|
-| J01      | Chef      |
-| J02      | Waiter    |
-| J03      | Bartender |
+### 💥 Second Normal Form (2NF)
 
+*   Để đạt được 2NF, bảng cần thỏa mãn các điều kiện sau:
+    
+    *  Đạt chuẩn 1NF
+    *   Các cột không phải là khóa chính (non-key columns) phải phụ thuộc vào toàn bộ khóa chính (entire primary key).
+    *   Xây dựng mối quan hệ giữa các bảng.
+
+Nếu có trường phi khóa phụ thuộc vào một phần của khóa chính, ta cần tách bảng thành các bảng riêng biệt để đảm bảo tính chất này. Bằng cách này, ta giảm thiểu sự lặp lại dữ liệu và đảm bảo tính nhất quán trong cơ sở dữ liệu.
+
+2NF là một bước tiến quan trọng trong việc chuẩn hóa cơ sở dữ liệu và giúp cải thiện tính nhất quán và hiệu quả trong việc truy xuất dữ liệu.
+
+
+*   Cách làm như sau:
+    
+    *   Tạo bảng mới có tên là Employees\_Projects với các cột: EmployeeId và ProjectId.
+    *   Trong bảng Employees\_Projects, cả hai cột EmployeeId và ProjectId tham gia cùng làm 1 khóa chính (primary key) để định danh mỗi hàng một cách duy nhất.
+    *   Xóa cột ProjectId trong bảng Employees.
+    *   Thiết lập khóa chính cho bảng Employees là cột EmployeeId.
+    *   Tạo mối quan hệ giữa bảng Employees và bảng Employees\_Projects thông qua cột EmployeeId.
+    *   Tạo mối quan hệ giữa bảng Projects và bảng Employees\_Projects thông qua cột ProjectId.
+
+
+**📰 Bảng Employees_Projects:**
+
+| EmployeeId | ProjectId |
+|------------|-----------|
+| 142        | 113       |
+| 142        | 124       |
+| 168        | 113       |
+| 263        | 113       |
+| 109        | 124       |
+
+
+**📰 Bảng Projects:**
+
+| ProjectId | ProjectName |
+|-----------|-------------|
+| 113       | BLUE STAR   |
+| 124       | MAGNUM      |
+
+**📰 Bảng Employees:**
+
+| EmployeeId | EmployeeName | Grade | Salary |
+|------------|--------------|-------|--------|
+| 142        | John         | A     | 20,000 |
+| 168        | James        | B     | 15,000 |
+| 263        | Andrew       | C     | 10,000 |
+| 109        | Bob          | C     | 10,000 |
+
+
+---
+
+### 💥 Third Normal Form (3NF)
+
+*   Để đạt được 3NF, bảng cần thỏa mãn các điều kiện sau:
+    
+    *   Cần đạt được 2NF.
+    *   Tất cả các trường phi khóa không được phụ thuộc vào nhau: Điều này có nghĩa là không có sự phụ thuộc không cần thiết giữa các trường phi khóa.
+
+Nếu có sự phụ thuộc không cần thiết giữa các trường phi khóa, ta cần tách bảng thành các bảng riêng biệt để loại bỏ sự phụ thuộc không cần thiết này. Bằng cách này, ta giảm thiểu sự phụ thuộc không cần thiết, loại bỏ sự lặp lại dữ liệu và đảm bảo tính nhất quán trong cơ sở dữ liệu.
+
+3NF là một bước tiến quan trọng trong việc chuẩn hóa cơ sở dữ liệu và giúp cải thiện tính nhất quán, hiệu quả và khả năng bảo trì của cơ sở dữ liệu.
+
+
+*   Cách làm như sau:
+    
+    *   Tạo bảng Grade với các cột: Grade và Salary.
+    *   Trong bảng Grade, cột Grade sẽ là khóa chính (primary key) để định danh mỗi hàng một cách duy nhất.
+    *   Xóa cột Salary trong bảng Employees.
+    *   Tạo mối quan hệ giữa bảng Employees và bảng Grade thông qua cột Grade.
+
+**📰 Bảng Grade**
+
+| Grade | Salary |
+|-------|--------|
+| A     | 20,000 |
+| B     | 15,000 |
+| C     | 10,000 |
+
+
+**📰 Bảng Employees**
+
+| EmployeeId | EmployeeName | Grade |
+|------------|--------------|-------|
+| 142        | John         | A     |
+| 168        | James        | B     |
+| 263        | Andrew       | C     |
+| 109        | Bob          | C     |
+
+**📰 Bảng Projects**
+
+| ProjectId | ProjectName |
+|-----------|-------------|
+| 113       | BLUE STAR   |
+| 124       | MAGNUM      |
+
+**📰 Bảng Employees_Projects**
+
+| EmployeeId | ProjectId |
+|------------|-----------|
+| 142        | 113       |
+| 142        | 124       |
+| 168        | 113       |
+| 263        | 113       |
+| 109        | 124       |
+
+---
 
 Đọc thêm:
 
@@ -175,7 +264,6 @@ Do đó, bảng này không đạt chuẩn 2NF. Chúng ta nên tách chúng thà
 - https://www.guru99.com/database-normalization.html
 - https://www.freecodecamp.org/news/database-normalization-1nf-2nf-3nf-table-examples/
 
----
 
 ## 💛Session 03 - Introduction to SQL Server 2019
 
@@ -184,6 +272,8 @@ Do đó, bảng này không đạt chuẩn 2NF. Chúng ta nên tách chúng thà
   - SQL SERVER MANAGEMENT STUDIO (SSMS): https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
 
 - Hướng dẫn cài đặt: https://youtu.be/JIvu6wx8BSY
+
+
 
 
 ////////////////////////////////////////////
