@@ -56,7 +56,7 @@ Gợi ý làm theo các bước:
 
 - Cần những thực thế nào ?
 - Thực thể đó có thuộc tính nào ?
-- Môi quan hệ giữa các thực thể đó là gì ?
+- Mối quan hệ giữa các thực thể đó là gì ?
 
 
 
