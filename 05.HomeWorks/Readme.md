@@ -255,9 +255,6 @@
 1. Viết câu lệnh UPDATE để cập nhật DISCOUNT với điều kiện: Các sản phẩm có discount <= 10% thì tăng thêm 5%
 1. Viết câu lệnh XOÁ tất cả các sản phẩm có quanlity là 0
 1. Chèn vào table brands thêm 3 thương hiệu nữa rồi sau đó viết câu lệnh XÓA 3 thương hiệu vừa thêm
-1. Viết câu lệnh UPDATE để cập nhật ngày thay đổi `updated_at` của table taxes bằng ngày hiện tại
-1. Viết câu lệnh UPDATE để cập nhật `max_local_tax_rate` tăng 2% và `avg_local_tax_rate ` tăng 1% của table taxes cho những quận nào có `max_local_tax_rate`  1%
-1. Viết câu lệnh UPDATE để cập nhật tiền hoa hồng cho tất cả nhân viên ở bảng `commissions`
 
 
 ## 💛  Phần C: Truy vấn cơ bản

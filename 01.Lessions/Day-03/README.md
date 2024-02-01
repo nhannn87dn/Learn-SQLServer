@@ -139,7 +139,7 @@ GO
 
 ```
 
-Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, suppliers trước khi tạo products
+Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, brands trước khi tạo products
 
 
 #### 🔹Giải thích lệnh GO
@@ -758,7 +758,7 @@ CREATE TABLE [dbo].[products] (
   CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
         REFERENCES categories(category_id), --Khóa ngoại category_id
   CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
-        REFERENCES suppliers(brand_id) --Khóa ngoại brand_id
+        REFERENCES brands(brand_id) --Khóa ngoại brand_id
 );
 ```
 
@@ -772,9 +772,9 @@ Hoặc bạn có thể tạo khóa ngoại cho một table đã tồn tại
 ALTER TABLE [dbo].[products]
 ADD CONSTRAINT [FK_products_categories] FOREIGN KEY ([category_id]) REFERENCES [dbo].[categories] ([category_id]);
 GO
---Tạo khóa ngoại FOREIGN KEY (brand_id) tham chiếu đến khóa chính suppliers(brand_id)
+--Tạo khóa ngoại FOREIGN KEY (brand_id) tham chiếu đến khóa chính brands(brand_id)
 ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [FK_products_brands_id] FOREIGN KEY ([brand_id]) REFERENCES [dbo].[suppliers] ([brand_id]);
+ADD CONSTRAINT [FK_products_brands_id] FOREIGN KEY ([brand_id]) REFERENCES [dbo].[brands] ([brand_id]);
 ```
 
 **Xóa Khóa phụ**
@@ -924,7 +924,7 @@ CREATE TABLE [dbo].[products] (
   CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
         REFERENCES categories(category_id), --Khóa ngoại category_id
   CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
-        REFERENCES suppliers(brand_id) --Khóa ngoại brand_id
+        REFERENCES brands(brand_id) --Khóa ngoại brand_id
 
 );
 GO
@@ -978,7 +978,7 @@ CREATE TABLE [dbo].[products] (
   CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
         REFERENCES categories(category_id), --Khóa ngoại category_id
   CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
-        REFERENCES suppliers(brand_id) --Khóa ngoại brand_id
+        REFERENCES brands(brand_id) --Khóa ngoại brand_id
 
 );
 GO
