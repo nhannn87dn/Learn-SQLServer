@@ -749,7 +749,7 @@ Go
 -- Tạo khóa ngoại category_id, brand_id ngay khi tạo mới Table
 CREATE TABLE [dbo].[products] (
   [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
+  [product_name] NVARCHAR(100) NOT NULL,
   [price] DECIMAL(18,2) NOT NULL,
   [discount] DECIMAL(4,2) NOT NULL,
   [description] NVARCHAR(MAX) NULL,
@@ -853,7 +853,7 @@ Khi có ràng buộc UNIQUE, mỗi khi bạn chèn một hàng mới, nó sẽ k
 --Tạo UNIQUE ngay khi tạo mới table
 CREATE TABLE [dbo].[categories] (
   [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [category_name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
   [description] NVARCHAR(500) NULL,
 );
 GO
@@ -863,7 +863,7 @@ Bạn cũng có thể tạo UNIQUE cho một table đã tồn tại
 
 ```sql
 ALTER TABLE [dbo].[categories]
-ADD CONSTRAINT [UQ_categories_name] UNIQUE ([name]); --UQ_categories_Name là tên bạn đặt cho CONTRAINT
+ADD CONSTRAINT [UQ_categories_category_name] UNIQUE ([category_name]); --UQ_categories_Name là tên bạn đặt cho CONTRAINT
 GO
 ```
 
@@ -891,7 +891,7 @@ NULL rất đặc biệt. Nó không bằng bất cứ thứ gì, kể cả chí
 ```sql
 CREATE TABLE [dbo].[categories] (
   [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [category_name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
   [description] NVARCHAR(500),
 );
 GO
@@ -915,7 +915,7 @@ price, discount mặc định = 0
 ```sql
 CREATE TABLE [dbo].[products] (
   [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
+  [product_name] NVARCHAR(100) NOT NULL,
   [price] DECIMAL(18,2) NOT NULL DEFAULT 0,
   [discount] DECIMAL(4,2) NOT NULL DEFAULT 0,
   [description] NVARCHAR(MAX) NULL,
@@ -969,7 +969,7 @@ Tạo table  products FULL Các CONTRAINT, ngay khi tạo mới
 ```sql
 CREATE TABLE [dbo].[products] (
   [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
+  [product_name] NVARCHAR(100) NOT NULL,
   [price] DECIMAL(18,2) DEFAULT 0 CHECK (price >=0),
   [discount] DECIMAL(4,2) DEFAULT 0 NOT NULL CHECK (discount >=0 AND discount <= 70),
   [description] NVARCHAR(MAX) NULL,
@@ -1018,6 +1018,39 @@ Cú pháp
 ALTER TABLE table_name
 NO CHECK CONSTRAINT check_constraint_name;
 ```
+
+## 💛 Kết Luận
+
+Tổng hợp các vấn đề trên bạn có thể thực hiện tạo bảng, với đầy đủ tính năng trong lần tạo mới như sau:
+
+- Có Khóa chính tự tăng được đặt tên
+- Có khóa ngoại được đặt tên
+- Có các contraints
+
+```sql
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
+  [product_name] NVARCHAR(100) NOT NULL UNIQUE, --Tên không được trùng
+  [price] DECIMAL(18,2) DEFAULT 0,
+  [discount] DECIMAL(4,2) DEFAULT 0,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
+  -- Khóa chính
+  CONSTRAINT PK_products_product_id PRIMARY KEY (product_id),
+  -- Danh sách khóa ngoại nếu có
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES brands(brand_id), --Khóa ngoại brand_id
+    -- Danh sách các contraints nếu có
+    CONSTRAINT [UQ_produtcs_product_name] UNIQUE ([product_name]),
+    CONSTRAINT [CK_products_price] CHECK ([price] > 0),
+    CONSTRAINT [CK_products_discount] CHECK ([discount] >= 0 AND [discount] <= 90)
+
+);
+```
+
 
 
 ## 💛Homeworks Guide - Session 2-3-4
