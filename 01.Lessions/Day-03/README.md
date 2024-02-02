@@ -1025,12 +1025,13 @@ Tổng hợp các vấn đề trên bạn có thể thực hiện tạo bảng, 
 
 - Có Khóa chính tự tăng được đặt tên
 - Có khóa ngoại được đặt tên
-- Có các contraints
+- Có các contraints được đặt tên
+
 
 ```sql
 CREATE TABLE [dbo].[products] (
   [product_id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
-  [product_name] NVARCHAR(100) NOT NULL UNIQUE, --Tên không được trùng
+  [product_name] NVARCHAR(100) NOT NULL,
   [price] DECIMAL(18,2) DEFAULT 0,
   [discount] DECIMAL(4,2) DEFAULT 0,
   [description] NVARCHAR(MAX) NULL,
@@ -1050,7 +1051,7 @@ CREATE TABLE [dbo].[products] (
 
 );
 ```
-
+==> Mục tiêu mọi thứ định nghĩa ra phải có tên rõ ràng để quản lý.
 
 
 ## 💛Homeworks Guide - Session 2-3-4
