@@ -88,3 +88,39 @@ ORDER BY
  --Để xem tài nguyên thực hiện truy vấn
  SET STATISTICS IO OFF;
  -- Truy vấn SQL của bạn ở đây
+SELECT GETDATE()
+ SELECT MONTH(GETDATE()) --thang hien tai
+ SELECT DAY(GETDATE()) -- ngay hien tai
+ SELECT * FROM customers 
+ WHERE 
+	MONTH(birthday) = MONTH(GETDATE()) AND
+	DAY(birthday) = DAY(GETDATE())
+SELECT * FROM orders WHERE shipping_city = 'Houston'
+
+SELECT * FROM brands WHERE brand_name NOT IN ('Heller', 'Trek')
+
+SELECT 
+	discount,
+	COUNT(product_id) AS countProducts
+FROM
+	products
+GROUP BY 
+	discount
+HAVING
+	discount >= 5
+ORDER BY 
+	discount DESC
+
+--35
+SELECT * FROM customers WHERE customer_id = 75
+
+SELECT 
+DATEDIFF(year, birthday, GETDATE()) AS age,
+COUNT (customer_id) AS countPerson
+FROM 
+customers
+GROUP BY
+	DATEDIFF(year, birthday, GETDATE())
+ORDER BY
+	age ASC
+
