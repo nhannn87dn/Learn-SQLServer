@@ -120,3 +120,30 @@ product_id,
     product_name 
 OFFSET 10 ROWS --bắt đầu lấy từ vị trí số 0
 FETCH NEXT 10 ROWS ONLY; --> lấy 10 dòng tiếp tiếp theo
+
+-- Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần.
+SELECT
+	discount,
+	COUNT(product_id) AS total
+FROM
+	products
+GROUP BY
+	discount
+ORDER BY
+	discount ASC
+
+SELECT * FROM products WHERE discount = 0.1
+
+SELECT
+    brand_name,
+    MIN (price) min_price,
+    MAX (price) max_price
+FROM
+    dbo.products p
+INNER JOIN dbo.brands b ON b.brand_id = p.brand_id
+WHERE
+    model_year = 2018
+GROUP BY
+    brand_name
+ORDER BY
+    brand_name;

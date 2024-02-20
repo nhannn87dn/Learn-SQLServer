@@ -46,7 +46,7 @@ CREATE TABLE brands (
 INSERT dbo.brands
 	(brand_id, brand_name)
 VALUES
-	(1, 'Xiaomi')
+	(5, 'Xiaomi')
 
 -- chèn nhiều record vào brands cùng l lệnh
 INSERT dbo.brands
@@ -121,7 +121,6 @@ SELECT * FROM dbo.products
 
 -- UPDATE
 select * FROM dbo.products
-select * from dbo.brands
 
 UPDATE dbo.products
 SET product_name  = N'Điện thoại Iphone 15 Pro max'
@@ -136,61 +135,7 @@ UPDATE dbo.products
 SET [description] = 'Description'
 WHERE product_id = 3
 
--- DELETE 
-select * from brands
-
--- xóa toàn bộ record có trong brands
-DELETE dbo.brands
--- Xóa 1 dòng cụ thể
-DELETE dbo.brands
-WHERE brand_id = 7
-
-
-CREATE TABLE dbo.stores (
-	store_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL,
-	store_name NVARCHAR (100) NOT NULL UNIQUE,
-	phone VARCHAR(50) NULL,
-	email VARCHAR(150) NULL,
-)
-
-INSERT dbo.stores
-	(store_name, phone)
-VALUES 
-	(N'Chi nhánh 06 Hùng Vương', '19008856')
-
-select * from dbo.stores
-
--- Định nghĩa PRIMARY KEY cho table đã tồn tại
-ALTER TABLE [dbo].stores
-ADD PRIMARY KEY (store_id);
-
-
-ALTER TABLE [dbo].stores
-ADD CONSTRAINT [PK_stores_store_id] PRIMARY KEY (store_id);
-
-
---Tạo khóa ngoại  FOREIGN KEY (category_id) tham chiếu đến khóa chính categories(Id)
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [FK_products_categories] 
-	FOREIGN KEY ([category_id]) REFERENCES [dbo].[categories] ([category_id]);
-GO
---Tạo khóa ngoại FOREIGN KEY (brand_id) tham chiếu đến khóa chính suppliers(brand_id)
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [FK_products_brands_id] 
-	FOREIGN KEY ([brand_id]) REFERENCES [dbo].[brands] ([brand_id])
-	ON DELETE CASCADE;
-
-DELETE dbo.brands WHERE brand_id = 1
-
-
-ALTER TABLE [dbo].[products]
-ADD CONSTRAINT [CK_products_price] 
-CHECK (price >= 0);
-
-DELETE dbo.products
-select * from dbo.products
-
-INSERT dbo.products 
-	(product_name, price, model_year, create_at, category_id, brand_id)
-VALUES
-	(N'Điện thoại Iphone 17 Pro max', 100, 2024, '2024-02-01',1, 2)
+-- Update nhiều cột một lần
+UPDATE dbo.products
+SET price = 8500, discount = 10
+WHERE product_id = 2

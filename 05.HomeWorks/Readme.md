@@ -259,10 +259,10 @@
 
 ## 💛  Phần C: Truy vấn cơ bản
 
-1. Hiển thị tất cả các sản phẩm có giảm giá (discount)  <= 10%
+1. Hiển thị tất cả các sản phẩm có giảm giá (discount)  <= 3%
 1. Hiện thị tất cả các sản phẩm không có giảm giá (discount) 
 1. Hiển thị tất cả các sản phẩm có Giá bán sau khi đã giảm giá (discount)  <= 100
-1. Hiện thị tất cả các sản phẩm thuộc danh mục có category_id = 4 và thương hiệu = 5
+1. Hiện thị tất cả các sản phẩm thuộc danh mục có category_id = 4 và thương hiệu = 9
 1. Hiện thị tất cả các sản phẩm thuộc danh mục có category_id = 2 và 4.
 1. Hiện thị tất cả các sản phẩm có model sản xuất (model_year) từ 2017 - 2020.
 1. Hiển thị tất cả các khách hàng có địa chỉ ở `city = 'New York'`

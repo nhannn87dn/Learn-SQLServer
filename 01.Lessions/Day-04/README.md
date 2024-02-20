@@ -436,7 +436,7 @@ Mệnh đề WITH TIES được sử dụng trong câu lệnh ORDER BY của SQL
 Khi sử dụng WITH TIES, các hàng có giá trị "ràng buộc" sẽ được bao gồm trong kết quả cuối cùng của câu lệnh ORDER BY, chứ không chỉ có các hàng có giá trị duy nhất.
 
 ```sql
-SELECT TOP 10 WITH TIES product_id, name, price 
+SELECT TOP 10 WITH TIES product_id, product_name, price 
 FROM products
 ORDER BY price DESC
 ```
@@ -520,7 +520,7 @@ FROM customers;
 
 Bạn có thể tận dụng tính năng này để backup một table
 
-#### 🔹 SELECT Không có FROM
+#### 🔹 SELECT Không có (without) FROM
 
 ```sql
 -- Trả về ngày hiện tại
@@ -530,6 +530,14 @@ SELECT LEFT('SQL Tutorial', 3) AS ExtractString;
 -- Chuyển chuỗi thành kí tự thường
 SELECT LOWER('SQL Tutorial is FUN!');
 ```
+
+Xem các hàm:
+
+- Hàm về ngày: https://www.sqlservertutorial.net/sql-server-date-functions/
+- Hàm về chuỗi: https://www.sqlservertutorial.net/sql-server-string-functions/
+- Hàm tính toán: https://www.sqlservertutorial.net/sql-server-aggregate-functions/
+- Hàm hệ thống: https://www.sqlservertutorial.net/sql-server-system-functions/
+
 
 ---
 
