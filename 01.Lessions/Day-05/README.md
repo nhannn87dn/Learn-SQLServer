@@ -16,7 +16,7 @@ SELECT
   discount, 
   COUNT(product_id) AS Total --- Đếm dựa vào ID và đặt tên là Total
 FROM products
-WHERE price > 20000
+WHERE price > 2000
 GROUP BY discount
 ORDER BY discount ASC
 ```
@@ -513,7 +513,7 @@ WHERE
         SELECT
             AVG (price)
         FROM
-            production.products
+            dbo.products
         GROUP BY
             brand_id
     )
@@ -707,7 +707,7 @@ SELECT
     i.item_id,
     o.order_date
 FROM
-    production.products p
+    dbo.products p
  LEFT JOIN sales.order_items i
   ON i.product_id = p.product_id
  LEFT JOIN sales.orders o
