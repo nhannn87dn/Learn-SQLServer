@@ -389,3 +389,19 @@ WHERE
 SELECT first_name, last_name FROM customers
 UNION
 SELECT first_name, last_name FROM staffs
+
+SELECT * FROM orders
+SELECT * FROM order_items
+
+select * from products
+
+SELECT
+	p.*,
+	s.store_id,
+	s.quantity
+FROM 
+	dbo.products	AS p
+INNER JOIN
+	dbo.stocks AS s ON s.product_id = p.product_id
+	
+SELECT * FROM stocks WHERE product_id = 314
