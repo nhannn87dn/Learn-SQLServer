@@ -1054,6 +1054,77 @@ COMMIT TRANSACTION
 
 `SAVE TRANSACTION` - Nó cho phép lưu lại trạng thái hiện tại của transaction và tiếp tục thực hiện các hoạt động trong transaction. Nếu sau đó có lỗi xảy ra, bạn có thể sử dụng lệnh ROLLBACK để hủy bỏ toàn bộ transaction hoặc sử dụng lệnh ROLLBACK TRANSACTION để hủy bỏ đến điểm đã được lưu trữ bởi SAVE TRANSACTION.
 
+Ví dụ 4:
+
+```sql
+
+--Mô phỏng chuyển tiền ngân hàng từ người a, sang người b
+
+--Tạo table bank
+CREATE TABLE bank
+(
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(20),
+    balance DECIMAL(10,2)
+)
+--Ghi log giao dich
+CREATE TABLE bank_log
+(
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    note NVARCHAR(500)
+)
+
+--chèn dữ liệu ban đầu cho a và b
+INSERT bank
+    (name,balance)
+VALUES
+    ('a', 250),
+    ('b', 0)
+
+/*
+Để thực hiện chuyển 50USD từ a --> b cần các bước:
+1. Trừ tiền người a: 50
+2. Ghi log lịch sử giao dịch
+3. Cộng tiền người b: 50
+4. Ghi log lịch sử giao dịch
+
+==> 4 bước trên được coi là 1 GIAO DỊCH trong ngân hàng
+==> Chỉ cần 1 trong 4 lệnh trên lỗi thì GIAO DỊCH được coi là không thành công.
+==> Trạng thái sẽ được khôi phục lại như khi chưa thực hiện GIAO DỊCH
+*/
+
+BEGIN TRANSACTION;
+
+BEGIN TRY
+    -- b1. Trừ tiền người a: 50
+    UPDATE bank SET balance = balance - 50 WHERE name = 'a';
+
+    -- b2. Ghi log lịch sử giao dịch
+    INSERT INTO bank_log (note)
+    VALUES ('Chuyen tien tu a sang 5, 50USD');
+
+    -- b3. Cộng tiền người b: 50
+    UPDATE bank SET balance = balance + 50 WHERE name = 'b';
+
+    -- b4. Ghi log lịch sử giao dịch
+    INSERT INTO bank_log (id, note)
+    VALUES (2, 'Nhan tien tu nguoi a, 50USD');
+
+    -- Nếu không có lỗi, xác nhận giao dịch
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    -- Xử lý lỗi
+    SELECT 
+        ERROR_NUMBER() AS ErrorNumber,
+        ERROR_MESSAGE() AS ErrorMessage;
+
+    -- Nếu có lỗi, hủy bỏ giao dịch
+    ROLLBACK TRANSACTION;
+END CATCH
+
+```
+
 ---
 
 ### 💥 Locks
