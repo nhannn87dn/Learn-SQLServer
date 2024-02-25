@@ -366,13 +366,23 @@ Ví dụ: Lấy danh sách sản phẩm
 CREATE PROCEDURE usp_ProductList -- đặt tên với prefix usp_
 AS
 BEGIN
-    SELECT 
-        product_name, 
-        price
-    FROM 
-        dbo.products
-    ORDER BY 
-        product_name;
+    BEGIN TRY
+        SELECT 
+            product_name, 
+            price
+        FROM 
+            dbo.products
+        ORDER BY 
+            product_name;
+    END TRY
+    BEGIN CATCH
+        -- Nếu có lỗi xảy ra, hiển thị thông tin lỗi
+        SELECT 
+            ERROR_NUMBER() AS ErrorNumber,
+            ERROR_MESSAGE() AS ErrorMessage;
+        --Ném lỗi
+        THROW;
+    END CATCH;
 END;
 ```
 Sau khi tạo xong bạn có thể thấy store được lưu ở `Programmability > Stored Procedures`
@@ -395,15 +405,25 @@ Ví dụ: Lấy danh sách sản phẩm có model_year > 2018
 CREATE PROCEDURE usp_FindProductsByModelYear(@model_year INT)
 AS
 BEGIN
-    SELECT
-        product_name,
-        price
-    FROM 
-        dbo.products
-    WHERE
-        model_year >= @model_year
-    ORDER BY
-        price;
+    BEGIN TRY
+        SELECT
+            product_name,
+            price
+        FROM 
+            dbo.products
+        WHERE
+            model_year >= @model_year
+        ORDER BY
+            price;
+    END TRY
+    BEGIN CATCH
+        -- Nếu có lỗi xảy ra, hiển thị thông tin lỗi
+        SELECT 
+            ERROR_NUMBER() AS ErrorNumber,
+            ERROR_MESSAGE() AS ErrorMessage;
+        --Ném lỗi
+        THROW;
+    END CATCH;
 END;
 --Sử dụng Store khi có tham số
 EXEC uspFindProductsByModelYear 2018;
@@ -423,9 +443,15 @@ AS
 BEGIN
   SELECT @Total = COUNT(*) FROM orders WHERE CAST(order_date AS DATE)  BETWEEN @FromDate AND @ToDate
 END;
---Sử dụng
+```
+
+Sử dụng
+
+```sql
 DECLARE @TotalOrders INT;
+
 EXEC usp_TotalOrderByRangeDate '2024-01-01', '2024-12-31', @TotalOrders OUTPUT;
+
 SELECT @TotalOrders as TotalOrders;
 ```
 
@@ -663,14 +689,24 @@ ON order_items
 AFTER INSERT
 AS
 BEGIN
-    UPDATE stocks
-        SET quantity = s.quantity - i.quantity
-    FROM
-       stocks as s
-    INNER JOIN inserted AS i ON s.product_id = i.product_id
-	INNER JOIN orders AS o ON o.order_id = i.order_id AND o.store_id = s.store_id;
+    BEGIN TRY
+        UPDATE stocks
+            SET quantity = s.quantity - i.quantity
+        FROM
+        stocks as s
+        INNER JOIN inserted AS i ON s.product_id = i.product_id
+        INNER JOIN orders AS o ON o.order_id = i.order_id AND o.store_id = s.store_id;
+    END TRY
+    BEGIN CATCH
+        -- Nếu có lỗi xảy ra, hiển thị thông tin lỗi
+        SELECT 
+            ERROR_NUMBER() AS ErrorNumber,
+            ERROR_MESSAGE() AS ErrorMessage;
+    END CATCH
 END;
 ```
+
+---
 
 Ví dụ 2: Tạo một trigger AFTER để ngăn chặn việc cập nhật / xóa đơn hàng khi đơn hàng (orders) có trạng thái order_status = 4 (COMPLETED)
 
@@ -687,13 +723,19 @@ BEGIN
         ROLLBACK -- Hủy lệnh UPDATE trước đó vào orders
     END
 
-    IF EXISTS (SELECT * FROM deleted WHERE [order_status] = 4)
+    IF EXISTS (SELECT * FROM deleted WHERE [order_startus] = 4)
     BEGIN
         PRINT 'Cannot delete order having status = 4 (COMPLETED).'
         ROLLBACK -- Hủy lệnh DELETE trước đó vào orders
     END
 END;
 ```
+
+Trong SQL Server, mỗi lệnh DML (Data Manipulation Language) như `INSERT`, `UPDATE`, `DELETE` tự động bắt đầu một transaction ngầm định, nên không cần phải gọi `BEGIN TRANSACTION` trước khi gọi ROLLBACK trong trigger.
+
+ Lệnh `ROLLBACK` sẽ hủy bỏ tất cả các thay đổi được thực hiện trong giao dịch hiện tại, bao gồm cả thay đổi được thực hiện bởi lệnh UPDATE hoặc DELETE đã kích hoạt trigger.
+
+---
 
 Ví dụ 3: Tạo một trigger AFTER để ngăn chặn việc cập nhật / thêm mới / xóa chi tiết đơn hàng (orders) có trạng thái order_status = 4 (COMPLETED)
 

@@ -844,15 +844,28 @@ Transaction được xác định bằng ba tính chất ACID:
 
 4. Durability (Bền vững): Một khi một transaction đã được hoàn thành thành công, các thay đổi dữ liệu phải được lưu trữ vĩnh viễn và không bị mất trong trường hợp xảy ra sự cố hệ thống.
 
-Trong SQL Server hoạt động theo các chế độ giao dịch sau:
-
-- Transaction tự động xác nhận (Autocommit transactions)
-- Mỗi câu lệnh riêng lẻ được coi là một giao dịch.
 
 Các ứng dụng của transaction:
 
 - Transaction được sử dụng để đảm bảo tính toàn vẹn của dữ liệu trong các ứng dụng doanh nghiệp.
 - Transaction có thể được sử dụng để thực hiện các thao tác như: chuyển tiền, thanh toán hóa đơn, đặt hàng, ...
+
+
+Trong SQL Server, có các chế độ thực hiện transaction như sau:
+
+1. **Autocommit Transactions**: Mỗi một dòng lệnh đơn được tự động cam kết khi nó thành công. Trong chế độ này, không cần viết bất kỳ câu lệnh xác định nào để bắt đầu và kết thúc transaction. Mặc định là chế độ này.
+
+2. **Explicit Transactions**: Mỗi transaction explicit (tường minh) bắt đầu với câu lệnh `BEGIN TRANSACTION` và kết thúc bằng `ROLLBACK` hoặc `COMMIT` transaction.
+
+3. **Implicit Transactions**: Một transaction mới được bắt đầu một cách ngầm định khi transaction trước đó hoàn thành, nhưng mỗi transaction được hoàn thành một cách rõ ràng với một câu lệnh `COMMIT` hoặc `ROLLBACK`.
+
+4. **Batch-scoped Transactions**: Chỉ áp dụng cho các tập kết quả hoạt động đa dạng (MARS), một transaction SQL rõ ràng hoặc ngầm định bắt đầu dưới một phiên MARS trở thành một transaction phạm vi batch.
+
+Khi ở chế độ `Autocommit Transactions`, mỗi lệnh DML (Data Manipulation Language) như `INSERT`, `UPDATE`, `DELETE` tự động bắt đầu một transaction ngầm định. 
+
+Nếu lệnh DML hoàn thành thành công, SQL Server sẽ tự động COMMIT transaction. Nếu có lỗi xảy ra, SQL Server sẽ tự động ROLLBACK transaction.
+
+Lưu ý rằng các lệnh điều khiển transaction chỉ được sử dụng với các lệnh thao tác dữ liệu DML như `INSERT`, `UPDATE` và `DELETE`. Chúng không thể được sử dụng trong lệnh `CREATE TABLE` hoặc `DROP TABLE` vì các hoạt động này được tự động được commit trong cơ sở dữ liệu.
 
 ---
 
@@ -956,9 +969,9 @@ Kết quả của một tập hợp các câu lệnh truy vấn trên:
 
 Lưu ý Để đúng như phần lý thuyết bạn nên kiểm tra lại cấu hình `XACT_ABORT`:
 
-- Khi "SET XACT_ABORT ON" được thiết lập, nếu một lỗi xảy ra trong một giao dịch, nó sẽ tự động kết thúc giao dịch đó và rollback (hoàn tác) tất cả các thay đổi đã được thực hiện trong giao dịch. Điều này đảm bảo tính toàn vẹn dữ liệu và giúp tránh tình trạng dữ liệu không nhất quán.
+- Khi "SET XACT_ABORT ON" được thiết lập, nếu một lỗi xảy ra trong một transaction, nó sẽ tự động kết thúc transaction đó và rollback (hoàn tác) tất cả các thay đổi đã được thực hiện trong transaction. Điều này đảm bảo tính toàn vẹn dữ liệu và giúp tránh tình trạng dữ liệu không nhất quán.
 
-- Khi "SET XACT_ABORT OFF" (giá trị mặc định) được thiết lập, một lỗi trong một giao dịch không đảm bảo sẽ kết thúc giao dịch tự động. Trong trường hợp này, các lệnh trong giao dịch có thể tiếp tục thực hiện sau khi xảy ra lỗi, và phải thực hiện rollback thủ công để hoàn tác các thay đổi.
+- Khi "SET XACT_ABORT OFF" (giá trị mặc định) được thiết lập, một lỗi trong một transaction không đảm bảo sẽ kết thúc transaction tự động. Trong trường hợp này, các lệnh trong transaction có thể tiếp tục thực hiện sau khi xảy ra lỗi, và phải thực hiện rollback thủ công để hoàn tác các thay đổi.
 
 Bạn có thể TEST trường hợp thất bại với câu lệnh INSERT bị lỗi
 
@@ -1084,13 +1097,13 @@ VALUES
 /*
 Để thực hiện chuyển 50USD từ a --> b cần các bước:
 1. Trừ tiền người a: 50
-2. Ghi log lịch sử giao dịch
+2. Ghi log lịch sử transaction
 3. Cộng tiền người b: 50
-4. Ghi log lịch sử giao dịch
+4. Ghi log lịch sử transaction
 
-==> 4 bước trên được coi là 1 GIAO DỊCH trong ngân hàng
-==> Chỉ cần 1 trong 4 lệnh trên lỗi thì GIAO DỊCH được coi là không thành công.
-==> Trạng thái sẽ được khôi phục lại như khi chưa thực hiện GIAO DỊCH
+==> 4 bước trên được coi là 1 transaction trong ngân hàng
+==> Chỉ cần 1 trong 4 lệnh trên lỗi thì transaction được coi là không thành công.
+==> Trạng thái sẽ được khôi phục lại như khi chưa thực hiện transaction
 */
 
 BEGIN TRANSACTION;
@@ -1099,18 +1112,18 @@ BEGIN TRY
     -- b1. Trừ tiền người a: 50
     UPDATE bank SET balance = balance - 50 WHERE name = 'a';
 
-    -- b2. Ghi log lịch sử giao dịch
+    -- b2. Ghi log lịch sử transaction
     INSERT INTO bank_log (note)
     VALUES ('Chuyen tien tu a sang 5, 50USD');
 
     -- b3. Cộng tiền người b: 50
     UPDATE bank SET balance = balance + 50 WHERE name = 'b';
 
-    -- b4. Ghi log lịch sử giao dịch
+    -- b4. Ghi log lịch sử transaction
     INSERT INTO bank_log (id, note)
     VALUES (2, 'Nhan tien tu nguoi a, 50USD');
 
-    -- Nếu không có lỗi, xác nhận giao dịch
+    -- Nếu không có lỗi, xác nhận transaction
     COMMIT TRANSACTION;
 END TRY
 BEGIN CATCH
@@ -1119,7 +1132,7 @@ BEGIN CATCH
         ERROR_NUMBER() AS ErrorNumber,
         ERROR_MESSAGE() AS ErrorMessage;
 
-    -- Nếu có lỗi, hủy bỏ giao dịch
+    -- Nếu có lỗi, hủy bỏ transaction
     ROLLBACK TRANSACTION;
 END CATCH
 
@@ -1129,33 +1142,33 @@ END CATCH
 
 ### 💥 Locks
 
-Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm soát truy cập và sửa đổi dữ liệu trong quá trình thực hiện các giao dịch. Khi một giao dịch yêu cầu truy cập vào dữ liệu, SQL Server áp dụng các locks trên dữ liệu tương ứng để đảm bảo tính nhất quán và độc lập của dữ liệu trong môi trường đa người dùng.
+Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm soát truy cập và sửa đổi dữ liệu trong quá trình thực hiện các transaction. Khi một transaction yêu cầu truy cập vào dữ liệu, SQL Server áp dụng các locks trên dữ liệu tương ứng để đảm bảo tính nhất quán và độc lập của dữ liệu trong môi trường đa người dùng.
 
 Có nhiều loại lock khác nhau trong SQL Server, bao gồm:
 
 1. Shared Lock (Shared Read Lock):
-   - Được sử dụng khi giao dịch muốn đọc (truy vấn) dữ liệu.
+   - Được sử dụng khi transaction muốn đọc (truy vấn) dữ liệu.
    - Nhiều shared locks có thể được áp dụng trên cùng một dữ liệu.
    - Shared locks không ngăn được các shared locks khác trên cùng một dữ liệu.
    - Shared locks không cho phép exclusive lock được áp dụng lên dữ liệu.
 
 2. Exclusive Lock (Write Lock):
-   - Được sử dụng khi giao dịch muốn thay đổi (ghi) dữ liệu.
+   - Được sử dụng khi transaction muốn thay đổi (ghi) dữ liệu.
    - Không thể có bất kỳ shared locks hoặc exclusive locks khác trên cùng một dữ liệu.
    - Exclusive locks ngăn cả shared locks và exclusive locks khác.
 
 3. Update Lock:
-   - Được sử dụng trong các trường hợp cần đảm bảo rằng dữ liệu không được đọc hoặc chỉnh sửa trong quá trình thực hiện giao dịch.
-   - Update locks được nâng cấp thành exclusive lock khi giao dịch cần thực hiện các thay đổi.
+   - Được sử dụng trong các trường hợp cần đảm bảo rằng dữ liệu không được đọc hoặc chỉnh sửa trong quá trình thực hiện transaction.
+   - Update locks được nâng cấp thành exclusive lock khi transaction cần thực hiện các thay đổi.
 
 4. Intent Lock:
    - Là các locks nhỏ hơn được áp dụng trên các cấu trúc dữ liệu phức tạp hơn như bảng, trang, phân vùng.
-   - Intent locks đại diện cho ý định của giao dịch để áp dụng shared locks hoặc exclusive locks trên các đối tượng con của cấu trúc dữ liệu.
+   - Intent locks đại diện cho ý định của transaction để áp dụng shared locks hoặc exclusive locks trên các đối tượng con của cấu trúc dữ liệu.
 
 5. Schema Lock:
-   - Được sử dụng khi giao dịch thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
+   - Được sử dụng khi transaction thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
 
-SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các giao dịch đồng thời.
+SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các transaction đồng thời.
 
 Ví dụ giả lập tình trạng Lock trong thực tế có thể xảy ra làm TREO CPU
 
