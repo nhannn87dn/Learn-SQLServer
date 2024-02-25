@@ -853,19 +853,22 @@ Các ứng dụng của transaction:
 
 Trong SQL Server, có các chế độ thực hiện transaction như sau:
 
-1. **Autocommit Transactions**: Mỗi một dòng lệnh đơn được tự động cam kết khi nó thành công. Trong chế độ này, không cần viết bất kỳ câu lệnh xác định nào để bắt đầu và kết thúc transaction. Mặc định là chế độ này.
+1. **Autocommit Transactions**: 
 
-2. **Explicit Transactions**: Mỗi transaction explicit (tường minh) bắt đầu với câu lệnh `BEGIN TRANSACTION` và kết thúc bằng `ROLLBACK` hoặc `COMMIT` transaction.
-
-3. **Implicit Transactions**: Một transaction mới được bắt đầu một cách ngầm định khi transaction trước đó hoàn thành, nhưng mỗi transaction được hoàn thành một cách rõ ràng với một câu lệnh `COMMIT` hoặc `ROLLBACK`.
-
-4. **Batch-scoped Transactions**: Chỉ áp dụng cho các tập kết quả hoạt động đa dạng (MARS), một transaction SQL rõ ràng hoặc ngầm định bắt đầu dưới một phiên MARS trở thành một transaction phạm vi batch.
+Mặc định là chế độ này.
 
 Khi ở chế độ `Autocommit Transactions`, mỗi lệnh DML (Data Manipulation Language) như `INSERT`, `UPDATE`, `DELETE` tự động bắt đầu một transaction ngầm định. 
 
 Nếu lệnh DML hoàn thành thành công, SQL Server sẽ tự động COMMIT transaction. Nếu có lỗi xảy ra, SQL Server sẽ tự động ROLLBACK transaction.
 
 Lưu ý rằng các lệnh điều khiển transaction chỉ được sử dụng với các lệnh thao tác dữ liệu DML như `INSERT`, `UPDATE` và `DELETE`. Chúng không thể được sử dụng trong lệnh `CREATE TABLE` hoặc `DROP TABLE` vì các hoạt động này được tự động được commit trong cơ sở dữ liệu.
+
+
+2. **Explicit Transactions**: Mỗi transaction explicit (tường minh) bắt đầu với câu lệnh `BEGIN TRANSACTION` và kết thúc bằng `ROLLBACK` hoặc `COMMIT` transaction.
+
+3. **Implicit Transactions**: Một transaction mới được bắt đầu một cách ngầm định khi transaction trước đó hoàn thành, nhưng mỗi transaction được hoàn thành một cách rõ ràng với một câu lệnh `COMMIT` hoặc `ROLLBACK`.
+
+4. **Batch-scoped Transactions**: Chỉ áp dụng cho các tập kết quả hoạt động đa dạng (MARS), một transaction SQL rõ ràng hoặc ngầm định bắt đầu dưới một phiên MARS trở thành một transaction phạm vi batch.
 
 ---
 
@@ -967,11 +970,6 @@ Kết quả của một tập hợp các câu lệnh truy vấn trên:
 - Nếu 1 trong 3 câu lệnh THẤT BẠI ==> Tất cả sẽ đều THẤT BẠI, trả lại trạng thái ban đầu.
 - Nếu cả 3 THÀNH CÔNG ==> TRANSACTION thành công, dữ liệu được cập nhật.
 
-Lưu ý Để đúng như phần lý thuyết bạn nên kiểm tra lại cấu hình `XACT_ABORT`:
-
-- Khi "SET XACT_ABORT ON" được thiết lập, nếu một lỗi xảy ra trong một transaction, nó sẽ tự động kết thúc transaction đó và rollback (hoàn tác) tất cả các thay đổi đã được thực hiện trong transaction. Điều này đảm bảo tính toàn vẹn dữ liệu và giúp tránh tình trạng dữ liệu không nhất quán.
-
-- Khi "SET XACT_ABORT OFF" (giá trị mặc định) được thiết lập, một lỗi trong một transaction không đảm bảo sẽ kết thúc transaction tự động. Trong trường hợp này, các lệnh trong transaction có thể tiếp tục thực hiện sau khi xảy ra lỗi, và phải thực hiện rollback thủ công để hoàn tác các thay đổi.
 
 Bạn có thể TEST trường hợp thất bại với câu lệnh INSERT bị lỗi
 
