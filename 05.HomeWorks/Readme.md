@@ -309,22 +309,15 @@
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer.
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết nhân viên Staff.
 1. Hiển thị tất cả các đơn hàng cùng với thông tin chi tiết khách hàng Customer và nhân viên Staff.
-1. Hiển thị tất cả danh mục (Categories) với số lượng hàng hóa trong mỗi danh mục
+1. Hiển thị tất cả danh mục (Categories) với số lượng hàng hóa trong mỗi danh mục. (Dùng INNER JOIN + GROUP BY với lệnh COUNT và Dùng SubQuery với lệnh COUNT)
 
-- Dùng INNER JOIN + GROUP BY với lệnh COUNT
-- Dùng SubQuery với lệnh COUNT
-
-1. Hiển thị tất cả thương hiệu (brands) với số lượng hàng hóa mỗi thương hiệu (brands)
-
-- Dùng INNER JOIN + GROUP BY với lệnh COUNT
-- Dùng SubQuery với lệnh COUNT
+1. Hiển thị tất cả thương hiệu (brands) với số lượng hàng hóa mỗi thương hiệu (brands). (Dùng INNER JOIN + GROUP BY với lệnh COUNT và Dùng SubQuery với lệnh COUNT)
 
 1. Hiển thị tất cả các sản phẩm được bán trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả các khách hàng mua hàng trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả các khách hàng mua hàng (với tổng số tiền) trong khoảng từ ngày, đến ngày
-
-- Dùng INNER JOIN + GROUP BY với lệnh SUM
-- Dùng SubQuery với lệnh SUM
+. (Dùng INNER JOIN + GROUP BY với lệnh SUM
+và Dùng SubQuery với lệnh SUM )
 
 1. Hiển thị tất cả đơn hàng với tổng số tiền của đơn hàng đó
 1. Hiển thị tất cả các nhân viên bán hàng với tổng số tiền bán được
@@ -333,10 +326,8 @@
 1. Hiển thị top 3 các nhân viên bán hàng với tổng số tiền bán được từ cao đến thấp trong khoảng từ ngày, đến ngày
 1. Hiển thị top 5 các khách hàng mua hàng với tổng số tiền mua được từ cao đến thấp trong khoảng từ ngày, đến ngày
 1. Hiển thị danh sách các mức giảm giá (discount)  của cửa hàng
-1. Hiển thị tất cả danh mục (Categories) với tổng số tiền bán được trong mỗi danh mục
-
-- Dùng INNER JOIN + GROUP BY với lệnh SUM
-- Dùng SubQuery với lệnh SUM
+1. Hiển thị tất cả danh mục (Categories) với tổng số tiền bán được trong mỗi danh mục. (Dùng INNER JOIN + GROUP BY với lệnh SUM
+và Dùng SubQuery với lệnh SUM)
 
 1. Hiển thị tất cả đơn hàng với tổng số tiền mà đã được giao hàng thành công trong khoảng từ ngày, đến ngày
 1. Hiển thị tất cả đơn hàng có tổng số tiền bán hàng nhiều nhất trong khoảng từ ngày, đến ngày
