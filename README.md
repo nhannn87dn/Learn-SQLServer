@@ -10,12 +10,11 @@
 2. Day 02
 
 - Session 02 - Normalization
-- Session 03 - Introduction to SQL Server 2019
 - Session 04 - Transact SQL
 
 3. Day 03
 
-- Session 04 - Transact SQL - Data Types
+- Session 03 - Introduction to SQL Server 2019
 - Session 05 - Creating and Managing Databases
 - Session 06 - Creating Tables, Modify Table, Drop Table
 
