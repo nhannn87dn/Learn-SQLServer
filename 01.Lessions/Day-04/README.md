@@ -1,612 +1,732 @@
-# Day 4
+# Day 04 - Session 06
 
 
-## 💛 Load Data mẫu:
+## 💛 Modifying data
 
-Bước 1: Tải 2 file .sql về máy tính mình ở thưc mục `02.Examples-SQL\BikeStores`
+### 🔹 INSERT
 
-- 1. BikeStores-Sample-Database-create-tables-Student.sql
-- 2. BikeStores-Sample-Database-load-data-Student.sql
+Câu lệnh INSERT cho phép bạn thêm một hoặc nhiều bản ghi mới vào bảng dữ liệu.
 
-Bước 2
-
-- Mở Microsoft SQL Server Management Studio (MSSMS) lên.
-
-- Kết nối với chế độ xác thực là windown authentication
-
-Bước 3
-
-- Menu FIle --> Open --> File (Hoặc Ctrl + O)
-- Chọn file .sql đã tải ở trên theo thứ tự lần lượt
-
-Bước 4
-
-- Chạy file số 1 trước, sau đó đến file số 2 bằng cách nhấn f5 (Nút Excute)
-
-Bước 5
-
-Kiểm tra lại dữ liệu trong table bằng cách, show mục table tại database, Click phải lên table bạn muốn xem dữ liệu --> chọn `Select top 1000 rows`
-
-
-
-## 💛 Session 08- Accessing Data
-
-Chi tiết xem link: https://documents.aptech.io/docs/aptech-mssql/A.Presentations/session-08
-
-
-### 💥 Câu lệnh SELECT
-
-Trong SQL SELECT là câu lệnh phức tạp nhất, bởi nó có thể kết hợp thêm nhiều mệnh đề khác để truy vấn đến kết quả cuối cùng mong muốn.
-
-Dưới đây là cú pháp đầy đủ của câu lệnh SELECT trong SQL Server:
+Cú pháp:
 
 ```sql
-SELECT [DISTINCT | ALL]
-    [TOP (expression) [PERCENT] [WITH TIES]]
-    column1, column2, ...
+INSERT INTO table_name (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...);
+```
+
+Nếu bạn muốn chèn nhiều bản ghi cùng một lúc, bạn có thể sử dụng cú pháp sau:
+
+```sql
+INSERT INTO table_name (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...),
+       (value1, value2, value3, ...),
+       (value1, value2, value3, ...);
+```
+
+Ví dụ: Tạo table `promotion` cho demo
+
+```sql
+CREATE TABLE dbo.promotions (
+    promotion_id INT PRIMARY KEY IDENTITY (1, 1),
+    promotion_name VARCHAR (255) NOT NULL,
+    discount DECIMAL (4, 2) DEFAULT 0,
+    start_date DATE NOT NULL, --Kiểu ngày yyyy-mm-dd
+    expired_date DATE NOT NULL --Kiểu ngày yyyy-mm-dd
+); 
+```
+
+Thêm 1 record vào `promotion`
+
+```sql
+INSERT INTO dbo.promotions (
+    promotion_name,
+    discount,
+    start_date, --Kiểu ngày yyyy-mm-dd
+    expired_date --Kiểu ngày yyyy-mm-dd
+)
+VALUES
+    (
+      '2018 Summer Promotion',
+      0.15,
+      '20180601',
+      '20180901'
+    );
+-- Lưu ý: không cần đưa promotion_id vào vì nó sẽ tự tăng
+```
+
+Thêm nhiều record vào `promotion` trong một câu truy vấn
+
+```sql
+INSERT INTO dbo.promotions (
+    promotion_name,
+    discount,
+    start_date, --Kiểu ngày yyyy-mm-dd
+    expired_date --Kiểu ngày yyyy-mm-dd
+)
+VALUES
+    (
+      '2018 Summer Promotion',
+      0.15,
+      '20180601',
+      '20180901'
+    ),
+     (
+      '2018 Chrismats Promotion',
+      2,
+      '20181201',
+      '20181230'
+    );
+```
+
+Bạn không thể chèn giá trị vào cột được khai báo là `IDENTITY` bởi vì nó sẽ được tạo tự động. Tuy nhiên bạn vẫn muốn làm thì SQL Server có hỗ trợ:
+
+```sql
+--Bước 1: Để câu này trước câu lệnh INSERT
+SET IDENTITY_INSERT dbo.promotions ON; 
+--Bước 2: Các câu lệnh INSERT
+INSERT INTO dbo.promotions (
+    promotion_id, --có đưa thêm trường IDENTITY
+    promotion_name,
+    discount,
+    start_date, --Kiểu ngày yyyy-mm-dd
+    expired_date --Kiểu ngày yyyy-mm-dd
+)
+VALUES
+    (
+      5, --Điền trước một giá trị đúng kiểu dữ liệu đã khai báo
+      '2018 Winter Promotion',
+      0.2,
+      '20180701',
+      '20181001'
+    );
+--Bước 3: Tắt tính năng tự động sinh giá trị IDENTITY 
+SET IDENTITY_INSERT dbo.promotions OFF; 
+```
+
+Nếu bạn không thiết lập `IDENTITY_INSERT` bạn sẽ gặp lỗi:
+
+```bash
+Cannot insert explicit value for identity column in table 'promotions' when IDENTITY_INSERT is set to OFF.
+```
+
+
+**INSERT Với giá trị Unicode**
+
+Để hỗ trợ lưu trữ và hiển thị các giá trị là chuỗi Unicode bạn cần:8
+
+```sql
+INSERT INTO table_name (column1, column2) VALUES (N'Xin Chào', N'SQL Server khá dễ học');
+```
+
+Trong đó, tiền tố "N" trước chuỗi ký tự đảm bảo rằng chuỗi được coi là một chuỗi Unicode.
+
+
+**INSERT INTO SELECT statement**
+
+Để chèn dữ liệu từ table đến table khác bạn có thể sử dụng mệnh đề `INSERT INTO SELECT`
+
+Cú pháp:
+
+```sql
+INSERT  [ TOP ( expression ) [ PERCENT ] ] 
+INTO target_table (column_list)
+query;
+```
+
+Ví dụ:
+
+```sql
+-- Tạo cấu trúc bảng regions
+CREATE TABLE dbo.regions (
+    address_id INT IDENTITY PRIMARY KEY,
+    street VARCHAR (255) NOT NULL,
+    city VARCHAR (50),
+    state VARCHAR (25),
+    zip_code VARCHAR (5)
+); 
+-- Lấy dữ liệu từ table customer đổ qua cho regions
+INSERT INTO dbo.regions (street, city, state, zip_code) 
+SELECT
+    street,
+    city,
+    state,
+    zip_code
 FROM
-    table_name
-[WITH (table_hint [,...])]
-[WHERE condition]
-[GROUP BY grouping_column1, grouping_column2, ...]
-[HAVING search_condition]
-[ORDER BY order_column1 [ASC | DESC], order_column2 [ASC | DESC], ...]
-[OFFSET {integer_constant | offset_row_count_expression} {ROW | ROWS}]
-    [FETCH {FIRST | NEXT} {integer_constant | fetch_row_count_expression} {ROW | ROWS} ONLY]
-[OPTION (query_hint [,...])];
+    dbo.customers
+ORDER BY
+    first_name,
+    last_name; 
 ```
 
-Giải thích các thành phần chính của cú pháp:
-
-- DISTINCT: Lọc các giá trị trùng lặp trong kết quả.
-- ALL: Trả về tất cả các giá trị, bao gồm cả các giá trị trùng lặp.
-- TOP: Xác định số lượng bản ghi đầu tiên được trả về.
-- PERCENT: Xác định số phần trăm bản ghi đầu tiên được trả về.
-- WITH TIES: Bao gồm các bản ghi có giá trị cuối cùng tương đương với bản ghi cuối cùng trong phạm vi TOP.
-- column1, column2, ...: Các cột hoặc biểu thức được chọn để trả về.
-- FROM: Xác định bảng hoặc các bảng được truy vấn.
-- WHERE: Xác định điều kiện để lọc bản ghi.
-- GROUP BY: Nhóm các bản ghi dựa trên các cột được chỉ định.
-- HAVING: Xác định điều kiện cho nhóm bản ghi.
-- ORDER BY: Xác định thứ tự sắp xếp của kết quả.
-- OFFSET-FETCH: Xác định số hàng bỏ qua và số hàng trả về từ kết quả.
-- OPTION: Xác định các gợi ý thực thi cho câu lệnh.
-
-Lưu ý rằng không phải tất cả các thành phần đều bắt buộc trong một câu lệnh SELECT. Bạn có thể điều chỉnh cú pháp để phù hợp với yêu cầu truy vấn cụ thể của mình.
-
-#### 🔹 SELECT * - Lấy tất cả
-
-Lấy tất cả các column từ table `categories`
-```sql
-SELECT * FROM [dbo].[categories]
-```
-
-Lưu ý: Khi chạy thực tế, hạn chế dùng cách này vì nó có thể dẫn đến lổ hỏng bảo mật: https://www.w3schools.com/sql/sql_injection.asp
+**INSERT Với kiểu dữ liệu thời gian**
 
 
-#### 🔹 SELECT cụ thể columns cần lấy
-
-Ví dụ: Lấy Column Id, first_name, last_name từ table `customers`
+Ví dụ có bảng
 
 ```sql
-SELECT [customer_id], [first_name], [last_name] FROM [dbo].[customers]
-```
+CREATE TABLE dbo.visits (
+    visit_id INT PRIMARY KEY IDENTITY,
+    customer_name VARCHAR (50) NOT NULL,
+    phone VARCHAR (25),
+    store_id INT NOT NULL,
+    visit_on DATE NOT NULL,
+    start_at TIME (0) NOT NULL,
+    end_at TIME (0) NOT NULL,
+    create_at DATETIME2 NOT NULL, --kiểu yyyy-mm-dd H:i:s, không tự động tạo
+    modified_at DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP --kiểu yyyy-mm-dd H:i:s, tự động tạo
+    FOREIGN KEY (store_id) REFERENCES sales.stores (store_id)
+);
 
-#### 🔹 SELECT với một biểu thức
+--Chèn dữ liệu
+INSERT INTO sales.visits (
+    customer_name,
+    phone,
+    store_id,
+    visit_on,
+    start_at,
+    end_at,
+    create_at
+)
+VALUES
+    (
+        'John Doe',
+        '(408)-993-3853',
+        1,
+        '2018-06-23',
+        '09:10:00',
+        '09:30:00',
+        '2018-06-23 09:30:00'
+    );
+-- Trường visit_id, modified_at không cần đưa vào vì nó sẽ tạo tự động
 
-Ví dụ: Dựa vào first_name, last_name hãy tạo một cột FullName khi lấy.
-
-```sql
-SELECT [customer_id], [first_name], [last_name], [first_name] + ' ' + [last_name] AS FullName FROM [dbo].[categories]
-```
-
-- Nối 2 cột bằng toán tử +
-- Dùng mệnh đề AS để đặt tên / Đổi tên cho một Cột
-
-
-#### 🔹 SELECT với mệnh đề WHERE
-
-- Dùng khi bạn muốn truy vấn muốn nhận kết quả dựa vào điều kiện nào đó.
-- Thông thường kết hợp cùng các toán tử
-
-Thứ tự thực hiện
-
-![where order](img/SQL-Server-SELECT-from-where-select.png)
-
-**Các phép toán lô-gíc (logical)**
-
-*   AND: dùng để kết hợp các mệnh đề với nhau, trả về TRUE nếu tất cả các mệnh đề đều đúng.
-*   OR: dùng để kết hợp các mệnh đề với nhau, trả về TRUE nếu một trong các mệnh đề đúng.
-*   NOT: dùng để phủ định kết quả của mệnh đề.
-*   LIKE: dùng để so sánh một giá trị với một chuỗi ký tự.
-*   IN: dùng để kiểm tra xem một giá trị có nằm trong một danh sách các giá trị hay không.
-*   BETWEEN: value1 AND value2 dùng để kiểm tra xem một giá trị có nằm trong một khoảng giá trị hay không.
-*   EXISTS: dùng để kiểm tra sự tồn tại của một bản ghi trong một bảng con.
-*   ANY: dùng để so sánh với một danh sách các giá trị và trả về TRUE nếu bất kỳ giá trị nào trong danh sách đó khớp với giá trị được so sánh.
-*   SOME: cũng tương tự như ANY, nó cũng dùng để so sánh với một danh sách các giá trị và trả về TRUE nếu bất kỳ giá trị nào trong danh sách đó khớp với giá trị được so sánh.
-*   ALL: dùng để so sánh với một danh sách các giá trị và trả về TRUE nếu tất cả các giá trị trong danh sách đó khớp với giá trị được so sánh.
-
-**Các phép toán so sánh (comparison)**
-
-`=` `<>` `!=` `>` `>=` `<` `<=`
-
-
-**Ví dụ với toán tử so sánh**
-
-Tìm những sản phẩm có giá bán >= 50.000
-
-```sql
-SELECT * FROM products WHERE price >= 500000
-```
-
-**Ví dụ với toán tử AND**
-
-Cú pháp:
-
-```sql
-boolean_expression AND boolean_expression
-```
-
-Bảng kết quả kết hợp 2 vế:
-
-|         | TRUE    | FALSE | UNKNOWN |
-|---------|---------|-------|---------|
-| TRUE    | TRUE    | FALSE | UNKNOWN |
-| FALSE   | FALSE   | FALSE | FALSE   |
-| UNKNOWN | UNKNOWN | FALSE | UNKNOWN |
-
-
-Tìm những sản phẩm có giá bán >= 20.000 và <= 50.000
-
-```sql
-SELECT * FROM products WHERE price >= 200000 AND price <= 500000
-```
-
-**Ví dụ với toán tử OR**
-
-Cú pháp:
-
-```sql
-boolean_expression OR boolean_expression    
-```
-
-Bảng kết quả kết hợp 2 vế:
-
-|         | TRUE | FALSE   | UNKNOWN |
-|---------|------|---------|---------|
-| TRUE    | TRUE | TRUE    | TRUE    |
-| FALSE   | TRUE | FALSE   | UNKNOWN |
-| UNKNOWN | TRUE | UNKNOWN | UNKNOWN |
-
-
-Ví dụ: Tìm những sản phẩm có discount = 10 hoặc 20
-
-```sql
-SELECT * FROM products WHERE discount = 10 OR discount = 20
 ```
 
 
-**Ví dụ với toán tử IS**
 
+### 🔹 UPDATE
 
-Ví dụ: Tìm những sản phẩm được nhập mô tả Description (Tức khác NULL)
-
-```sql
-SELECT * FROM products WHERE Description IS NOT NULL
-```
-
-**Ví dụ với toán tử IN**
-
-
-Ví dụ: Tìm những sản phẩm thuộc danh mục có ID 2 hoặc 3
-
-```sql
-SELECT * FROM products WHERE category_id IN (2,3)
---Câu lệnh trên tương đương với toán tử OR
-SELECT * FROM products WHERE category_id = 2 OR category_id = 3
-```
-
-
-**Ví dụ với toán tử BETWEEN**
-
+Mệnh đề UPDATE dùng để thay đổi dữ liệu trong table
 
 Cú pháp
 
 ```sql
---Trong khoảng 
-column | expression BETWEEN start_expression AND end_expression
---Ngoài khoảng 
-column | expression NOT BETWEEN start_expression AND end_expresion
+UPDATE [schame_name].[table_name]
+SET c1 = v1, c2 = v2, ... cn = vn
+[WHERE condition]
 ```
 
-Ví dụ: Tìm những đơn đặt hàng từ 2016-01-01 - 2016-05-01
+Lưu ý: Câu lệnh UPDATE nên đi kèm với mệnh đề WHERE để giới hạn phạm vi tác động của dữ liệu, để giảm bớt sai sót nếu nhầm lẫn logic xử lý.
+
+**UPDATE JOIN syntax**
+
+```sql
+UPDATE 
+    t1
+SET 
+    t1.c1 = t2.c2,
+    t1.c2 = expression,
+    ...   
+FROM 
+    t1
+    [INNER | LEFT] JOIN t2 ON join_predicate
+WHERE 
+    where_predicate;
+```
+
+Tạo dữ liệu demo
+
+```sql
+DROP TABLE IF EXISTS dbo.targets;
+
+CREATE TABLE dbo.targets
+(
+    target_id  INT	PRIMARY KEY, 
+    percentage DECIMAL(4, 2) 
+        NOT NULL DEFAULT 0
+);
+
+INSERT INTO 
+    dbo.targets(target_id, percentage)
+VALUES
+    (1,0.2),
+    (2,0.3),
+    (3,0.5),
+    (4,0.6),
+    (5,0.8);
+
+CREATE TABLE dbo.commissions
+(
+    staff_id    INT PRIMARY KEY, 
+    target_id   INT, 
+    base_amount DECIMAL(10, 2) 
+        NOT NULL DEFAULT 0, 
+    commission  DECIMAL(10, 2) 
+        NOT NULL DEFAULT 0, 
+    FOREIGN KEY(target_id) 
+        REFERENCES sales.targets(target_id), 
+    FOREIGN KEY(staff_id) 
+        REFERENCES sales.staffs(staff_id),
+);
+
+INSERT INTO 
+    dbo.commissions(staff_id, base_amount, target_id)
+VALUES
+    (1,100000,2),
+    (2,120000,1),
+    (3,80000,3),
+    (4,900000,4),
+    (5,950000,5);
+```
+
+Yêu cầu Cập nhật tiền thưởng (trường commissions) ở table `commissions` theo công thức: `commissions = base_amount * percentage` mặc định nhân viên mới sẽ có mức chiết khấu percentage = 0.1
 
 
 ```sql
-SELECT *
-FROM orders
-WHERE order_date BETWEEN '2016-01-01' AND '2016-03-01';
-
-
---- Chuyển đổi chuỗi sang kiểu ngày
-SELECT *
-FROM orders
-WHERE order_date BETWEEN CONVERT(DATE, '2016-01-01') AND CONVERT(DATE, '2016-03-01');
-
-
---- Ép kiểu: chuỗi --> Date
-SELECT *
-FROM orders
-WHERE order_date BETWEEN CAST('2016-01-01' AS DATE) AND CAST('2016-03-01' AS DATE);
+UPDATE 
+    dbo.commissions
+SET  
+    dbo.commissions.commission = 
+        c.base_amount  * COALESCE(t.percentage,0.1) -- COALESCE trả về 0.1 nếu percentage là NULL
+FROM  
+    dbo.commissions AS c
+    LEFT JOIN dbo.targets t -- tham chiếu đến targets để lấy trường percentage
+        ON c.target_id = t.target_id;
 ```
 
-**Ví dụ với toán tử LIKE**
+### 🔹 DELETE
 
-Ví dụ: Tìm tên khách hàng có số điện thoại đuôi 678
-
-```sql
-SELECT *
-FROM customers
-WHERE phone LIKE '%478'
-```
-
-Dưới đây là một bảng giải thích các ký tự đại diện (wildcard) phổ biến được sử dụng với LIKE:
-
-| Ký tự đại diện (Wildcard) | Mô tả                                                                                     |
-|-------------------------|------------------------------------------------------------------------------------------|
-| %                       | Đại diện cho bất kỳ chuỗi ký tự nào (bao gồm cả chuỗi rỗng)                               |
-| _                       | Đại diện cho bất kỳ ký tự đơn lẻ nào                                                          |
-| [character_list]        | Đại diện cho bất kỳ ký tự nào trong danh sách các ký tự được chỉ định                            |
-| [^character_list]       | Đại diện cho bất kỳ ký tự nào không nằm trong danh sách các ký tự được chỉ định                 |
-| [range_of_characters]   | Đại diện cho bất kỳ ký tự nào nằm trong một khoảng các ký tự được chỉ định                       |
-
-Ví dụ về việc sử dụng wildcard trong mệnh đề LIKE:
-
-- `WHERE column_name LIKE 'A%'`: Tìm tất cả các giá trị trong cột "column_name" bắt đầu bằng "A".
-- `WHERE column_name LIKE '%B'`: Tìm tất cả các giá trị trong cột "column_name" kết thúc bằng "B".
-- `WHERE column_name LIKE '%C%'`: Tìm tất cả các giá trị trong cột "column_name" chứa "C" ở bất kỳ vị trí nào.
-- `WHERE column_name LIKE '_D%'`: Tìm tất cả các giá trị trong cột "column_name" có chữ cái đầu tiên là bất kỳ ký tự nào, sau đó là "D".
-- `WHERE column_name LIKE '[ABC]%'`: Tìm tất cả các giá trị trong cột "column_name" bắt đầu bằng "A", "B" hoặc "C".
-- `WHERE column_name LIKE '[^XYZ]%'`: Tìm tất cả các giá trị trong cột "column_name" không bắt đầu bằng "X", "Y" hoặc "Z".
-- `WHERE column_name LIKE '[A-Z]%'`: Tìm tất cả các giá trị trong cột "column_name" bắt đầu bằng một ký tự trong khoảng từ "A" đến "Z".
-
-Lưu ý rằng mệnh đề LIKE được sử dụng trong câu lệnh SELECT của SQL để tìm kiếm các giá trị phù hợp với mẫu chuỗi được chỉ định.
-
-
-
-#### 🔹 SELECT với mệnh đề ORDER BY
-
-- Dùng để sắp xếp kết quả truy vấn theo một hoặc nhiều cột.
-- Mặc định sắp xếp theo thứ tự tăng dần (ASC), nhưng bạn cũng có thể chỉ định thứ tự giảm dần (DESC).
-
-
-Thứ tự thực hiện
-
-![where order](img/SQL-Server-SELECT-from-where-select-order-by.png)
-
-
-Ví dụ: Sắp xếp tất cả các khách hàng theo `first_name` tăng dần:
-
-```sql
-SELECT
-    first_name,
-    last_name
-FROM
-    customers
-ORDER BY
-    first_name; --Mặc định không set thì là ASC
-```
-
-Ví dụ: Sắp xếp tất cả các khách hàng theo `first_name` giảm dần:
-
-```sql
-SELECT
-    first_name,
-    last_name
-FROM
-    customers
-ORDER BY
-    first_name DESC;
-```
-
-
-Ví dụ: Sắp xếp theo thành phố, first_name, last_name
-
-```sql
--- Sắp xếp theo nhiều column
-SELECT
-    city,
-    first_name,
-    last_name
-FROM
-   customers
-ORDER BY
-    city,
-    first_name;
-```
-
-#### 🔹 SELECT với mệnh đề OFFSET-FETCH
-
-- Dùng để phân trang kết quả truy vấn.
-- Mệnh đề OFFSET xác định số hàng bỏ qua từ kết quả `bắt đầu` trả về.
-- Mệnh đề FETCH xác định số hàng trả về từ kết quả.
+Câu lệnh DELETE cho phép bạn loại bỏ dữ liệu không cần thiết, không chính xác hoặc không muốn từ một bảng cụ thể trong cơ sở dữ liệu.
 
 Cú pháp:
 
 ```sql
-ORDER BY column_list [ASC |DESC]
-OFFSET offset_row_count {ROW | ROWS}
-FETCH {FIRST | NEXT} fetch_row_count {ROW | ROWS} ONLY
+DELETE [ TOP ( expression ) [ PERCENT ] ]  
+FROM table_name
+[WHERE search_condition];
 ```
 
-![ftech](img/SQL-Server-OFFSET-FETCH.png)
-
-Ví dụ: Truy vấn tất cả các sản phẩm và bỏ qua 10 hàng đầu tiên:
+Ví dụ các trường hợp:
 
 ```sql
-SELECT
-    product_name,
-    price
-FROM
-    dbo.products
-ORDER BY
-    price,
-    product_name 
-OFFSET 10 ROWS;
+-- Xóa tất cả records từ table target_table
+DELETE FROM target_table;
+-- Xóa 1 dòng đầu tiên
+DELETE TOP 10 FROM target_table;  
+-- Xóa 10 % records ngẫu nhiên trong table
+DELETE TOP 10 PERCENT FROM target_table;
 ```
-Ví dụ: bỏ qua 10 hàng đầu tiên, và lấy 10 dòng tiếp theo:
+
+**DELETE với mệnh đề WHERE**
+
+Thông thường câu lệnh DELETE đi kèm điều kiện WHERE để xác định cụ thể bản ghi nào cần xóa
 
 ```sql
-SELECT
-    product_name,
-    price
-FROM
-    dbo.products
-ORDER BY
-    price,
-    product_name 
-OFFSET 10 ROWS 
-FETCH NEXT 10 ROWS ONLY;
+DELETE FROM dbo.commissions WHERE staff_id = 1
 ```
 
-Lưu ý: Mệnh đề OFFSET-FETCH chỉ được hỗ trợ từ SQL Server 2012 (bao gồm cả SQL Server 2012) trở đi.
-
-Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-offset-fetch/
 
 
-#### 🔹 SELECT với mệnh đề DISTINCT
+## 💛 SQL CONSTRAINT
 
-Dùng để loại bỏ các giá trị trùng lặp trong kết quả truy vấn.
+CONSTRAINT (ràng buộc) là một khối mã hoặc một quy tắc được áp dụng cho một hoặc nhiều cột trong một bảng để định nghĩa và bảo vệ tính toàn vẹn dữ liệu. Ràng buộc định nghĩa các quy tắc và giới hạn cho dữ liệu được lưu trữ trong cơ sở dữ liệu.
+
+Các CONSTRAINT phổ biến:
+
+### 🔹 PRIMARY KEY
+
+Primary key (Khóa chính) là một thuộc tính hoặc tập hợp các thuộc tính trong một bảng dùng để định danh duy nhất mỗi hàng trong bảng đó. Khóa chính đảm bảo tính duy nhất và xác định của các bản ghi trong bảng
+
+Là sự kết hợp giữa 2 CONSTRAINT `UNIQUE` và `NOT NULL`
 
 ```sql
---- Lấy danh sách city từ Table customers
-SELECT city
-FROM customers
-ORDER BY city ASC
----
---- Kết quả trùng lặp các giá trị và bạn muốn khử trùng lặp thì dùng DISTINCT
----
-
-SELECT DISTINCT city
-FROM customers
-ORDER BY city ASC
+-- Định nghĩa PRIMARY KEY ngay khi tạo table
+CREATE TABLE [dbo].[products] (
+    product_id INT IDENTITY(1,1) PRIMARY KEY NOT NULL
+)
+-- Định nghĩa PRIMARY KEY cho table đã tồn tại
+ALTER TABLE [dbo].[products]
+ADD PRIMARY KEY (product_id);
+-- Hoặc, bạn có thể đặt tên cho contraint là PK_products_product_id
+--Khuyên dùng cách này để xảy ra lỗi thì dễ dàng nhận biết vì có tên
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
 ```
 
+==> Sử dụng tiếp đầu ngữ `pk_` để nhận biết đó là khóa chính
 
-Nếu bạn chỉ định nhiều cột, mệnh đề DISTINCT sẽ đánh giá sự trùng lặp dựa trên sự kết hợp các giá trị của các cột này.
+Ngoài cách dùng `IDENTITY` bạn có thể sử một phương thức mới hơn là `GUID`
 
 ```sql
-SELECT 
-	city, 
-	state, 
-	zip_code
-FROM 
-	customers
-GROUP BY 
-	city, state, zip_code
-ORDER BY
-	city, state, zip_code;
+SELECT NEWID() AS GUID;
+-- Cho ra được: 3297F0F2-35D3-4231-919D-1CFCF4035975
+-- Đảm bảo được tính duy nhất khi làm khóa chính
 ```
 
-Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-select-distinct/
-
-#### 🔹 SELECT với mệnh đề TOP & TOP PERCENT
-
-Mệnh đề SELECT TOP được sử dụng để chỉ định số lượng bản ghi cần trả về.
-
-Ví dụ: Lấy 10 bản ghi đầu tiên trong kết quả trả về table products
+Bạn có thể áp dụng GUID làm `primary key`
 
 ```sql
-SELECT TOP 10 * 
-FROM products
+CREATE TABLE dbo.customers(
+    customer_id UNIQUEIDENTIFIER DEFAULT NEWID(),
+    first_name NVARCHAR(100) NOT NULL,
+    last_name NVARCHAR(100) NOT NULL,
+    email VARCHAR(200) NOT NULL
+);
+-- Trong đó: UNIQUEIDENTIFIER ==> Đảm bảo định danh duy nhất, không trùng lặp, 
+-- DEFAULT NEWID() --> tự động tạo
 ```
-
-Ví dụ lấy 5% số lượng bản từ table products
+**Xóa Khóa chính**
 
 ```sql
---- Ngẩu nhiên --> Mang tính tương đối
-SELECT TOP 5 PERCENT * 
-FROM products
+ALTER TABLE table_name
+DROP CONSTRAINT constraint_name;
 ```
 
-#### 🔹 SELECT với mệnh đề WITH TIES
-
-Mệnh đề WITH TIES được sử dụng trong câu lệnh ORDER BY của SQL để bao gồm các hàng có giá trị "ràng buộc" (ties) trong kết quả sắp xếp. Một "ràng buộc" xảy ra khi hai hoặc nhiều hàng có giá trị sắp xếp bằng nhau theo cùng một tiêu chí.
-
-Khi sử dụng WITH TIES, các hàng có giá trị "ràng buộc" sẽ được bao gồm trong kết quả cuối cùng của câu lệnh ORDER BY, chứ không chỉ có các hàng có giá trị duy nhất.
+Ví dụ
 
 ```sql
-SELECT TOP 10 WITH TIES product_id, product_name, price 
-FROM products
-ORDER BY price DESC
+ALTER TABLE dbo.products
+DROP CONSTRAINT PK_products_product_id;
 ```
 
 
-#### 🔹 SELECT với mệnh đề GROUP BY,GROUP BY với HAVING
-
-Mệnh đề GROUP BY dùng để nhóm các hàng dữ liệu thành các nhóm dựa trên giá trị của một hoặc nhiều cột. Nó cho phép bạn thực hiện các phép tính tổng hợp (aggregate) trên các nhóm dữ liệu này.
-
-Khi sử dụng GROUP BY, dữ liệu sẽ được phân chia thành các nhóm dựa trên giá trị của cột được chỉ định trong mệnh đề GROUP BY. Các bản ghi có giá trị giống nhau trong cột này sẽ thuộc cùng một nhóm.
-
-
-Thứ tự thực hiện
-
-![where order](img/SQL-Server-SELECT-from-where-group-by-select-order-by.png)
-
-
-
-
-Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần.
+Nếu như khóa chính chưa set tự động tăng trước đó bạn có thể tạo như sau
 
 ```sql
-SELECT discount
-FROM products
-GROUP BY discount
-ORDER BY discount ASC
---- Câu lệnh này tương đương bạn dùng DISTINCT
+-- xóa khóa chính
+ALTER TABLE dbo.products
+DROP CONSTRAINT PK_products_product_id;
+--xóa cột product_id
+ALTER TABLE dbo.products DROP COLUMN product_id
+--tạo lại product_id với IDENTITY
+ALTER TABLE dbo.products
+ADD product_id INT IDENTITY(1,1)
+--Thiết lập lại khóa chính
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [PK_products_product_id] PRIMARY KEY ([product_id]);
+--
+Go
 ```
 
-Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó.
+
+
+
+### 🔹 FOREIGN KEY 
+
+- Foreign key (khóa ngoại) là một cột hoặc tập hợp các cột trong một bảng tham chiếu đến khóa chính của một bảng khác. Khóa ngoại tạo ra một mối quan hệ giữa hai bảng dựa trên giá trị của cột hoặc các cột được liên kết.
+
+- Bảng chứa khóa ngoại được gọi là bảng tham chiếu hoặc bảng con. Và bảng được tham chiếu bởi khóa ngoại được gọi là bảng được tham chiếu hoặc bảng cha.
+
+- Một bảng có thể có nhiều khóa ngoại tùy thuộc vào mối quan hệ của nó với các bảng khác.
+
+- Bạn xác định khóa ngoại bằng cách sử dụng ràng buộc khóa ngoại. Ràng buộc khóa ngoại giúp duy trì tính toàn vẹn tham chiếu của dữ liệu giữa bảng con và bảng cha.
+
+- Ràng buộc khóa ngoại chỉ ra rằng các giá trị trong một cột hoặc một nhóm cột trong bảng con bằng với các giá trị trong một cột hoặc một nhóm cột của bảng cha.
+
+```sql
+-- Tạo khóa ngoại category_id, brand_id ngay khi tạo mới Table
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [product_name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL,
+  [discount] DECIMAL(4,2) NOT NULL,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES brands(brand_id) --Khóa ngoại brand_id
+);
+```
+
+==> Sử dụng tiếp đầu ngữ `fk_` để nhận biết đó là khóa ngoại
+
+
+Hoặc bạn có thể tạo khóa ngoại cho một table đã tồn tại
+
+```sql
+--Tạo khóa ngoại  FOREIGN KEY (category_id) tham chiếu đến khóa chính categories(Id)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [FK_products_categories] FOREIGN KEY ([category_id]) REFERENCES [dbo].[categories] ([category_id]);
+GO
+--Tạo khóa ngoại FOREIGN KEY (brand_id) tham chiếu đến khóa chính brands(brand_id)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [FK_products_brands_id] FOREIGN KEY ([brand_id]) REFERENCES [dbo].[brands] ([brand_id]);
+```
+
+**Xóa Khóa phụ**
+
+```sql
+ALTER TABLE table_name
+DROP CONSTRAINT constraint_name;
+```
+
+Ví dụ
+
+```sql
+ALTER TABLE dbo.products
+DROP CONSTRAINT FK_products_brands_id
+```
+
+**📢 Khóa ngoại với tùy chọn tham chiếu**
+
+Câu lệnh FOREIGN KEY trong SQL Server được sử dụng để tạo ràng buộc khóa ngoại giữa hai bảng trong cơ sở dữ liệu. Ràng buộc khóa ngoại đảm bảo tính toàn vẹn dữ liệu bằng cách xác định mối quan hệ giữa các bảng thông qua khóa ngoại và khóa chính.
+
+Cú pháp chung của câu lệnh FOREIGN KEY như sau:
+
+```sql
+FOREIGN KEY (foreign_key_columns)
+    REFERENCES parent_table(parent_key_columns)
+    ON UPDATE CASCADE |  SET NULL | SET DEFAULT | NO ACTION | RESTRICT
+    ON DELETE CASCADE |  SET NULL | SET DEFAULT | NO ACTION | RESTRICT;
+```
+
+- `foreign_key_columns`: Là danh sách các cột trong bảng hiện tại, được định nghĩa là khóa ngoại và sẽ tham chiếu đến khóa chính trong bảng cha.
+- `parent_table`: Là tên của bảng cha, tức là bảng mà các cột khóa chính được tham chiếu đến.
+- `parent_key_columns`: Là danh sách các cột khóa chính trong bảng cha.
+- `ON UPDATE action`: Xác định hành động khi giá trị của khóa chính trong bảng cha được cập nhật. Có thể là `CASCADE`, `SET NULL`, `SET DEFAULT`, `NO ACTION` hoặc `RESTRICT`.
+- `ON DELETE action`: Xác định hành động khi một hàng trong bảng cha bị xóa. Có thể là `CASCADE`, `SET NULL`, `SET DEFAULT`, `NO ACTION` hoặc `RESTRICT`.
+
+Trong đó:
+
+1. SET DEFAULT: Khi sử dụng "SET DEFAULT", nếu một bản ghi trong bảng cha (parent table) được cập nhật hoặc xóa, và có các bản ghi tương ứng trong bảng con (child table) sử dụng khóa ngoại, giá trị của các cột khóa ngoại trong bảng con sẽ được đặt về giá trị mặc định (default value) đã được xác định trước đó. Nếu không có giá trị mặc định, thì một lỗi có thể xảy ra.
+
+2. NO ACTION: Khi sử dụng "NO ACTION", nếu có sự thay đổi trong bảng cha, nhưng các bản ghi trong bảng con vẫn có tham chiếu đến các bản ghi trong bảng cha, thì NO ACTION sẽ ngăn chặn các thay đổi này. Nghĩa là, hệ thống sẽ không thực hiện thay đổi hoặc xóa bản ghi trong bảng cha nếu có các bản ghi con liên quan. Điều này đảm bảo tính nhất quán của dữ liệu, nhưng có thể gây ra lỗi nếu không được xử lý cẩn thận.
+
+3. RESTRICT: RESTRICT tương tự như NO ACTION, nghĩa là nó ngăn chặn sự thay đổi hoặc xóa bản ghi trong bảng cha khi có các bản ghi con liên quan. RESTRICT cũng được sử dụng để đảm bảo ràng buộc dữ liệu và tính nhất quán, và có thể gây ra lỗi nếu không được xử lý cẩn thận.
+
+4. CASCADE: Khi sử dụng "CASCADE" trong mệnh đề FOREIGN KEY, nếu có sự thay đổi trong bảng cha, như cập nhật hoặc xóa bản ghi, các thay đổi tương ứng sẽ được tự động lan truyền (cascade) đến bảng con. Nghĩa là, các bản ghi trong bảng con có khóa ngoại trùng khớp sẽ được cập nhật hoặc xóa một cách tự động.
+
+5. SET NULL: Khi sử dụng "SET NULL", nếu một bản ghi trong bảng cha được cập nhật hoặc xóa, và có các bản ghi tương ứng trong bảng con sử dụng khóa ngoại, giá trị của các cột khóa ngoại trong bảng con sẽ được đặt về NULL. Điều này cho phép tồn tại các bản ghi trong bảng con không có liên kết với bảng cha.
+
+Tóm lại, khi sử dụng các từ khóa trong mệnh đề FOREIGN KEY, chúng ta có thể xác định cách thức xử lý dữ liệu liên quan đến khóa ngoại khi có sự thay đổi trong bảng cha. Mỗi từ khóa có ý nghĩa và tác động khác nhau lên dữ liệu và các bảng liên quan. Lựa chọn từ khóa phù hợp phụ thuộc vào yêu cầu kinh doanh và mô hình dữ liệu của hệ thống.
+
+
+Ví dụ, để tạo một ràng buộc khóa ngoại trong bảng "Orders" tham chiếu đến khóa chính "OrderID" trong bảng "Customers", và khi khóa chính trong bảng "Customers" được cập nhật hoặc xóa, các hành động tương ứng được thực hiện, bạn có thể sử dụng câu lệnh sau:
+
+```sql
+ALTER TABLE Orders
+ADD FOREIGN KEY (CustomerID)
+REFERENCES Customers(CustomerID)
+ON UPDATE CASCADE
+ON DELETE SET NULL;
+```
+
+Trong ví dụ trên, cột "CustomerID" trong bảng "Orders" được định nghĩa là khóa ngoại, tham chiếu đến cột "CustomerID" trong bảng "Customers".
+
+- Khi khóa chính trong bảng "Customers" được cập nhật, các bản ghi tương ứng trong bảng "Orders" sẽ được cập nhật theo (`ON UPDATE CASCADE`). 
+- Khi một bản ghi trong bảng "Customers" bị xóa, giá trị khóa ngoại trong bảng "Orders" sẽ được đặt thành NULL (`ON DELETE SET NULL`).
+
+
+
+
+### 🔹 UNIQUE
+
+SQL cung cấp cho bạn ràng buộc UNIQUE để duy trì tính duy nhất của dữ liệu một cách chính xác.
+
+Khi có ràng buộc UNIQUE, mỗi khi bạn chèn một hàng mới, nó sẽ kiểm tra xem giá trị đã có trong bảng chưa. Nó từ chối thay đổi và đưa ra lỗi nếu giá trị đã tồn tại. Quá trình tương tự được thực hiện để cập nhật dữ liệu hiện có.
+
+```sql
+--Tạo UNIQUE ngay khi tạo mới table
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [category_name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [description] NVARCHAR(500) NULL,
+);
+GO
+```
+
+Bạn cũng có thể tạo UNIQUE cho một table đã tồn tại
+
+```sql
+ALTER TABLE [dbo].[categories]
+ADD CONSTRAINT [UQ_categories_category_name] UNIQUE ([category_name]); --UQ_categories_Name là tên bạn đặt cho CONTRAINT
+GO
+```
+
+==> Sử dụng tiếp đầu ngữ `uq_` để nhận biết đó là UNIQUE
+
+**Xóa UNIQUE Contraint**
+
+```sql
+ALTER TABLE table_name
+DROP CONSTRAINT uq_constraint_name;
+
+```
+
+
+### 🔹 NOT NULL
+
+Trong lý thuyết cơ sở dữ liệu, NULL đại diện cho thông tin chưa biết hoặc thiếu thông tin. NULL không giống như một chuỗi trống hoặc số 0.
+
+Giả sử bạn cần chèn địa chỉ email của một liên hệ vào bảng. Bạn có thể yêu cầu địa chỉ email của người đó. Tuy nhiên, nếu bạn không biết người liên hệ đó có địa chỉ email hay không, bạn có thể chèn NULL vào cột địa chỉ email. Trong trường hợp này, NULL chỉ ra rằng địa chỉ email không được biết tại thời điểm ghi.
+
+NULL rất đặc biệt. Nó không bằng bất cứ thứ gì, kể cả chính nó. Biểu thức NULL = NULL trả về NULL vì điều đó có nghĩa là hai giá trị chưa biết không được bằng nhau.
+
+Định nghĩa NOT NULL ngay khi tạo mới table
+
+```sql
+CREATE TABLE [dbo].[categories] (
+  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
+  [category_name] NVARCHAR(50) UNIQUE NOT NULL, -- UNIQUE
+  [description] NVARCHAR(500),
+);
+GO
+```
+Hoặc cho table đã tồn tại
+
+```sql
+ALTER TABLE [dbo].[categories]
+ALTER COLUMN [name] NVARCHAR(50) UNIQUE NOT NULL;
+```
+
+
+### 🔹 DEFAULT
+
+DEFAULT là một thuộc tính được sử dụng trong cơ sở dữ liệu để định nghĩa giá trị mặc định cho một cột khi không có giá trị nào được cung cấp trong quá trình chèn dữ liệu mới hoặc cập nhật dữ liệu trong cột đó.
+
+Định nghĩa `DEFAULT CONTRAINT` ngay khi tạo mới Table
+
+price, discount mặc định = 0
+
+```sql
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [product_name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) NOT NULL DEFAULT 0,
+  [discount] DECIMAL(4,2) NOT NULL DEFAULT 0,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES brands(brand_id) --Khóa ngoại brand_id
+
+);
+GO
+
+```
+Với kiểu dữ liệu thời gian ví dụ như ghi nhận thời gian thêm mới đơn hàng `order_date`
+
+Ví dụ:
+
+```sql
+CREATE TABLE [dbo].[orders] (
+	[order_id] [int]  NOT NULL,
+	[customer_id] [int] NOT NULL,
+	[order_status] [tinyint] NOT NULL,
+	-- Order status: 1 = Pending; 2 = Processing; 3 = cancel; 4 = Completed
+	[order_date] [datetime2] NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	[required_date] [datetime2] NOT NULL,
+	[shipped_date] [datetime2] NULL,
+	[store_id] [int] NOT NULL,
+	[staff_id] [int] NOT NULL,
+	[order_note] [nvarchar](500) NULL,
+	[shipping_address] [nvarchar](500) NULL,
+	[shipping_city] [nvarchar](50) NULL,
+	[payment_type] [tinyint] NOT NULL,
+	-- payment type: 1 = COD; 2 = Credit; 3 = ATM; 4 = Cash
+	[order_amount] [decimal](18, 2) NOT NULL
+);
+GO
+```
+
+
+
+### 🔹 CHECK
+
+Check Contraint là một loại ràng buộc cho phép bạn chỉ định xem các giá trị trong một cột có phải đáp ứng một yêu cầu cụ thể hay không.
+
+Nếu các giá trị vượt qua quá trình kiểm tra, PostgreSQL sẽ chèn hoặc cập nhật các giá trị này vào cột. Nếu không, PostgreSQL sẽ từ chối các thay đổi và đưa ra lỗi vi phạm ràng buộc.
+
+
+Tạo table  products FULL Các CONTRAINT, ngay khi tạo mới
+
+```sql
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Tự tăng
+  [product_name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) DEFAULT 0 CHECK (price >=0),
+  [discount] DECIMAL(4,2) DEFAULT 0 NOT NULL CHECK (discount >=0 AND discount <= 70),
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES brands(brand_id) --Khóa ngoại brand_id
+
+);
+GO
+
+```
+
+Bạn cũng có thể tạo CONTRAINT CHECK cho table đã tồn tại
 
 
 ```sql
-SELECT 
-  discount, 
-  COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
-FROM products
-GROUP BY discount
-ORDER BY discount ASC
+-- Create CHECK (price > 0)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [CK_products_price] CHECK ([price] > 0);
+GO
+
+--Create CHECK (discount >= 0 AND discount <= 90)
+ALTER TABLE [dbo].[products]
+ADD CONSTRAINT [CK_products_discount] CHECK ([discount] >= 0 AND [discount] <= 90);
+GO
+
 ```
 
-Ví dụ: Lấy tất cả các mức giảm giá discount của sản phẩm theo thứ tự tăng dần, đồng thời thống kê số lượng sản phẩm có mức giảm giá đó. Chỉ lấy những mức discount >= 5
+==> Sử dụng tiếp đầu ngữ `ck_` để nhận biết đó là Check
+
+**Xóa Check Contraint**
 
 ```sql
-SELECT 
-  discount, 
-  COUNT(Id) AS Total --- Đếm dựa vào ID và đặt tên là Total
-FROM products
-GROUP BY discount
-HAVING discount >= 5 --- Lọc sau khi nhóm xong
-ORDER BY discount ASC
+ALTER TABLE table_name
+DROP CONSTRAINT check_constraint_name;
 ```
 
-Ví dụ: Thống kê số lượng đơn hàng khách hàng đã mua theo năm.
+**Tắt Check Contraint**
+
+Cú pháp
 
 ```sql
-SELECT
-    customer_id,
-    YEAR (order_date),
-    COUNT (order_id) order_count
-FROM
-    orders
-GROUP BY
-    customer_id,
-    YEAR (order_date)
-HAVING
-    COUNT (order_id) >= 2
-ORDER BY
-    customer_id;
+ALTER TABLE table_name
+NO CHECK CONSTRAINT check_constraint_name;
 ```
 
+## 💛 Kết Luận
 
-#### 🔹 SELECT với mệnh đề INTO
+Tổng hợp các vấn đề trên bạn có thể thực hiện tạo bảng, với đầy đủ tính năng trong lần tạo mới như sau:
 
-Dùng để tạo bảng mới từ kết quả truy vấn
+- Có Khóa chính tự tăng được đặt tên
+- Có khóa ngoại được đặt tên
+- Có các contraints được đặt tên
+
 
 ```sql
-SELECT * INTO customersBackup2019
-FROM customers;
+CREATE TABLE [dbo].[products] (
+  [product_id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
+  [product_name] NVARCHAR(100) NOT NULL,
+  [price] DECIMAL(18,2) DEFAULT 0,
+  [discount] DECIMAL(4,2) DEFAULT 0,
+  [description] NVARCHAR(MAX) NULL,
+  [category_id] INT NOT NULL,
+  [brand_id] INT NOT NULL,
+  -- Khóa chính
+  CONSTRAINT PK_products_product_id PRIMARY KEY (product_id),
+  -- Danh sách khóa ngoại nếu có
+  CONSTRAINT FK_products_category_id FOREIGN KEY (category_id) 
+        REFERENCES categories(category_id), --Khóa ngoại category_id
+  CONSTRAINT FK_products_brand_id FOREIGN KEY (brand_id) 
+        REFERENCES brands(brand_id), --Khóa ngoại brand_id
+    -- Danh sách các contraints nếu có
+    CONSTRAINT [UQ_produtcs_product_name] UNIQUE ([product_name]),
+    CONSTRAINT [CK_products_price] CHECK ([price] > 0),
+    CONSTRAINT [CK_products_discount] CHECK ([discount] >= 0 AND [discount] <= 90)
+
+);
 ```
-
-Bạn có thể tận dụng tính năng này để backup một table
-
-#### 🔹 SELECT Không có (without) FROM
-
-```sql
--- Trả về ngày hiện tại
-SELECT GETDATE() 
--- Lấy 3 kí tự bên trái của chuỗi
-SELECT LEFT('SQL Tutorial', 3) AS ExtractString;
--- Chuyển chuỗi thành kí tự thường
-SELECT LOWER('SQL Tutorial is FUN!');
-```
-
-Xem các hàm:
-
-- Hàm về ngày: https://www.sqlservertutorial.net/sql-server-date-functions/
-- Hàm về chuỗi: https://www.sqlservertutorial.net/sql-server-string-functions/
-- Hàm tính toán: https://www.sqlservertutorial.net/sql-server-aggregate-functions/
-- Hàm hệ thống: https://www.sqlservertutorial.net/sql-server-system-functions/
-
-
----
-
-
-## 💛 Session 07- Azure SQL
-
-
-### 💥 Giới thiệu SQL Azure
-
-SQL Azure là một dịch vụ cơ sở dữ liệu quan hệ dựa trên đám mây, thúc đẩy các công nghệ SQL Server hiện có. Microsoft SQL Azure mở rộng chức năng của Microsoft SQL Server để phát triển các ứng dụng dựa trên web, có khả năng mở rộng và được phân phối. SQL Azure cho phép người dùng thực hiện các truy vấn quan hệ, hoạt động tìm kiếm và đồng bộ hóa dữ liệu với người dùng di động và các office từ xa. SQL Azure có thể lưu trữ và lấy cả dữ liệu có cấu trúc và phi cấu trúc.
-
-
-Quy trình hoạt động của SQL Azure được giải thích trong mô hình như được trình bày bên dưới:
-
-![](https://images.viblo.asia/63d95cfa-351a-44a6-a537-fa8976f1929c.png)
-
-### 💥  Mô hình hoạt động của SQL Azure
-
-Ba đối tượng cốt lõi trong mô hình hoạt động của SQL Azure như sau:
-
-1. Tài khoản
-
-Đầu tiên phải tạo một tài khoản SQL Azure. Tài khoản này được tạo ra cho mục đích thanh toán. Thuê bao tài khoản được ghi lại và đo lường, được tính tiền theo lượng sử dụng. Sau khi tài khoản người dùng được tạo ra, các yêu cầu cần phải được cung cấp cho cơ sở dữ liệu SQL Azure, bao gồm số lượng cơ sở dữ liệu cần thiết, kích thước cơ sở dữ liệu, v.v...
-
-2. Server
-
-Máy chủ SQL Azure là đối tượng giúp tương tác giữa tài khoản và cơ sở dữ liệu. Sau khi tài khoản được đăng ký, cơ sở dữ liệu được cấu hình sử dụng máy chủ SQL Azure. Các thiết lập khác như thiết lập tường lửa và gán tên miền (DNS) cũng được cấu hình trong máy chủ SQL Azure.
-
-3. Database
-
-Cơ sở dữ liệu SQL Azure lưu trữ tất cả dữ liệu theo cách tương tự như bất kỳ cơ sở dữ liệu SQL Server tại chỗ. Mặc dù lưu trữ bằng công nghệ đám mây, cơ sở dữ liệu SQL Azure có tất cả các chức năng của một RDBMS bình thường như table, view, query, function, thiết lập bảo mật, v.v...
-
-Ngoài những đối tượng cốt lõi thì còn một đối tượng bổ sung trong SQL Azure. Đối tượng này là công nghệ Đồng bộ dữ liệu SQL Azure. Công nghệ Đồng bộ dữ liệu SQL Azure được xây dựng trên Microsoft Sync Framework và cơ sở dữ liệu SQL Azure.
-
-SQL Azure Data Sync giúp đồng bộ hóa dữ liệu trên SQL Server cục bộ với các dữ liệu trên SQL Azure như được trình bày trong hình dưới:
-
-Data Sync còn có khả năng quản lý dữ liệu giúp chia sẻ dữ liệu dễ dàng giữa các cơ sở dữ liệu SQL khác nhau. Data Sync không chỉ được sử dụng để đồng bộ hóa tại chỗ với SQL Azure, mà còn để đồng bộ hóa một tài khoản SQL Azure với tài khoản khác.
-
-### 💥  Các lợi ích của SQL Azure
-
-1. Chi phí thấp hơn
-
-SQL Azure cung cấp một số hàm tương tự như trên SQL Server tại chỗ với chi phí thấp hơn so với SQL Server tại chỗ. Ngoài ra, khi SQL Azure trên nền tảng đám mây, nó có thể được truy cập từ bất kỳ vị trí nào. Do đó, không có thêm chi phí cần thiết để phát triển một cơ sở hạ tầng CNTT chuyên dụng và phòng ban để quản lý cơ sở dữ liệu.
-
-2. Sử dụng TDS
-
-TDS được sử dụng trong các cơ sở dữ liệu SQL Server tại chỗ cho các thư viện máy khách. Do đó, hầu hết các nhà phát triển đã quen thuộc với TDS và cách sử dụng tiện ích này. Cùng một loại giao diện TDS được sử dụng trong SQL Azure để xây dựng các thư viện máy khách. Do đó, các nhà phát triển làm việc trên SQL Azure dễ dàng hơn
-
-3. Biện pháp chuyển đổi dự phòng tự động
-
-SQL Azure lưu trữ nhiều bản sao dữ liệu trên các vị trí vật lý khác nhau. Thậm chí khi có lỗi phần cứng do sử dụng nhiều hoặc tải quá mức, SQL Azure giúp duy trì các hoạt động kinh doanh bằng cách cung cấp khả năng sẵn sàng của dữ liệu thông qua các địa điểm vật lý khác.
-
-4. Tính linh hoạt trong việc sử dụng dịch vụ
-
-Ngay cả các tổ chức nhỏ cũng có thể sử dụng SQL Azure bởi mô hình định giá cho SQL Azure được dựa trên khả năng lưu trữ được tổ chức sử dụng. Nếu tổ chức cần lưu trữ nhiều hơn, giá có thể thay đổi cho phù hợp với nhu cầu. Điều này giúp các tổ chức có được sự linh hoạt trong việc đầu tư tùy thuộc vào việc sử dụng dịch vụ.
-
-5. Hỗ trợ Transact-SQL
-
-Do SQL Azure hoàn toàn dựa trên mô hình cơ sở dữ liệu quan hệ, nó cũng hỗ trợ các hoạt động và truy vấn Transact-SQL. Khái niệm này cũng tương tự như hoạt động của các SQL Server tại chỗ. Do đó, các quản trị viên không cần bất kỳ đào tạo hoặc hỗ trợ bổ sung nào để sử dụng SQL Azure
-
-### 💥  Sự khác biệt giữa SQL Azure và SQL Server
-
-Một số khác biệt quan trọng khác giữa SQL Azure và SQL Server phía khách hàng như sau:
-
-- Các công cụ – SQL Server phía khách hàng cung cấp một số công cụ để theo dõi và quản lý. Tất cả những công cụ này có thể không được hỗ trợ bởi SQL Azure bởi có một số tập hợp công cụ hạn chế có sẵn trong phiên bản này
-- Sao lưu – Sao lưu và phục hồi chức năng phải được hỗ trợ trong SQL Server phía khách hàng để khắc phục thảm họa. Đối với SQL Azure, do tất cả các dữ liệu là trên nền tảng điện toán đám mây, sao lưu và phục hồi là không cần thiết
-- Câu lệnh USE – Câu lệnh USE không được SQL Azure hỗ trợ. Do đó, người dùng không thể chuyển đổi giữa các cơ sở dữ liệu trong SQL Azure so với SQL Server phía khách hàng.
-- Xác thực – SQL Azure chỉ hỗ trợ xác thực SQL Server và SQL Server phía khách hàng hỗ trợ cả xác thực SQL Server và xác thực của Windows
-Hỗ trợ Transact-SQL – Không phải tất cả các chức năng - Transact-SQL đều được SQL Azure hỗ trợ
-Tài khoản và đăng nhập – Trong SQL Azure, các tài khoản quản trị được tạo ra trong cổng thông tin quản lý Azure. Do đó, không có thông tin đăng nhập người dùng mức thể hiện cấp riêng biệt
-- Tường lửa – Các thiết lập tường lửa cho các cổng và địa chỉ IP cho phép có thể được quản lý trên máy chủ vật lý cho SQL Server phía khách hàng. Bởi cơ sở dữ liệu SQL Azure có mặt trên điện toán đám mây, xác thực thông qua các thông tin đăng nhập là phương pháp duy nhất để xác minh người dùng
+==> Mục tiêu mọi thứ định nghĩa ra phải có tên rõ ràng để quản lý.
 
