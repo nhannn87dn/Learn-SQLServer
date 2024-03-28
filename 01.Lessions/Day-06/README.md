@@ -1,1211 +1,963 @@
-# Day 6
+# Day 5
 
-## 💛 Session 13 - Programming Transact-SQL
 
-### 💥 Transact-SQL là gì ?
 
-Transact-SQL (viết tắt là T-SQL) là một phần mở rộng của ngôn ngữ truy vấn SQL được phát triển dựa theo tiêu chuẩn ISO và ANSI (American National Standards Institute).
+## 💛 Session 09- Advanced Queries and Joins - Part 1
 
-T-SQL là một ngôn ngữ truy vấn phổ biến được sử dụng trong hệ quản trị CSDL Microsoft SQL Server và Azure SQL Database. T-SQL là một phần mở rộng của ngôn ngữ SQL (Structured Query Language) với các tính năng bổ sung để hỗ trợ lập trình, xử lý dữ liệu và quản lý CSDL.
+### 💥 GROUP BY với WHERE
 
-Dưới đây là một số điểm nổi bật về T-SQL:
+Mục đích của GROUP BY là nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột. Khi kết hợp với WHERE, GROUP BY sẽ nhóm các bản ghi thỏa mãn điều kiện của WHERE.
 
-1. Truy vấn dữ liệu: T-SQL cung cấp các câu lệnh như SELECT, INSERT, UPDATE và DELETE để truy vấn và thay đổi dữ liệu trong CSDL. Nó hỗ trợ các điều kiện, phép toán, và hàm tích hợp để lọc và xử lý dữ liệu theo nhu cầu.
 
-2. Quản lý CSDL: T-SQL cung cấp các câu lệnh để tạo, sửa đổi và xóa các đối tượng CSDL như bảng, khóa ngoại, chỉ mục, thủ tục lưu trữ, chức năng và trigger. Nó cũng hỗ trợ các câu lệnh để quản lý quyền truy cập và an ninh CSDL.
+Ví dụ: Liệt kê danh sách giảm giá của những sản phẩm có giá trên 2000
 
-3. Xử lý dữ liệu: T-SQL cung cấp các câu lệnh để thực hiện các phép tính và chức năng xử lý dữ liệu như tính toán, chuỗi kết hợp, chuyển đổi dữ liệu, phân trang và ghép nối.
+```sql
+SELECT 
+  discount, 
+  COUNT(product_id) AS Total --- Đếm dựa vào ID và đặt tên là Total
+FROM products
+WHERE price > 2000
+GROUP BY discount
+ORDER BY discount ASC
+```
 
-4. Lập trình: T-SQL hỗ trợ các cấu trúc điều khiển như IF...ELSE, WHILE, và BEGIN...END để viết mã logic phức tạp. Nó cũng hỗ trợ biến, hằng số, tham số và các hàm người dùng để tạo các tác vụ lập trình.
-
-5. Xử lý lỗi và gỡ lỗi: T-SQL cung cấp các cơ chế để xử lý lỗi và gỡ lỗi trong quá trình thực thi. Nó hỗ trợ các câu lệnh TRY...CATCH để bắt và xử lý các ngoại lệ trong quá trình thực thi mã.
+Câu lệnh sẽ chạy mệnh đề WHERE trước, lọc ra những sản phẩm có giá > 2000 trước khi đem đi GROUP BY
 
 ---
 
-### 💥 Transact-SQL Variables
+### 💥 GROUP BY với NULL
 
-Biến (Variables) là một đối tượng chứa một giá trị của một loại cụ thể, ví dụ: số nguyên, ngày tháng hoặc chuỗi ký tự khác nhau.
+Khi bạn sử dụng mệnh đề GROUP BY và có giá trị NULL trong cột được nhóm, các bản ghi với giá trị NULL sẽ được gom vào một nhóm duy nhất. Điều này có nghĩa là tất cả các bản ghi có giá trị NULL trong cột được nhóm sẽ tồn tại trong một nhóm riêng biệt.
 
-
-#### 🔹 Khai báo Biến
-
-```sql
-DECLARE @variable_name data_type [= value]  
-```
-
-Ví dụ:
+Ví dụ: Lấy danh sách thành phố của khách hàng đã đặt hàng.
 
 ```sql
-DECLARE @model_year AS SMALLINT;
--- Hoặc khai báo nhiều biến trong 1 câu lệnh
-DECLARE @model_year SMALLINT, 
-        @product_name VARCHAR(MAX);
+SELECT shipping_city
+FROM orders
+GROUP BY shipping_city
+ORDER BY shipping_city
 ```
 
-#### 🔹  Gán giá trị cho Biến
+Bạn sẽ thấy giá trị NULL được liệt kê ra ở đầu danh sách.
+
+---
+
+### 💥 GROUP BY với ALL
+
+Trong SQL Server, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng, bao gồm cả các bản ghi trùng lặp. Điều này có nghĩa là tất cả các bản ghi sẽ được coi là cùng một nhóm.
+
+Dưới đây là một ví dụ để hiểu cách sử dụng mệnh đề GROUP BY ALL trong SQL Server:
+
+Giả sử bạn có một bảng "Orders" với các cột "order_id", "customer_id" và "order_amount". Bạn muốn tính tổng số lượng đơn hàng và tổng số tiền cho tất cả các đơn hàng, bao gồm cả các đơn hàng trùng lặp:
 
 ```sql
-SET @model_year = 2018;
+SELECT order_id, customer_id, SUM(order_amount) AS TotalAmount
+FROM orders
+GROUP BY ALL order_id, customer_id;
 ```
 
-#### 🔹 Sử dụng Biến
+Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "orders". Kết quả trả về sẽ bao gồm tất cả các cặp order_id và customer_id có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp order_id và customer_id sẽ được tính bằng hàm SUM(TotalAmount).
+
+Lưu ý rằng mệnh đề GROUP BY ALL không phổ biến và thường không được sử dụng trong các trường hợp thông thường. Nó cung cấp một cách để xử lý các bản ghi trùng lặp trong quá trình nhóm dữ liệu.
+
+---
+
+### 💥 GROUPING SETS
+
+là một cú pháp mở rộng của mệnh đề GROUP BY để cho phép bạn `nhóm dữ liệu theo nhiều tập hợp khác nhau trong một câu truy vấn duy nhất`. Nó cho phép bạn tạo các kết quả tổng hợp từ các nhóm dữ liệu khác nhau một cách thuận tiện.
+
+Với GROUPING SETS, bạn có thể chỉ định một danh sách các cột hoặc biểu thức nhóm để tạo các tập hợp nhóm khác nhau. Cú pháp của GROUPING SETS như sau:
+
+```sql
+SELECT 
+    column1, column2, ..., aggregate_function(column)
+FROM table
+GROUP BY 
+    GROUPING SETS (column1, column2, ..., ())
+```
+
+Tìm hiểu qua ví dụ
+
+Tạo một table mới `dbo.sales_summary`
 
 ```sql
 SELECT
-    product_name,
-    model_year,
-    price 
-FROM 
-    dbo.products
-WHERE 
-    model_year = @model_year
+    b.brand_name AS brand,
+    c.category_name AS category,
+    p.model_year,
+    round(
+        SUM (
+            i.quantity * i.price * (1 - i.discount)
+        ),
+        0
+    ) sales INTO dbo.sales_summary
+FROM
+    dbo.order_items i
+INNER JOIN dbo.products p ON p.product_id = i.product_id
+INNER JOIN dbo.brands b ON b.brand_id = p.brand_id
+INNER JOIN dbo.categories c ON c.category_id = p.category_id
+GROUP BY
+    b.brand_name,
+    c.category_name,
+    p.model_year
 ORDER BY
-    product_name;
+    b.brand_name,
+    c.category_name,
+    p.model_year;
 ```
+Bạn sẽ nhận được một bảng dữ liệu tổng hợp doanh thu theo `brand`, `categories` và `year_model`
 
-Bạn có thể gán giá trị cho biến với một kết quả truy vấn
+![grou-set](img/SQL-Server-GROUPING-SETS-sample-table.png)
+
+Ví dụ: Từ đó hãy, Truy vấn trả về số tiền bán được nhóm theo thương hiệu và danh mục:
 
 ```sql
-DECLARE @product_count INT;
-SET @product_count = (
-    SELECT 
-        COUNT(*) 
-    FROM 
-        dbo.products 
-);
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand,
+    category
+ORDER BY
+    brand,
+    category;
 ```
 
-#### 🔹 Xuất giá trị Biến
-
+Tương tự vậy: Chỉ nhóm theo `brand`
 
 ```sql
-SELECT @product_count;
--- Hoặc
-PRINT @product_count;
+SELECT
+    brand,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand
+ORDER BY
+    brand;
+```
+
+Tương tự vậy: Chỉ nhóm theo `categories`
+
+```sql
+SELECT
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    category
+ORDER BY
+    category;
+```
+Và một nhóm tổng hợp: tổng doanh thu của tất cả `brand` và `categories`
+
+```sql
+SELECT
+    SUM (sales) sales
+FROM
+    dbo.sales_summary;
+```
+
+Như vậy chúng ta có 4 nhóm dữ liệu:
+
+```sql
+(brand, category)
+(brand)
+(category)
+()
+```
+Để có một báo cáo tổng hợp thông tin 4 nhóm trên bạn có thể dùng mệnh đề `UNION ALL` để nối lại như sau:
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand,
+    category
+UNION ALL
+SELECT
+    brand,
+    NULL,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    brand
+UNION ALL
+SELECT
+    NULL,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    category
+UNION ALL
+SELECT
+    NULL,
+    NULL,
+    SUM (sales)
+FROM
+    dbo.sales_summary
+ORDER BY brand, category;
+```
+
+==> Nhược điểm: Câu lênh truy vấn dài, phức tạp, hiệu suất truy vấn chậm
+
+==> Bạn có thể fix vấn đề này bằng cách dùng GROUP với `GROUPING SETS`
+
+```sql
+SELECT
+	brand,
+	category,
+	SUM (sales) sales
+FROM
+	dbo.sales_summary
+GROUP BY
+	GROUPING SETS (
+		(brand, category),
+		(brand),
+		(category),
+		()
+	)
+ORDER BY
+	brand,
+	category;
+```
+Hàm GROUPING cho biết liệu một cột được chỉ định trong mệnh đề GROUP BY có được tổng hợp hay không. Nó trả về 1 nếu được tổng hợp hoặc 0 nếu không được tổng hợp trong tập kết quả.
+
+```sql
+SELECT
+    GROUPING(brand) grouping_brand,
+    GROUPING(category) grouping_category,
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    sales.sales_summary
+GROUP BY
+    GROUPING SETS (
+        (brand, category),
+        (brand),
+        (category),
+        ()
+    )
+ORDER BY
+    brand,
+    category;
+```
+
+Giá trị trong cột grouping_brand cho biết hàng có được tổng hợp hay không, 1 nghĩa là số tiền bán hàng được tổng hợp theo thương hiệu, 0 có nghĩa là số tiền bán hàng không được tổng hợp theo thương hiệu. Khái niệm tương tự được áp dụng cho cột grouping_category.
+
+---
+
+### 💥 GROUP BY với CUBE
+
+Cú pháp CUBE sẽ tạo ra tất cả các tổ hợp có thể của các cột được chỉ định, bao gồm các nhóm theo từng cột riêng lẻ, các nhóm con của từng cột, các nhóm con của các tổ hợp cột, và tổng hợp toàn bộ dữ liệu.
+
+Hay nói dễ hiểu hơn `CUBE` là cú pháp ngắn gọn để làm `GROUPING SETS`
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function (c4)
+FROM
+    table_name
+GROUP BY
+    GROUPING SETS (
+        (d1,d2,d3), 
+        (d1,d2),
+        (d1,d3),
+        (d2,d3),
+        (d1),
+        (d2),
+        (d3), 
+        ()
+     );
+```
+Rất dài dòng, thay vì thế dùng ngay `CUBE`
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function (c4)
+FROM
+    table_name
+GROUP BY
+    CUBE (d1, d2, d3); -- Rút gọn lại còn 1 dòng
+```
+
+Từ ví dụ trên có thể rút gọn lại, cho kết quả giống nhau
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    CUBE(brand, category)
+ORDER BY
+	brand,
+	category;
+```
+
+
+---
+
+
+### 💥 GROUP BY với ROLLUP
+
+ROLLUP là một mệnh đề con của mệnh đề GROUP BY cung cấp cách viết tắt để xác định nhiều nhóm nhóm. Không giống như mệnh đề con CUBE, ROLLUP không tạo ra tất cả các tập hợp nhóm có thể có dựa trên các cột thứ nguyên; CUBE tạo ra một tập hợp con trong số đó.
+
+Khi tạo các tập hợp nhóm, ROLLUP giả định một hệ thống phân cấp giữa các cột thứ nguyên và chỉ tạo các tập hợp nhóm dựa trên hệ thống phân cấp này.
+
+ROLLUP thường được sử dụng để tạo subtotals và totals cho mục đích báo cáo.
+
+`CUBE (d1,d2,d3)` định nghĩa ra `8` grouping sets:
+
+```sql
+(d1, d2, d3)
+(d1, d2)
+(d2, d3)
+(d1, d3)
+(d1)
+(d2)
+(d3)
+()
+```
+Trong khi `ROLLUP(d1,d2,d3)` tạo `4` grouping sets, theo cấu trúc phân cấp d1 > d2> d3
+
+```sql
+(d1, d2, d3)
+(d1, d2)
+(d1)
+()
+```
+
+Cú pháp:
+
+```sql
+SELECT
+    d1,
+    d2,
+    d3,
+    aggregate_function(c4)
+FROM
+    table_name
+GROUP BY
+    ROLLUP (d1, d2, d3);
+```
+
+Nối tiếp ví dụ trên 
+
+```sql
+SELECT
+    brand,
+    category,
+    SUM (sales) sales
+FROM
+    dbo.sales_summary
+GROUP BY
+    ROLLUP(brand, category);
+```
+Kết quả được canh theo cột brand:  brand > category
+
+---
+
+### 💥 GROUP BY WITH Aggregate Function
+
+Khi kết hợp với các hàm tổng hợp như COUNT, SUM, AVG, MIN, MAX, GROUP BY sẽ nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột và tính toán các hàm tổng hợp trên các nhóm này.
+
+#### 🔹 COUNT
+
+Dùng để đếm số lượng bản ghi trong một nhóm.
+
+```sql
+-- Đếm số lượng sản phẩm theo từng loại giá
+SELECT
+    price,
+    COUNT(product_id) AS 'NumberOfProducts'
+FROM products
+GROUP BY price
+```
+
+#### 🔹 SUM
+
+Dùng để tính tổng các giá trị trong một cột.
+
+```sql
+-- Tính tổng số lượng tồn kho theo từng nhóm category_id
+SELECT
+    category_id, 
+    SUM(Stock) AS 'total_stock'
+FROM products
+GROUP BY category_id
+```
+
+#### 🔹 MIN
+
+Dùng để lấy giá trị nhỏ nhất của các giá trị trong một cột.
+
+```sql
+-- Hiển thị sản phẩm có giá thấp nhất theo từng nhóm category_id
+SELECT
+    category_id, 
+    MIN(price) AS 'min_price'
+FROM products
+GROUP BY category_id
+```
+
+#### 🔹 MIN
+
+Dùng để lấy giá trị lớn nhất của các giá trị trong một cột.
+
+```sql
+-- Hiển thị sản phẩm có giá cao nhất theo từng nhóm category_id
+SELECT
+    category_id, 
+    MAX(price) AS 'max_price'
+FROM products
+GROUP BY category_id
 ```
 
 ---
 
-### 💥Synonyms
+### 💥 Sub Query
 
-Synonyms trong SQL Server là một đối tượng CSDL được sử dụng để tạo ra một tên định danh thay thế cho một đối tượng khác trong cùng CSDL hoặc CSDL khác. Synonym cho phép bạn tham chiếu đến một đối tượng bằng một tên ngắn gọn và dễ nhớ, thay vì sử dụng tên đối tượng đầy đủ và phức tạp.
+Subquery (hoặc còn gọi là inner query hoặc nested query) là một câu truy vấn SELECT được nhúng bên trong một câu truy vấn khác. Nó cho phép bạn sử dụng kết quả của một câu truy vấn như là một tập dữ liệu đầu vào cho câu truy vấn chính.
 
-Ví dụ, để tạo một synonym có tên "ctm" để tham chiếu đến bảng "dbo.customers" trong cùng CSDL:
+Ví dụ: Liệt kê danh sách danh mục kèm số lượng sản phẩm có trong danh mục đó
 
-```sql
-CREATE SYNONYM ctm
-FOR dbo.customers;
-
--- Sau đó bạn có thể sử dụng
-SELECT * FROM ctm --tên ngắn hơn
-```
----
-
-### 💥 Program Flow Statements
-
-Như đã đề cập trên T-SQL là một ngôn ngữ lập trình mở rộng, cho nên nó cũng được trang bị các các câu lệnh điều khiển luồng chương trình như:
-
-- IF...ELSE
-- WHILE
-- BREAK
-- CONTINUE
-- GOTO
-- RETURN
-- WAITFOR
-- TRY...CATCH
-- THROW
-- BEGIN...END
-
-Và một số câu lệnh khác.
-
-#### 🔹  BEGIN...END
-
-- Khai báo một khối lệnh. Khối lệnh là tập hộp các câu lệnh SQL thực hiện cùng với nhau
-- Có thể lồng các khối lệnh vào nhau -- Nested Blocks
 
 ```sql
-BEGIN
-    { sql_statement | statement_block}
-END
+SELECT
+  c.*, (SELECT COUNT(product_id) FROM dbo.products AS P WHERE p.category_id = c.product_id) AS 'number_product'
+FROM dbo.categories AS c
 ```
 
-Ví dụ:
+Ví dụ, bạn có thể sử dụng subquery để tìm tất cả các khách hàng có đơn hàng với tổng giá trị lớn hơn một ngưỡng nào đó:
 
 ```sql
-BEGIN
-    SELECT
-        product_id,
-        product_name
-    FROM
-        dbo.products
-    WHERE
-        price > 100000;
-
-    IF @@ROWCOUNT = 0
-        -- In giá trị ra cửa sổ message
-        PRINT 'No product with price greater than 100000 found';
-END
-
+SELECT customer_name
+FROM dbo.customers
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM dbo.orders
+    GROUP BY customer_id
+    HAVING SUM(order_amount) > 1000
+)
 ```
 
-#### 🔹  IF...ELSE
+Ví dụ: Lấy thông tin đơn hàng của tất cả khách hàng ở `New York`
 
 ```sql
-IF Boolean_expression
-BEGIN
-    -- Statement block executes when the Boolean expression is TRUE
-END
-ELSE
-BEGIN
-    -- Statement block executes when the Boolean expression is FALSE
-END
+SELECT
+    order_id,
+    order_date,
+    customer_id
+FROM
+    dbo.orders
+WHERE
+    customer_id IN (
+        SELECT
+            customer_id
+        FROM
+            dbo.customers
+        WHERE
+            city = 'New York'
+    )
+ORDER BY
+    order_date DESC;
 ```
 
-Ví dụ: Xem năm 2028 có đạt chi tiêu doanh số bán ra không. Nếu có hãy in ra một lời chúc.
+Để có hiệu suất truy vấn cao hơn, khuyến nghị nên chuyển subquery thành JOIN trong các trường hợp nhất định. Lý do là các hệ quản lý cơ sở dữ liệu thường tối ưu hóa truy vấn JOIN và có thể sử dụng các chỉ mục và kỹ thuật tham gia để tìm kiếm và kết hợp dữ liệu hiệu quả.
 
-```sql
-BEGIN
-    DECLARE @sales INT;
-
-    SELECT 
-        @sales = SUM(price * quantity)
-    FROM
-        dbo.order_items AS i
-        INNER JOIN dbo.orders o ON o.order_id = i.order_id
-    WHERE
-        YEAR(order_date) = 2018;
-
-    SELECT @sales;
-
-    IF @sales > 1000000
-    BEGIN
-        PRINT 'Great! The sales amount in 2018 is greater than 1,000,000';
-    END
-    ELSE
-    BEGIN
-        PRINT 'Sales amount in 2018 did not reach 1,000,000';
-    END
-END
-
-```
-
-Bạn hoàn toàn có thể lồng cách câu lênh IF...ELSE vào nhau như trong các ngôn ngữ lập trình khác
-
-```sql
-BEGIN
-    DECLARE @x INT = 10,
-            @y INT = 20;
-
-    IF (@x > 0)
-    BEGIN
-        IF (@x < @y)
-            PRINT 'x > 0 and x < y';
-        ELSE
-            PRINT 'x > 0 and x >= y';
-    END			
-END
-```
-
-#### 🔹  WHILE
+#### 🔹 Sub Query and ANY
 
 Cú pháp
 
 ```sql
-WHILE Boolean_expression   
-     { sql_statement | statement_block} 
+scalar_expression comparison_operator ANY (subquery)
 ```
+
+- scalar_expression: biểu thức giá trị đơn
+- comparison_operator: toán tử so sánh
+- subquery: trả về một danh sách (v1, v2, … vn). `ANY` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với MỘT TRONG các giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
+
 Ví dụ
 
 ```sql
-DECLARE @counter INT = 1;
-
-WHILE @counter <= 5
-BEGIN
-    PRINT @counter;
-    SET @counter = @counter + 1;
-END
+SELECT
+    product_name,
+    price
+FROM
+    dbo.products
+WHERE
+    -- Nếu price >= với bất kì giá trị nào
+    -- trong kết quả SELECT thì WHERE thực thi
+    price >= ANY (
+        SELECT
+            AVG (price)
+        FROM
+            dbo.products
+        GROUP BY
+            brand_id
+    )
 ```
 
 
-#### 🔹 BREAK
+#### 🔹 Sub Query and ALL
 
-BREAK được sử dụng để kết thúc một khối lệnh hoặc vòng lặp. Nó thường được sử dụng trong cấu trúc điều khiển như WHILE hoặc LOOP để thoát khỏi vòng lặp hoặc dừng việc thực thi các lệnh trong khối.
+ALL có cách dùng tương tự nhưng khác một chỗ là khi dùng `ALL` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với TẤT CẢ giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
 
+
+#### 🔹 Sub Query and EXISTS, NOT EXISTS 
+
+Cú pháp
 
 ```sql
-DECLARE @counter INT = 0;
-
-WHILE @counter <= 5
-BEGIN
-    SET @counter = @counter + 1;
-    IF @counter = 4
-        BREAK; -- Bỏ qua những lệnh phía sau nó
-    PRINT @counter;
-END
-
+WHERE [NOT] EXISTS (subquery)
 ```
+EXISTS trả về `TRUE` nếu `subquery` trả về kết quả; ngược lại trả về `FALSE`.
 
-#### 🔹 CONTINUE
+NOT EXISTS phủ định của EXISTS
 
-CONTINUE được sử dụng để bỏ qua phần còn lại của vòng lặp hiện tại và chuyển đến lần lặp tiếp theo. Khi lệnh CONTINUE được thực thi, các lệnh sau nó trong vòng lặp sẽ bị bỏ qua và chương trình sẽ chuyển đến lần lặp tiếp theo của vòng lặp.
+Ví dụ: Lấy thông tin khách hàng, có đơn hàng mua vào năm 2017.
 
 ```sql
-DECLARE @counter INT = 0;
-
-WHILE @counter < 5
-BEGIN
-    SET @counter = @counter + 1;
-    IF @counter = 3
-        CONTINUE; --Tiếp tục vòng lặp, bỏ qua câu lệnh sau nó
-    PRINT @counter;
-END
-```
-
-
-#### 🔹 GOTO
-
-GOTO được sử dụng để chuyển quyền điều khiển đến một điểm nhãn (label) cụ thể trong mã SQL. Nó cho phép nhảy tới một vị trí khác trong chương trình mà không cần tuân thủ thứ tự thực hiện các lệnh.
-
-```sql
-DECLARE @i int = 1
-WHILE @i <= 10 BEGIN
-    IF @i = 5 BEGIN
-        GOTO label
-    END
-    PRINT @i
-    SET @i = @i + 1
-END
-label:
-PRINT 'Done'
-```
-
-Nếu gặp giá trị = 5, lập tức nhảy đến vị trí `label:` và chạy tiếp
-
-
-#### 🔹 RETURN
-
-Trả về giá trị, dùng trong function
-
-```sql
-CREATE FUNCTION udsf_GetFullName
-    @FirstName nvarchar(50),
-    @LastName nvarchar(50)
-AS
-BEGIN
-    DECLARE @FullName nvarchar(100)
-    SET @FullName = @FirstName + ' ' + @LastName
-    RETURN @FullName
-END
-```
-
-
-#### 🔹 WAITFOR
-
-WAITFOR được sử dụng để tạm dừng thực thi một khối lệnh hoặc truy vấn trong một khoảng thời gian nhất định. Nó thường được sử dụng để tạo độ trễ hoặc đồng bộ hóa các hoạt động trong cơ sở dữ liệu.
-
-```sql
-PRINT 'Start';
-WAITFOR DELAY '00:00:05'; --Dừng 5s rồi chạy lệnh Sau nó
-PRINT 'End';
-```
-
----
-
-### 💥 Transact-SQL Functions
-
-T-SQL (Transact-SQL) Functions là các hàm được cung cấp bởi Microsoft SQL Server và Azure SQL Database để thực hiện các thao tác xử lý dữ liệu, tính toán và truy vấn trong môi trường CSDL. T-SQL Functions cho phép bạn thực hiện các phép tính, chuyển đổi dữ liệu, truy xuất thông tin và thực hiện các tác vụ xử lý dữ liệu phức tạp.
-
-Các nhóm Funtions trong SQL Server:
-
-- Aggregate Functions
-- Date Functions
-- String Functions
-- System Functions
-- Window Functions
-
-Xem chi tiết các sử dụng: https://www.sqlservertutorial.net/sql-server-functions/
-
-Dựa vào cách thức trả về (return) của function, function được chia thành 2 loại:
-
-#### 🔹  Scalar-valued functions
-
-**Scalar-valued Functions**: nó nhận đầu vào và trả về một giá trị duy nhất.
-
-**Tạo function**
-
-Nhưng function người dùng tạo ra được gọi là  `User-defined function`
-
-Cú pháp:
-
-```sql
-CREATE OR ALTER FUNCTION [schema_name.]function_name (parameter_list)
-        RETURN data_type AS
-        BEGIN
-            statements
-            RETURN value
-        END
-```
-
-Ví dụ: Viết 1 function trả về FullName dựa vào  FirstName và LastName từ bảng customers
-
-```sql
--- Dùng từ khóa CREATE FUNCTION
--- udsf_ prefix = User-defined Scalar function
-CREATE FUNCTION udsf_GetFullName
-(
-    @FirstName nvarchar(50),
-    @LastName nvarchar(50)
-)
-RETURNS nvarchar(100)
-AS
-BEGIN
-    DECLARE @FullName nvarchar(100)
-    SET @FullName = @FirstName + ' ' + @LastName
-    RETURN @FullName
-END
-```
-
-Sử dụng
-
-
-```sql
-SELECT dbo.udsf_GetFullName(first_name, last_name) AS full_name
-FROM dbo.customers
-```
-
-Ví dụ: Viết 1 function trả về thành tiền sản phẩm
-
-```sql
-CREATE FUNCTION udsf_GetAmountProduct(@Price money, @Discount decimal(18, 2), @Quantity decimal(18, 2))
-RETURNS decimal(18, 2)
-AS
-BEGIN
-    RETURN (@Price * (100 - @Discount) / 100) * @Quantity
-END
-```
-
-Sử dụng:
-
-```sql
-SELECT dbo.udsf_GetAmountProduct(price, discount, quantity) AS total_amount
-FROM dbo.order_items
-```
-
-
-**Sửa function**
-
-
-```sql
---Dùng từ khóa ALTER FUNCTION
-ALTER FUNCTION udsf_GetFullName
-(
-    @FirstName nvarchar(50),
-    @LastName nvarchar(50)
-)
-RETURNS nvarchar(100)
-AS
-BEGIN
-    DECLARE @FullName nvarchar(100)
-    SET @FullName = @FirstName + ' ' + @LastName
-    RETURN @FullName
-END
-```
-
-**Xóa function**
-
-```sql
-DROP FUNCTION [schema_name.]function_name;
-```
-
-#### 🔹 Table-valued Functions
-
-**Table-valued Functions**: nó nhận đầu vào và trả về một bảng (table)
-
-
-Ví dụ: Viết một Table-valued Functions trả về danh sách các sản phẩm có giảm giá (discount > 0)
-
-
-```sql
-CREATE FUNCTION udtf_PromotionProducts()
-RETURNS TABLE -- return về một Table
-AS
-RETURN
-(
-    SELECT *
-    FROM dbo.products
-    WHERE discount > 0
-)
-```
-
-Sử dụng funtion
-
-
-```sql
-SELECT * FROM dbo.udtf_PromotionProducts()
-```
----
-
-### 💥 Windown Functions
-
-Window functions (còn được gọi là windowing functions) trong SQL Server là một tập hợp các hàm tích hợp sẵn cho phép bạn thực hiện các tính toán trên một tập hợp các hàng trong một kết quả truy vấn, dựa trên một cửa sổ hoặc phạm vi xác định.
-
-Các window functions cho phép bạn thực hiện các tính toán như tính tổng, trung bình, lấy hàng đầu, hàng cuối, v.v. trên các tập hợp con của dữ liệu truy vấn. Một cửa sổ (window) là một tập hợp các hàng trong kết quả truy vấn, và nó có thể được xác định bằng cách sử dụng các mệnh đề ORDER BY và ROWS/RANGE BETWEEN trong cú pháp của window functions.
-
-Cú pháp chung của một window function trong SQL Server là:
-
-```
-<window function> OVER (PARTITION BY <partitioning clause> ORDER BY <ordering clause> ROWS/RANGE BETWEEN <window frame start> AND <window frame end>)
-```
-
-Trong đó:
-- `<window function>` là hàm tính toán được áp dụng lên cửa sổ.
-- `<partitioning clause>` xác định cách chia dữ liệu thành các phân vùng (partitions) riêng biệt để tính toán trên mỗi phân vùng.
-- `<ordering clause>` sắp xếp các hàng trong cửa sổ theo thứ tự cụ thể.
-- `<window frame start>` và `<window frame end>` xác định phạm vi của cửa sổ dựa trên hàng hiện tại.
-
-Ví dụ, một window function phổ biến là `ROW_NUMBER()` cho phép đánh số các hàng trong một cửa sổ dựa trên thứ tự xác định. Dưới đây là một ví dụ sử dụng window function `ROW_NUMBER()`:
-
-```
-SELECT 
-  Col1, Col2, 
-  ROW_NUMBER() OVER (ORDER BY Col1) AS RowNum
-FROM 
-  YourTable
-```
-
-Trong ví dụ trên, `ROW_NUMBER()` sẽ đánh số các hàng trong `YourTable` theo thứ tự tăng dần của cột `Col1`, và kết quả sẽ chứa cột mới `RowNum` chứa số thứ tự của mỗi hàng.
-
-
-Ngoài ra SQL Server  còn hỗ trợ các loại funtions:
-
-- Aggregate Functions
-- Date Functions
-- String Functions
-- System Functions
-
-Chi tiết xem tại: https://www.sqlservertutorial.net/sql-server-functions/
-
----
-
-### 💥 Expressions
-
-#### Mệnh đề CASE
-
-**simple CASE expression**
-
-Cú pháp:
-
-```sql
-CASE input   
-    WHEN e1 THEN r1
-    WHEN e2 THEN r2
-    ...
-    WHEN en THEN rn
-    [ ELSE re ]   
-END
-```
-
-Ví dụ:
-
-```sql
-SELECT    
-    CASE order_status
-        WHEN 1 THEN 'Pending'
-        WHEN 2 THEN 'Processing'
-        WHEN 3 THEN 'Rejected'
-        WHEN 4 THEN 'Completed'
-    END AS order_status, 
-    COUNT(order_id) order_count
-FROM    
-    sales.orders
-WHERE 
-    YEAR(order_date) = 2018
-GROUP BY 
-    order_status;
-```
-
-Kết quả:
-
-![case simple](img/SQL-Server-CASE-Expression-Using-Simple-CASE-in-SELECT-clause.png)
-
-
-**searched CASE expression**
-
-Cú pháp:
-
-```sql
-CASE  
-    WHEN e1 THEN r1
-    WHEN e2 THEN r2
-    ...
-    WHEN en THEN rn
-    [ ELSE re ]   
-END 
-```
-
-Ví dụ:
-
-```sql
-SELECT    
-    o.order_id, 
-    SUM(quantity * price) order_value,
-    CASE
-        WHEN SUM(quantity * price) <= 500 
-            THEN 'Very Low'
-        WHEN SUM(quantity * price) > 500 AND 
-            SUM(quantity * price) <= 1000 
-            THEN 'Low'
-        WHEN SUM(quantity * price) > 1000 AND 
-            SUM(quantity * price) <= 5000 
-            THEN 'Medium'
-        WHEN SUM(quantity * price) > 5000 AND 
-            SUM(quantity * price) <= 10000 
-            THEN 'High'
-        WHEN SUM(quantity * price) > 10000 
-            THEN 'Very High'
-    END order_priority
-FROM    
-    dbo.orders o
-INNER JOIN sales.order_items i ON i.order_id = o.order_id
-WHERE 
-    YEAR(order_date) = 2018
-GROUP BY 
-    o.order_id;
-
-```
-
-### COALESCE
-
-COALESCE là một hàm dùng để trả về giá trị đầu tiên không null từ danh sách các biểu thức. Nó được sử dụng để xác định một giá trị mặc định hoặc thay thế khi giá trị ban đầu là null.
-
-Ví dụ:
-
-```sql
-SELECT 
-    COALESCE(NULL, 'Hi', 'Hello', NULL) result;
---Kết quả: Hi
-```
-
-Ví dụ thực tế:
-
-```sql
-SELECT 
-    first_name, 
-    last_name, 
-    COALESCE(phone,'N/A') phone, 
-    email
-FROM 
-    dbo.customers
-ORDER BY 
-    first_name, 
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    city
+FROM
+    dbo.customers c
+WHERE
+    EXISTS (
+        -- Đi tìm những khách hàng mua hàng năm 2017
+        SELECT
+            customer_id
+        FROM
+            dbo.orders o
+        WHERE
+            o.customer_id = c.customer_id
+        AND YEAR (order_date) = 2017
+    )
+ORDER BY
+    first_name,
     last_name;
 ```
 
-Trường phone nếu NULL thì trả về 'N/A', còn không thì lấy chính nó.
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-subquery/
 
-Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-coalesce/
 
-#### NULLIF
 
-NULLIF là một hàm được sử dụng để so sánh hai biểu thức. Nếu hai biểu thức bằng nhau, NULLIF sẽ trả về giá trị null. Nếu hai biểu thức không bằng nhau, NULLIF sẽ trả về giá trị của biểu thức đầu tiên.
 
-Cú pháp:
+## 💛 Session 09- Advanced Queries and Joins - Part 2
 
-```sql
-NULLIF(expression1, expression2)
-```
+### 💥 JOINs
 
-Ví dụ:
+Trong SQL, joins là phép kết hợp các hàng từ hai hoặc nhiều bảng dựa trên một điều kiện kết hợp. Joins cho phép bạn kết hợp dữ liệu từ các bảng liên quan nhau để tạo ra các kết quả kết hợp mới, giúp truy vấn dữ liệu từ nhiều nguồn trở nên linh hoạt và mạnh mẽ hơn.
+
+Tìm hiểu về các phép JOINs qua ví dụ:
 
 ```sql
-SELECT NULLIF(10, 10) result; --=> NULL
-SELECT NULLIF(20, 10) result; --=> 20
-SELECT NULLIF('Hello', 'Hi') result; --=> 'Hello'
-```
-
-Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-nullif/
-
----
-
-## 💛 Session 15 - Error Handing
-
-Tóm tắt nội dung:
-
-1. Hiểu được cách thức hoạt động của error handling
-1. Cách sử dụng TRY...CATCH
-1. Cách sử dụng RAISEERROR, THROW
-1. Cách sử dụng @@ERROR, ERROR_NUMBER, ERROR_SEVERITY, 
-ERROR_STATE, ERROR_PROCEDURE, ERROR_LINE, ERROR_MESSAGE
-
----
-
-### 💥 Các loại lỗi trong SQL Server
-
-- Lỗi cú pháp (Syntax errors)
-- Lỗi thời gian chạy (Runtime errors)
-
-#### 🔹 Lỗi cú pháp (Syntax errors)
-Là lỗi xảy ra khi câu lệnh SQL không được viết đúng cú pháp.
-
-#### 🔹 Lỗi thời gian chạy (Runtime errors)
-
-Là lỗi xảy ra khi câu lệnh SQL được viết đúng cú pháp nhưng không thể thực thi được do sai logic hoặc do dữ liệu không hợp lệ.
-
----
-
-### 💥  TRY...CATCH
-Là cấu trúc dùng để bắt lỗi trong SQL Server. Được giới thiệu từ phiên bản SQL Server 2005. Ví dụ:
-
-Cú pháp:
-
-```sql
-BEGIN TRY  
-   -- statements that may cause exceptions
-END TRY 
-BEGIN CATCH  
-   -- statements that handle exception
-END CATCH  
-
-```
-
-Ví dụ:
-
-
-```sql
-BEGIN
-    BEGIN TRY
-        SELECT 1/0 -- Chia một số cho 0
-    END TRY
-    BEGIN CATCH
-        --Bắt lỗi, và hiển ra thành một table
-        SELECT  
-            ERROR_NUMBER() AS ErrorNumber  
-            ,ERROR_SEVERITY() AS ErrorSeverity  
-            ,ERROR_STATE() AS ErrorState  
-            ,ERROR_PROCEDURE() AS ErrorProcedure  
-            ,ERROR_LINE() AS ErrorLine  
-            ,ERROR_MESSAGE() AS ErrorMessage;  
-    END CATCH
-END;
-```
-
-Bạn có thể dùng lại đoạn code bắt lỗi trên rất nhiều do vậy bạn có thể viết thành một Store.
-
-
-```sql
-CREATE PROC usp_report_error
-AS
-    SELECT   
-        ERROR_NUMBER() AS ErrorNumber  
-        ,ERROR_SEVERITY() AS ErrorSeverity  
-        ,ERROR_STATE() AS ErrorState  
-        ,ERROR_LINE () AS ErrorLine  
-        ,ERROR_PROCEDURE() AS ErrorProcedure  
-        ,ERROR_MESSAGE() AS ErrorMessage;  
-GO;
-```
-
-Ví dụ trên bạn có thể rút gọn lại
-
-
-
-```sql
-BEGIN
-    BEGIN TRY
-        SELECT 1/0 -- Chia một số cho 0
-    END TRY
-    BEGIN CATCH
-        --Bắt lỗi, và hiển ra thành một table
-        -- report exception
-        EXEC usp_report_error;
-    END CATCH
-END;
-```
-
----
-
-### 💥 RAISERROR
-
-Là câu lệnh dùng để tạo ra một lỗi do người dùng tự định nghĩa. Ví dụ: Tạo một lỗi do người dùng tự định nghĩa
-
-```sql
--- Cú pháp
-RAISERROR(ErrorMessage, ErrorSeverity, ErrorState);
--- Ví dụ:
-RAISERROR('This is a custom error', 16, 1)
-```
-Trong đó: severity level là một số nguyên 0 - 25
-
-- 0–10 Informational messages
-- 11–18 Errors
-- 19–25 Fatal errors
-
-state: là một số nguyên 0 - 255. hầu hết hay để là 1
-
-Levels of severity: https://learn.microsoft.com/en-us/sql/relational-databases/errors-events/database-engine-error-severities?view=sql-server-ver16
-
----
-
-### 💥  THROW
-
-Là câu lệnh dùng để tạo ra một lỗi do người dùng tự định nghĩa. Được giới thiệu từ phiên bản SQL Server 2012. Do đơn giản hơn RAISERROR nên nên được ưu tiên sử dụng.
-
-Ví dụ: Tạo một lỗi do người dùng tự định nghĩa
-
-```sql
-THROW 50000, 'This is a custom error', 1
-```
-
-Ví dụ 2:
-
-```sql
--- Tạo table t1
-CREATE TABLE t1(
-    id int primary key
+--Tạo bảng a
+CREATE TABLE basket_a (
+    a INT PRIMARY KEY,
+    fruit_a VARCHAR (50) NOT NULL
 );
-GO
---
-BEGIN TRY
-    INSERT INTO t1(id) VALUES(1);
-    --  cause error
-    INSERT INTO t1(id) VALUES(1);
-END TRY
-BEGIN CATCH
-    PRINT('Raise the caught error again');
-    THROW;
-END CATCH
-
-```
-
----
-
-### 💥  Biến @@ERROR
-
-Là một biến toàn cục, chứa mã lỗi của lỗi gần nhất xảy ra. Ví dụ:
-
-```sql
-SELECT 1/0
-SELECT @@ERROR
-```
-
-Kết quả:
-
-```text
-Msg 8134, Level 16, State 1, Line 1
-Divide by zero error encountered.
-8134
-```
-
-### 💥  ERROR_NUMBER()
-
-Là hàm trả về mã lỗi của lỗi gần nhất xảy ra.
-
-### 💥  ERROR_SEVERITY()
-
-Là hàm trả về mức độ nghiêm trọng của lỗi gần nhất xảy ra.
-
-### 💥  ERROR_STATE()
-
-Là hàm trả về trạng thái của lỗi gần nhất xảy ra.
-
-### 💥  ERROR_PROCEDURE()
-
-Là hàm trả về tên của stored procedure hay trigger gây ra lỗi gần nhất xảy ra.
-
-### 💥  ERROR_LINE()
-
-Là hàm trả về số dòng gây ra lỗi gần nhất xảy ra.
-
-### 💥  ERROR_MESSAGE()
-
-Là hàm trả về thông điệp lỗi gần nhất xảy ra.
-
----
-
-
-
-## 💛 Session 14 - Transactions
-
-### 💥 Transaction là gì?
-
-Transaction là một tập hợp các hoạt động được thực hiện như một đơn vị không thể chia rời. Mục tiêu chính của transaction là đảm bảo tính toàn vẹn và nhất quán của dữ liệu trong cơ sở dữ liệu trong quá trình thực hiện các hoạt động.
-
-Transaction được sử dụng để thực hiện các thay đổi dữ liệu trong cơ sở dữ liệu, bao gồm cả việc chèn, cập nhật và xóa dữ liệu. Một transaction bao gồm ít nhất hai hoặc nhiều hơn các hoạt động dữ liệu và được xem là một đơn vị làm việc hoàn chỉnh.
-
-Nếu một hoặc nhiều hoạt động trong transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ được phục hồi về trạng thái ban đầu.
-
-Transaction được xác định bằng ba tính chất ACID:
-
-1. Atomicity (Toàn vẹn): Transaction được coi là một đơn vị toàn vẹn không thể chia rời. Nếu một phần của transaction gặp lỗi, toàn bộ transaction sẽ bị hủy và dữ liệu sẽ trở về trạng thái ban đầu.
-
-2. Consistency (Nhất quán): Một transaction phải đảm bảo rằng dữ liệu sẽ được đưa về trạng thái nhất quán sau khi hoàn thành. Nếu dữ liệu không tuân thủ các ràng buộc hoặc quy tắc, transaction sẽ bị hủy.
-
-3. Isolation (Cô lập): Mỗi transaction phải thực hiện một cách cô lập và không bị tác động bởi các transaction khác đang thực hiện đồng thời. Điều này đảm bảo tính nhất quán của dữ liệu và tránh xảy ra xung đột.
-
-4. Durability (Bền vững): Một khi một transaction đã được hoàn thành thành công, các thay đổi dữ liệu phải được lưu trữ vĩnh viễn và không bị mất trong trường hợp xảy ra sự cố hệ thống.
-
-
-Các ứng dụng của transaction:
-
-- Transaction được sử dụng để đảm bảo tính toàn vẹn của dữ liệu trong các ứng dụng doanh nghiệp.
-- Transaction có thể được sử dụng để thực hiện các thao tác như: chuyển tiền, thanh toán hóa đơn, đặt hàng, ...
-
-
-Trong SQL Server, có các chế độ thực hiện transaction như sau:
-
-1. **Autocommit Transactions**: 
-
-Mặc định là chế độ này.
-
-Khi ở chế độ `Autocommit Transactions`, mỗi lệnh DML (Data Manipulation Language) như `INSERT`, `UPDATE`, `DELETE` tự động bắt đầu một transaction ngầm định. 
-
-Nếu lệnh DML hoàn thành thành công, SQL Server sẽ tự động COMMIT transaction. Nếu có lỗi xảy ra, SQL Server sẽ tự động ROLLBACK transaction.
-
-Lưu ý rằng các lệnh điều khiển transaction chỉ được sử dụng với các lệnh thao tác dữ liệu DML như `INSERT`, `UPDATE` và `DELETE`. Chúng không thể được sử dụng trong lệnh `CREATE TABLE` hoặc `DROP TABLE` vì các hoạt động này được tự động được commit trong cơ sở dữ liệu.
-
-
-2. **Explicit Transactions**: Mỗi transaction explicit (tường minh) bắt đầu với câu lệnh `BEGIN TRANSACTION` và kết thúc bằng `ROLLBACK` hoặc `COMMIT` transaction.
-
-3. **Implicit Transactions**: Một transaction mới được bắt đầu một cách ngầm định khi transaction trước đó hoàn thành, nhưng mỗi transaction được hoàn thành một cách rõ ràng với một câu lệnh `COMMIT` hoặc `ROLLBACK`.
-
-4. **Batch-scoped Transactions**: Chỉ áp dụng cho các tập kết quả hoạt động đa dạng (MARS), một transaction SQL rõ ràng hoặc ngầm định bắt đầu dưới một phiên MARS trở thành một transaction phạm vi batch.
-
----
-
-### 💥  Các lệnh quản lý transaction
-
-- **BEGIN TRANSACTION** : Dùng để bắt đầu một transaction.
-
-- **COMMIT TRANSACTION** : Dùng để xác nhận toàn bộ một transaction.
-
-- **COMMIT WORK** : Dùng để đánh đấu kết thúc của transaction.
-
-- **SAVE TRANSACTION** : Dùng để tạo một savepoint trong transaction.
-
-- **ROLLBACK WORK** : Dùng để hủy bỏ một transaction.
-
-- **ROLLBACK TRANSACTION** : Dùng để hủy bỏ toàn bộ một transaction.
-
-- **ROLLBACK TRANSACTION [SavepointName]** : Dùng để hủy bỏ một savepoint trong transaction
-
----
-
-Xem Thêm: <https://learn.microsoft.com/en-us/sql/t-sql/language-elements/begin-transaction-transact-sql?view=sql-server-ver16>
-
-### 💥 Cách sử dụng transaction
-
-Để bắt đầu một transaction bạn sử dụng từ khóa `BEGIN TRANSACTION` hoặc `BEGIN TRAN`
-
-```sql
--- Bước 1:  start a transaction
-BEGIN TRANSACTION; -- or BEGIN TRAN
-
--- Bước 2:  Các câu lênh truy vấn bắt đầu ở đây INSERT, UPDATE, and DELETE
-
--- =====================
--- Chạy xong các câu lệnh trên thì bạn kết thúc TRANSACTION với 1 trong 2 hình thức.
--- =====================
-
--- Bước 3 -  1. commit the transaction
--- Để xác nhận thay đổi dữ liệu
-COMMIT;
-
--- Bước 3 - 2. rollback -- Hồi lại những thay đổi trong những câu lệnh truy vấn ở trên. (Hủy ko thực hiện nữa, trả lại trạng thái ban đầu lúc chưa chạy)
-ROLLBACK;
-```
-
-Về bản chất các câu lệnh truy vấn trên nó chưa được ghi nhận thay đổi vào dữ liệu thật mà nó tạo ra dữ liệu tạm trước.
-
-Sau đó dựa vào Bước 3, chờ bạn quyết định như thế nào với dữ liệu tạm đó, thì nó mới chính thức đi cập nhật thay đổi với dữ liệu thật.
-
-Ví dụ: Tạo 2 bảng mới `invoices` và `invoice_items`
-
-```sql
--- Hóa đơn
-CREATE TABLE invoices (
-  id int IDENTITY(1,1) PRIMARY KEY,
-  customer_id int NOT NULL,
-  total decimal(10, 2) NOT NULL DEFAULT 0 CHECK (total >= 0)
+--Tạo bảng b
+CREATE TABLE basket_b (
+    b INT PRIMARY KEY,
+    fruit_b VARCHAR (50) NOT NULL
 );
--- Chi tiết các mục ghi vào hóa đơn
-CREATE TABLE invoice_items (
-  id int IDENTITY(1,1),
-  invoice_id int NOT NULL,
-  item_name varchar(100) NOT NULL,
-  amount decimal(18, 2) NOT NULL CHECK (amount >= 0),
-  tax decimal(4, 2) NOT NULL CHECK (tax >= 0),
-  PRIMARY KEY (id, invoice_id),
-  FOREIGN KEY (invoice_id) REFERENCES invoices (id)
- ON UPDATE CASCADE
- ON DELETE CASCADE
-);
-```
-
-Bây giờ chúng ta tạo một `TRANSACTION` thực hiện thêm mới dữ liệu vào cho 2 table cùng lúc:
-
-```sql
--- Bước 1
-BEGIN TRANSACTION; -- or BEGIN TRAN
--- Bước 2
--- Thêm vào invoices
-INSERT INTO dbo.invoices (customer_id, total)
-VALUES (100, 0);
--- Thêm vào invoice_items
- INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Keyboard', 70, 0.08),
-       (1, 'Mouse', 50, 0.08);
--- Thay đổi dữ liệu cho record đã chèn vào invoices
-UPDATE dbo.invoices
-SET total = (SELECT
-  SUM(amount * (1 + tax))
-FROM invoice_items
-WHERE invoice_id = 1);
-
---Bước 3: xác nhận cho phép thay đổi dữ liệu
-COMMIT TRANSACTION; -- or COMMIT
-```
-
-Kết quả của một tập hợp các câu lệnh truy vấn trên:
-
-- Nếu 1 trong 3 câu lệnh THẤT BẠI ==> Tất cả sẽ đều THẤT BẠI, trả lại trạng thái ban đầu.
-- Nếu cả 3 THÀNH CÔNG ==> TRANSACTION thành công, dữ liệu được cập nhật.
-
-
-Bạn có thể TEST trường hợp thất bại với câu lệnh INSERT bị lỗi
-
-```sql
---Check dữ liệu của 2 table trước khi thực hiện
-select * from invoices
-select * from invoice_items
-
--- Bước 1
-BEGIN TRANSACTION; -- or BEGIN TRAN
--- Bước 2
--- Thêm vào invoices
-INSERT INTO dbo.invoices (customer_id, total)
-VALUES (100, 0);
---Trường ID đã khai báo IDENTITY nên bạn không thể khai báo chi tiết giá trị của id khi thêm mới
---Câu lệnh này sẽ gây lỗi IDENTITY_INSERT is set to OFF
- INSERT INTO dbo.invoice_items (id, invoice_id, item_name, amount, tax)
-VALUES (3, 1, 'Keyboard v2 ', 70, 0.08),
-       (4, 1, 'Mouse v2 ', 50, 0.08);
--- Thay đổi dữ liệu cho record đã chèn vào invoices
-UPDATE dbo.invoices
-SET total = (SELECT
-  SUM(amount * (1 + tax))
-FROM invoice_items
-WHERE invoice_id = 1);
-
---Bước 3: xác nhận cho phép thay đổi dữ liệu
-COMMIT TRANSACTION; -- or COMMIT
-
-
---Check dữ liệu của 2 table SAU khi thực hiện
-select * from invoices
-select * from invoice_items
-```
-
-Bạn có thể kiểm tra dữ liệu, Chỉ cần 1 trong 3 câu lệnh bị lỗi thì toàn bộ transaction sẽ bị hủy.
-
-
-Ví dụ 2:
-
-```sql
--- Bước 1
-BEGIN TRANSACTION;
--- Bước 2
--- Thêm vào invoice_items
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Headphone', 80, 0.08),
-       (1, 'Mainboard', 30, 0.08);
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'TochPad', 20, 0.08),
-       (1, 'Camera', 90, 0.08);
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Wifi', 120, 0.08),
-       (1, 'Bluetooth', 20, 0.08);
-
---Bước 3: xác nhận HỦY thay đổi dữ liệu
-ROLLBACK TRANSACTION;
-```
-
-- Các câu lệnh ở Bước 2: vẫn chạy, và đưa vào dữ liệu tạm
-- Đến Bước 3, gặp câu lệnh `ROLLBACK` thì dữ liệu tạm bị HỦY, việc INSERT dữ liệu không được ghi nhận.
-
-Ví dụ 3:
-
-```sql
--- Bước 1
-BEGIN TRANSACTION;
--- Bước 2
--- Thêm vào invoice_items
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Headphone', 80, 0.08),
-       (1, 'Mainboard', 30, 0.08);
-
-SAVE TRANSACTION Savepoint1
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'TochPad', 20, 0.08),
-       (1, 'Camera', 90, 0.08);
-
-ROLLBACK TRANSACTION Savepoint1
-
-INSERT INTO dbo.invoice_items (invoice_id, item_name, amount, tax)
-VALUES (1, 'Wifi', 120, 0.08),
-       (1, 'Bluetooth', 20, 0.08);
-
---Bước 3: xác nhận cho phép thay đổi dữ liệu
-COMMIT TRANSACTION
-```
-
-`SAVE TRANSACTION` - Nó cho phép lưu lại trạng thái hiện tại của transaction và tiếp tục thực hiện các hoạt động trong transaction. Nếu sau đó có lỗi xảy ra, bạn có thể sử dụng lệnh ROLLBACK để hủy bỏ toàn bộ transaction hoặc sử dụng lệnh ROLLBACK TRANSACTION để hủy bỏ đến điểm đã được lưu trữ bởi SAVE TRANSACTION.
-
-Ví dụ 4:
-
-```sql
-
---Mô phỏng chuyển tiền ngân hàng từ người a, sang người b
-
---Tạo table bank
-CREATE TABLE bank
-(
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(20),
-    balance DECIMAL(10,2)
-)
---Ghi log giao dich
-CREATE TABLE bank_log
-(
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    note NVARCHAR(500)
-)
-
---chèn dữ liệu ban đầu cho a và b
-INSERT bank
-    (name,balance)
+--Chèn dữ liệu vào bảng a
+INSERT INTO basket_a (a, fruit_a)
 VALUES
-    ('a', 250),
-    ('b', 0)
+    (1, 'Apple'),
+    (2, 'Orange'),
+    (3, 'Banana'),
+    (4, 'Cucumber');
+--Chèn dữ liệu vào bảng b
+INSERT INTO basket_b (b, fruit_b)
+VALUES
+    (1, 'Orange'),
+    (2, 'Apple'),
+    (3, 'Watermelon'),
+    (4, 'Pear');
+```
 
-/*
-Để thực hiện chuyển 50USD từ a --> b cần các bước:
-1. Trừ tiền người a: 50
-2. Ghi log lịch sử transaction
-3. Cộng tiền người b: 50
-4. Ghi log lịch sử transaction
+#### 🔹 INNER JOIN / JOIN
 
-==> 4 bước trên được coi là 1 transaction trong ngân hàng
-==> Chỉ cần 1 trong 4 lệnh trên lỗi thì transaction được coi là không thành công.
-==> Trạng thái sẽ được khôi phục lại như khi chưa thực hiện transaction
-*/
+INNER JOIN là một loại phép nối (join) trong SQL, được sử dụng để kết hợp các hàng từ hai hoặc nhiều bảng dựa trên một điều kiện kết hợp. INNER JOIN chỉ trả về các hàng có giá trị khớp trong `cả hai bảng`.
 
-BEGIN TRANSACTION;
+```sql
+SELECT
+    a,
+    fruit_a,
+    b,
+    fruit_b
+FROM
+    basket_a
+INNER JOIN basket_b
+    ON fruit_a = fruit_b;
+```
 
-BEGIN TRY
-    -- b1. Trừ tiền người a: 50
-    UPDATE bank SET balance = balance - 50 WHERE name = 'a';
+Kết quả được
 
-    -- b2. Ghi log lịch sử transaction
-    INSERT INTO bank_log (note)
-    VALUES ('Chuyen tien tu a sang 5, 50USD');
+![innner join](img/join-inner-join-example.png)
 
-    -- b3. Cộng tiền người b: 50
-    UPDATE bank SET balance = balance + 50 WHERE name = 'b';
+Phép nối Inner Join được biểu diễn với sơ đồ  Venn diagram
 
-    -- b4. Ghi log lịch sử transaction
-    INSERT INTO bank_log (id, note)
-    VALUES (2, 'Nhan tien tu nguoi a, 50USD');
+![innner join](img/Join-Inner-Join.png)
 
-    -- Nếu không có lỗi, xác nhận transaction
-    COMMIT TRANSACTION;
-END TRY
-BEGIN CATCH
-    -- Xử lý lỗi
-    SELECT 
-        ERROR_NUMBER() AS ErrorNumber,
-        ERROR_MESSAGE() AS ErrorMessage;
+Ví dụ: Lấy danh sách sản phẩm bao gồm tên sản phẩm, danh mục sản phẩm, giá bán.
 
-    -- Nếu có lỗi, hủy bỏ transaction
-    ROLLBACK TRANSACTION;
-END CATCH
+```sql
+SELECT
+    product_name,
+    category_name,
+    price
+FROM
+    dbo.products p
+INNER JOIN dbo.categories c 
+    ON c.category_id = p.category_id -- mối quan hệ giữ 2 bảng
+ORDER BY
+    product_name DESC;
+```
 
+Kết quả
+
+![query inner join](img/SQL-Server-Inner-Join-example.png)
+
+Bảng `products` có trường khóa ngoại `category_id`, dựa vào đó bạn móc nối với Bảng `categories` để lấy tên danh mục dựa vào khóa chính  `category_id`
+
+#### 🔹 OUTER JOIN
+
+OUTER JOIN là một loại phép nối  được sử dụng để kết hợp các hàng từ hai hoặc nhiều bảng dựa trên một điều kiện kết hợp, nhưng khác với INNER JOIN, OUTER JOIN có thể bao gồm các hàng không khớp từ ít nhất một bảng.
+
+Có ba loại OUTER JOIN chính: LEFT OUTER JOIN (hoặc LEFT JOIN), RIGHT OUTER JOIN (hoặc RIGHT JOIN), FULL OUTER JOIN (hoặc FULL JOIN)
+
+#### 🔹 LEFT JOIN
+
+Trả về tất cả các hàng từ bảng bên trái (left table) và các hàng khớp từ bảng bên phải (right table). Nếu không có hàng khớp trong bảng bên phải, các cột từ bảng bên phải sẽ có giá trị NULL trong kết quả.
+
+```sql
+SELECT
+    a,
+    fruit_a,
+    b,
+    fruit_b
+FROM
+    basket_a
+LEFT JOIN basket_b 
+   ON fruit_a = fruit_b;
+```
+
+Kết quả
+
+![join-left-join-example](img/join-left-join-example.png)
+
+Phép nối Left Join được biểu diễn với sơ đồ  Venn diagram
+
+![innner join](img/Join-Left-Join.png)
+
+Ví dụ: Dựa vào mối quan hệ giữ `order_items` và `products` ==> Một sản phẩm có thể nằm trong nhiều đơn hàng
+
+![item-products](img/products-order_items.png)
+
+Hãy đưa ra thống kê sản phẩm thuộc đơn hàng nào ?
+
+```sql
+SELECT
+    product_name,
+    order_id
+FROM
+    dbo.products p
+LEFT JOIN dbo.order_items o ON o.product_id = p.product_id
+ORDER BY
+    order_id;
+```
+
+Dựa vào qua hệ giữa 3 bảng sau: Bạn có thể lấy thêm nhiều thông tin hơn, bằng cách kết hợp hơn 1 phép LEFT JOIN.
+
+![item-products](img/orders-order_items-products.png)
+
+Hãy đưa ra thống kê sản phẩm thuộc đơn hàng nào, kèm ngày bán ra ?
+
+```sql
+SELECT
+    p.product_name,
+    o.order_id,
+    i.item_id,
+    o.order_date
+FROM
+    dbo.products p
+ LEFT JOIN sales.order_items i
+  ON i.product_id = p.product_id
+ LEFT JOIN sales.orders o
+  ON o.order_id = i.order_id
+ORDER BY
+    order_id;
+```
+
+#### 🔹 RIGHT JOIN
+
+Tương tự LEFT OUTER JOIN, nhưng trả về tất cả các hàng từ bảng bên phải (right table) và các hàng khớp từ bảng bên trái (left table). Nếu không có hàng khớp trong bảng bên trái, các cột từ bảng bên trái sẽ có giá trị NULL trong kết quả.
+
+```sql
+SELECT
+    a,
+    fruit_a,
+    b,
+    fruit_b
+FROM
+    basket_a
+RIGHT JOIN basket_b ON fruit_a = fruit_b;
+```
+
+Kết quả
+
+![join-right-join-example](img/join-right-join-example.png)
+
+Phép nối Rigth Join được biểu diễn với sơ đồ  Venn diagram
+
+![right join](img/Join-Right-Join.png)
+
+Thực tế phép này ít xài, các lập trình viên có xu hướng chuyển table bên phải qua bên trái rồi dùng LEFT JOIN.
+
+#### 🔹 FULL JOIN
+
+Trả về tất cả các hàng từ cả hai bảng. Nếu không có hàng khớp, các cột tương ứng sẽ có giá trị NULL trong kết quả.
+
+```sql
+SELECT
+    a,
+    fruit_a,
+    b,
+    fruit_b
+FROM
+    basket_a
+FULL OUTER JOIN basket_b 
+    ON fruit_a = fruit_b;
+```
+
+Kết quả
+
+![join-full-outer-join-example](img/join-full-outer-join-example.png)
+
+Phép nối Full Join được biểu diễn với sơ đồ  Venn diagram
+
+![full join](img/Join-Full-Outer-Join.png)
+
+#### 🔹 SEFT JOIN
+
+SELF JOIN là một phép nối mà bạn kết hợp một bảng với chính nó. Nó cho phép bạn kết nối các hàng trong cùng một bảng dựa trên một điều kiện kết hợp, và do đó, tạo ra một tập hợp mới các cặp hàng trong bảng đó.
+
+Cú pháp:
+
+```sql
+SELECT t1.column_name, t2.column_name
+FROM table_name t1
+JOIN table_name t2 ON t1.column = t2.column;
+```
+
+Cùng quan sát table `staffs` chúng ta thấy có trường manager_id, là khóa ngoại nằm tham chiếu tới chính table `staffs`
+
+![self join](img/staffs.png)
+
+Bạn có thể hiểu trong mô hình cây quản lý nhân sự: cấp trên <==> cấp dưới
+
+Dựa vào trường `manager_id` dễ dàng tìm ra ai là quản lý của một người
+
+```sql
+SELECT
+    e.first_name + ' ' + e.last_name employee,
+    m.first_name + ' ' + m.last_name manager
+FROM
+    dbo.staffs e
+LEFT JOIN dbo.staffs m ON m.staff_id = e.manager_id
+ORDER BY
+    manager;
+```
+
+Kết quả
+
+![self join 2](img/Self-Join-with-LEFT-JOIN.png)
+
+---
+
+### 💥 Common Table Expressions (CTEs)
+
+Common Table Expression (CTE) là một công cụ trong SQL cho phép bạn tạo ra một bảng tạm thời mà có thể được sử dụng trong câu truy vấn chính. Nó cung cấp một cách để đặt tên và tham chiếu đến một truy vấn con trong câu truy vấn chính, giúp làm cho mã SQL dễ đọc, dễ hiểu và dễ bảo trì.
+
+CTE thường được sử dụng trong các truy vấn phức tạp hoặc truy vấn có cấu trúc lồng nhau, nơi bạn muốn sử dụng kết quả của một truy vấn con nhiều lần hoặc trong các phần khác nhau của câu truy vấn chính.
+
+Cú pháp của CTE bao gồm hai phần chính: phần WITH và phần truy vấn chính.
+
+Phần WITH xác định tên của CTE và các cột (nếu cần) trong CTE. Đây là nơi bạn xác định truy vấn con và đặt tên cho nó. Ví dụ:
+
+```sql
+WITH cte_name (column1, column2, ...)
+AS (
+    -- Truy vấn con
+    SELECT column1, column2, ...
+    FROM table_name
+    WHERE condition
+)
+```
+
+Phần truy vấn chính sử dụng tên CTE đã định nghĩa trong phần WITH để tham chiếu đến kết quả của truy vấn con. Ví dụ:
+
+```sql
+SELECT *
+FROM cte_name
+WHERE condition;
+```
+
+CTE có thể được sử dụng trong nhiều truy vấn khác nhau như SELECT, INSERT, UPDATE, DELETE, hoặc kết hợp với các phép nối (JOIN) và các biểu thức khác trong SQL.
+
+Lợi ích của CTE bao gồm:
+
+1. Mã SQL dễ đọc: CTE giúp tạo ra mã SQL có cấu trúc rõ ràng và dễ đọc hơn, bằng cách tách biệt các phần truy vấn con và truy vấn chính.
+
+2. Tái sử dụng mã: Bạn có thể sử dụng CTE nhiều lần trong cùng một câu truy vấn hoặc trong các câu truy vấn khác nhau, giúp giảm việc lặp lại mã SQL và tăng tính tái sử dụng.
+
+3. Bảo trì dễ dàng: Khi cần thay đổi truy vấn con, bạn chỉ cần chỉnh sửa nó trong phần WITH, và tất cả các truy vấn chính sử dụng CTE sẽ được cập nhật tự động.
+
+Ví dụ: Thống kê doanh thu bán ra theo nhân viên trong năm 2018
+
+```sql
+-- Truy vấn và tạo bảng ảo
+WITH cte_sales_amounts (staff, sales, year) AS (
+    SELECT    
+        first_name + ' ' + last_name, 
+        SUM(quantity * price * (1 - discount)),
+        YEAR(order_date)
+    FROM    
+        dbo.orders o
+    INNER JOIN dbo.order_items i ON i.order_id = o.order_id
+    INNER JOIN dbo.staffs s ON s.staff_id = o.staff_id
+    GROUP BY 
+        first_name + ' ' + last_name,
+        year(order_date)
+)
+-- Câu lệnh SELECT này phải thực hiện đồng thời với câu lệnh trên.
+SELECT
+    staff, 
+    sales
+FROM 
+    cte_sales_amounts
+WHERE
+    year = 2018;
 ```
 
 ---
 
-### 💥 Locks
+### 💥 Combining Data
 
-Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm soát truy cập và sửa đổi dữ liệu trong quá trình thực hiện các transaction. Khi một transaction yêu cầu truy cập vào dữ liệu, SQL Server áp dụng các locks trên dữ liệu tương ứng để đảm bảo tính nhất quán và độc lập của dữ liệu trong môi trường đa người dùng.
+#### 🔹 UNION
 
-Có nhiều loại lock khác nhau trong SQL Server, bao gồm:
+UNION là một câu lệnh SQL được sử dụng để kết hợp các kết quả của hai hoặc nhiều câu lệnh SELECT thành một tập kết quả duy nhất. Các bản ghi trong các tập kết quả được hợp nhất không có bất kỳ sự trùng lặp nào.
 
-1. Shared Lock (Shared Read Lock):
-   - Được sử dụng khi transaction muốn đọc (truy vấn) dữ liệu.
-   - Nhiều shared locks có thể được áp dụng trên cùng một dữ liệu.
-   - Shared locks không ngăn được các shared locks khác trên cùng một dữ liệu.
-   - Shared locks không cho phép exclusive lock được áp dụng lên dữ liệu.
+![union](img/SQL-Server-UNION-vs-JOIN.png)
 
-2. Exclusive Lock (Write Lock):
-   - Được sử dụng khi transaction muốn thay đổi (ghi) dữ liệu.
-   - Không thể có bất kỳ shared locks hoặc exclusive locks khác trên cùng một dữ liệu.
-   - Exclusive locks ngăn cả shared locks và exclusive locks khác.
+Khi sử dụng UNION trong câu lệnh SQL, dưới đây là một số lưu ý quan trọng mà bạn nên xem xét:
 
-3. Update Lock:
-   - Được sử dụng trong các trường hợp cần đảm bảo rằng dữ liệu không được đọc hoặc chỉnh sửa trong quá trình thực hiện transaction.
-   - Update locks được nâng cấp thành exclusive lock khi transaction cần thực hiện các thay đổi.
+1. Số lượng và kiểu dữ liệu của các cột: Các câu lệnh SELECT trong UNION phải có cùng số lượng cột và cùng kiểu dữ liệu tương ứng. Nếu không, bạn cần sử dụng các biểu thức để đảm bảo rằng các cột có cùng số lượng và kiểu dữ liệu
 
-4. Intent Lock:
-   - Là các locks nhỏ hơn được áp dụng trên các cấu trúc dữ liệu phức tạp hơn như bảng, trang, phân vùng.
-   - Intent locks đại diện cho ý định của transaction để áp dụng shared locks hoặc exclusive locks trên các đối tượng con của cấu trúc dữ liệu.
+1. Thứ tự cột: Kết quả của UNION phụ thuộc vào thứ tự của các cột trong câu lệnh SELECT đầu tiên. Vì vậy, hãy đảm bảo rằng các cột trong cả hai câu lệnh SELECT được sắp xếp theo cùng một thứ tự
 
-5. Schema Lock:
-   - Được sử dụng khi transaction thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
+1. Loại bỏ các bản ghi trùng lặp: UNION tự động loại bỏ các bản ghi trùng lặp trong kết quả cuối cùng. Nếu bạn muốn bao gồm các bản ghi trùng lặp, bạn có thể sử dụng UNION ALL thay vì UNION
 
-SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các transaction đồng thời.
+1. Sự phù hợp về dữ liệu: Các cột trong các câu lệnh SELECT phải phù hợp về mặt dữ liệu. Ví dụ, cột đầu tiên trong câu lệnh SELECT thứ nhất phải có cùng kiểu dữ liệu với cột đầu tiên trong câu lệnh SELECT thứ hai và ngược lại
 
-Ví dụ giả lập tình trạng Lock trong thực tế có thể xảy ra làm TREO CPU
+1. Hiệu suất: UNION có thể tạo ra một tập kết quả lớn và tốn tài nguyên. Hãy đảm bảo rằng sử dụng UNION chỉ khi cần thiết và kiểm tra hiệu suất của câu lệnh của bạn.
 
-1. Mở một cùng lúc 2 cửa sổ Query như sau
+Ví dụ: Nếu kết quả truy vấn thông tin từ table `staffs` và `customer` thành một danh sách:
 
-![lock](img/lock.png)
+```sql
+SELECT
+    first_name, last_name
+FROM dbo.staffs
+UNION --Loại bỏ giá trị trùng lặp sau khi kết hợp
+SELECT
+    first_name, last_name
+FROM
+    dbo.customers;
+```
 
-- Cửa sổ 1: chạy lệnh UPDATE số dư của người a
-- Cửa sổ 2: Xóa người a
+Câu lệnh trên sẽ loại bỏ những records trùng lặp. Nếu bạn không muốn loại bỏ records trùng thì dùng `UNION ALL`
 
-2. Bạn thực hiện tuần từ 1 xong đến 2. Bạn sẽ thấy trạng thái `Executing query...` xoay miết không ngừng. ==> Transaction này đã bị TREO.
+```sql
+SELECT
+    first_name, last_name
+FROM dbo.staffs
+UNION ALL -- Giữ giá trị trùng lặp sau khi kết hợp
+SELECT
+    first_name, last_name
+FROM
+    dbo.customers;
+```
 
-Lí do là bên cửa sổ 1. Transaction đã chạy rồi, nhưng không có lệnh để đóng transaction lại. ==> Thể hiện transaction chưa thực hiện xong.
+#### 🔹 INTERSECT
 
-==> Đó là hiện tượng LOCKED
+Dùng để lấy các bản ghi chung của 2 hoặc nhiều câu lệnh SELECT. Các câu lệnh SELECT phải có cùng số lượng cột và kiểu dữ liệu tương ứng.
 
+![SQL-Server-INTERSECT-Illustration](img/SQL-Server-INTERSECT-Illustration.png)
 
-Làm sao để xử lý Lock để Server không bị ĐƠ (Quá tải CPU)
+Ví dụ có `order_items` và `products` ==> cả 2 đều cho trường product_id.
 
-Bạn hãy mở thêm một instance Server mới
+![o-p](img/products-order_items.png)
 
-1. Kích phải lên instance chọn `Activity Monitor`
+Dựa vào đó bạn có thể: Lấy ra danh sách những sản phẩm ĐÃ được bán ra.
 
-![lock process](img/lock-2.png)
+```sql
+SELECT
+    product_id
+FROM
+    dbo.products
+INTERSECT
+SELECT
+    product_id
+FROM
+    dbo.order_items;
+```
 
-2. Xổ mục Processes ra để xem danh sách các tiến trình đang chạy
-3. Tại mục 3, click đúp 2 lần vào cột `Blocked by` để sắp xếp giảm dần.
+#### 🔹 EXCEPT
 
-Như hình bạn thấy dòng `Session ID` 64 đang lock một session có giá trị 53.
+Dùng để lấy các bản ghi của câu lệnh SELECT đầu tiên mà không có trong các câu lệnh SELECT sau. Các câu lệnh SELECT phải có cùng số lượng cột và kiểu dữ liệu tương ứng.
 
-Bạn có thể click phải lên các dòng và chọn `Detail` để xem chi tiết câu lệnh SQL đang thực hiện.
+![SQL-Server-EXCEPT-illustration](img/SQL-Server-EXCEPT-illustration.png)
 
-4. Để xử lí LOCK bạn có thể thực hiện `Kill Process` bằng cách click phải lên dòng bị lock. Trong trường hợp trên thì dòng `53` bị lock bởi `64`. Sau đó chọn `Kill Process`
+Dựa vào đó bạn có thể: Lấy ra danh sách những sản phẩm CHƯA được bán ra.
 
-5. Quay lại màn hình truy vấn trước đó. Bạn sẽ thấy cửa số 2 đã có trạng thái `disconect`. Kết nối này bị đóng.
+```sql
+SELECT
+    product_id
+FROM
+    dbo.products
+EXCEPT
+SELECT
+    product_id
+FROM
+    dbo.order_items;
+```
 
-![kill process](img/lock-3.png)
+---
 
-
-## 💛 Review Homeworks
-
-Giải các bài tập homework theo nội dung vừa học, áp dụng view, store để tái sử dụng code
