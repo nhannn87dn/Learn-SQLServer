@@ -4,4 +4,6 @@
   - SQL SERVER 2019 EXPRESS EDITION: https://www.microsoft.com/en-us/sql-server/sql-server-downloads --> Tải bản Express
   - SQL SERVER MANAGEMENT STUDIO (SSMS): https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
 
-- Hướng dẫn cài đặt: https://youtu.be/JIvu6wx8BSY
+Hướng dẫn cài đặt: 
+ - CHo win: https://youtu.be/JIvu6wx8BSY
+ - CHo Mac: https://www.youtube.com/watch?v=VgXci_5h
