@@ -1,6 +1,6 @@
 # Day 02 
 
-## 💛Session 02 - Normalization
+## 💛 Normalization
 
 ### 💥 Database Normalization là gì ?
 
@@ -265,6 +265,13 @@ Nếu có sự phụ thuộc không cần thiết giữa các trường phi khó
 - https://www.freecodecamp.org/news/database-normalization-1nf-2nf-3nf-table-examples/
 
 
+## 💛 Denormalization - Không chuẩn hóa
+
+Theo trên khi thiết kế CSDL chúng ta nên tuân theo các nguyên tắc `Normalization` về chuẩn hóa dữ liệu nhưng thực tế có lúc chúng ta buộc phải chọn giải pháp  không chuẩn hóa`.
+
+Mục đích của việc không chuẩn hóa trong một số trường hợp nhất định là để đạt được hiệu suất truy vấn cao hơn.
+
+
 ## 💛Session 03 - Introduction to SQL Server 2019
 
 - Cách cài đặt phần mềm
@@ -274,9 +281,8 @@ Nếu có sự phụ thuộc không cần thiết giữa các trường phi khó
 - Hướng dẫn cài đặt: https://youtu.be/JIvu6wx8BSY
 
 
-
-
 ////////////////////////////////////////////
+
 ---
 
 
@@ -316,6 +322,8 @@ Data Manipulation Language (DML) là một phần của ngôn ngữ truy vấn t
 
 Data Control Language (DCL) là một phần của ngôn ngữ truy vấn trong hệ quản trị cơ sở dữ liệu (DBMS) dùng để quản lý quyền truy cập và phân quyền trong cơ sở dữ liệu. DCL cung cấp các câu lệnh để cấp quyền, thu hồi quyền và điều khiển quyền truy cập đối với người dùng và vai trò trong cơ sở dữ liệu.
 
+
+![command type](img/types-of-sql-commands.png)
 ---
 
 ## 💛 HomeWork Guide - Normalization

@@ -1,7 +1,5 @@
 # Day 5
 
-
-
 ## 💛 Session 09- Advanced Queries and Joins - Part 1
 
 ### 💥 GROUP BY với WHERE
@@ -961,3 +959,6 @@ FROM
 
 ---
 
+## 💛 SQL Cheet
+
+Xem link: https://pbs.twimg.com/media/FrqM3ZkXwAA8G69?format=jpg&name=4096x4096

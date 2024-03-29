@@ -23,7 +23,12 @@ Data management được tổ chức thành 2 loại khác nhau:
     - Bảo mật không được cao
     - Tính toàn vẹn không có
 
-- Database system: Tổ chức khoa học hơn, có thể chia nhỏ để tối ưu hiệu suất
+- Database system: 
+    - Giảm thiểu được tính dư thừa dữ liệu
+    - Không có sự mâu thuẩn trong dữ liệu
+    - Tính chia sẽ dư liệu cao
+    - Tính toàn vẹn được duy trì
+    - Tính bảo mật cao
 
 ---
 
