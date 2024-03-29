@@ -322,8 +322,6 @@ Data Manipulation Language (DML) là một phần của ngôn ngữ truy vấn t
 
 Data Control Language (DCL) là một phần của ngôn ngữ truy vấn trong hệ quản trị cơ sở dữ liệu (DBMS) dùng để quản lý quyền truy cập và phân quyền trong cơ sở dữ liệu. DCL cung cấp các câu lệnh để cấp quyền, thu hồi quyền và điều khiển quyền truy cập đối với người dùng và vai trò trong cơ sở dữ liệu.
 
-
-![command type](img/types-of-sql-commands.png)
 ---
 
 ## 💛 HomeWork Guide - Normalization
