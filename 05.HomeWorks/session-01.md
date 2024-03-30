@@ -5,5 +5,6 @@
   - SQL SERVER MANAGEMENT STUDIO (SSMS): https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
 
 Hướng dẫn cài đặt: 
+
  - CHo win: https://youtu.be/JIvu6wx8BSY
- - CHo Mac: https://www.youtube.com/watch?v=VgXci_5h
+ - CHo Mac: https://www.youtube.com/watch?v=VgXci_5hzxY

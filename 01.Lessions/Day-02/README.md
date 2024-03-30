@@ -1,6 +1,6 @@
 # Day 02 
 
-## 💛Session 02 - Normalization
+## 💛 Normalization
 
 ### 💥 Database Normalization là gì ?
 
@@ -263,6 +263,25 @@ Nếu có sự phụ thuộc không cần thiết giữa các trường phi khó
 - https://learn.microsoft.com/en-us/office/troubleshoot/access/database-normalization-description
 - https://www.guru99.com/database-normalization.html
 - https://www.freecodecamp.org/news/database-normalization-1nf-2nf-3nf-table-examples/
+
+
+## 💛 Denormalization - Không chuẩn hóa
+
+Theo trên khi thiết kế CSDL chúng ta nên tuân theo các nguyên tắc `Normalization` về chuẩn hóa dữ liệu nhưng thực tế có lúc chúng ta buộc phải chọn giải pháp  không chuẩn hóa`.
+
+Mục đích của việc không chuẩn hóa trong một số trường hợp nhất định là để đạt được hiệu suất truy vấn cao hơn.
+
+
+## 💛Session 03 - Introduction to SQL Server 2019
+
+- Cách cài đặt phần mềm
+  - SQL SERVER 2019 EXPRESS EDITION: https://www.microsoft.com/en-us/sql-server/sql-server-downloads --> Tải bản Express
+  - SQL SERVER MANAGEMENT STUDIO (SSMS): https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
+
+- Hướng dẫn cài đặt: https://youtu.be/JIvu6wx8BSY
+
+
+////////////////////////////////////////////
 
 ---
 
