@@ -1,5 +1,18 @@
 # Day 04 - Session 06
 
+Chèn thông tin vào cho các table:
+
+- categories
+- brands
+- customers
+- staffs
+- products
+- stores
+- stocks
+- orders
+- order_items
+
+
 
 ## 💛 Modifying data
 

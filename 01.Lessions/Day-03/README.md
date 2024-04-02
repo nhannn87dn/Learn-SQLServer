@@ -344,9 +344,19 @@ CREATE TABLE ##heller_products -- Sử dụng 2 dấu ## ở trước tên
 
 
 
-## 💛Homeworks Guide - Session 2-3-4
+## 💛Homeworks Guide 
 
+Tạo các bảng theo thưs tự (Đến cột DataSize)
 
+- categories
+- brands
+- customers
+- staffs
+- products
+- stores
+- stocks
+- orders
+- order_items
 
 
 
