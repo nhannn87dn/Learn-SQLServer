@@ -17,8 +17,8 @@ Làm các yêu cầu tại mục 1 - phần A
 1. Làm các yêu cầu tại mục 2 - phần A
 
 
-- Tạo Database bằng giao diện đồ họa
-- Tạo Database bằng câu lệnh SQL Query
+- Tạo Table bằng giao diện đồ họa
+- Tạo Table bằng câu lệnh SQL Query
 
 
 2. Làm các yêu cầu phần B
