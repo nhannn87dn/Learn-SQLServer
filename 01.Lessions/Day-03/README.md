@@ -133,31 +133,27 @@ Mỗi Table trong Database có thể liên kết với một hoặc nhiều Tabl
 
 #### 🔹 Tạo bằng dòng lệnh 
 
-Tạo Table với các column, CONSTRAINT được định nghĩa ngay khi tạo mới Table
+Tạo Table với các column, và kiểu Data type
 
 ```sql
 --Create table categories
 CREATE TABLE [dbo].[categories] (
-  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [category_name] NVARCHAR(50) UNIQUE NOT NULL,
-  [description] NVARCHAR(500) NULL,
+  [category_id] INT,
+  [category_name] NVARCHAR(50),
+  [description] NVARCHAR(500),
 );
 GO
 --Create table  products
 CREATE TABLE [dbo].[products] (
-  [product_id] INT IDENTITY(1,1) NOT NULL, --Tự tăng
-  [name] NVARCHAR(100) NOT NULL,
-  [price] DECIMAL(18,2) NOT NULL,
-  [discount] DECIMAL(4,2) NOT NULL,
-  [description] NVARCHAR(MAX) NULL,
-  [category_id] INT NOT NULL,
-  [brand_id] INT NOT NULL
+  [product_id] INT,
+  [name] NVARCHAR(100),
+  [price] DECIMAL(18,2),
+  [discount] DECIMAL(4,2),
+  [description] NVARCHAR(MAX)
 );
 GO
 
 ```
-
-Lưu ý với các table có quan hệ, chứ khóa ngoại thì bạn cần tạo table tham chiếu trước. Trong ví dụ trên bạn phải tạo table categories, brands trước khi tạo products
 
 
 #### 🔹Giải thích lệnh GO
@@ -171,9 +167,9 @@ USE Batch37
 GO
 -- Tạo table vào databse Batch37
 CREATE TABLE [dbo].[categories] (
-  [category_id] INT IDENTITY(1,1) PRIMARY KEY NOT NULL, --Khóa chính tự tăng
-  [category_name] NVARCHAR(50) UNIQUE NOT NULL,
-  [description] NVARCHAR(500) NULL,
+  [category_id] INT, 
+  [category_name] NVARCHAR(50) ,
+  [description] NVARCHAR(500)
 );
 GO
 ```
@@ -346,7 +342,7 @@ CREATE TABLE ##heller_products -- Sử dụng 2 dấu ## ở trước tên
 
 ## 💛Homeworks Guide 
 
-Tạo các bảng theo thưs tự (Đến cột DataSize)
+Tạo các bảng theo thứ tự (Đến cột DataSize)
 
 - categories
 - brands

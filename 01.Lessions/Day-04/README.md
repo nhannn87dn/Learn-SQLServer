@@ -40,11 +40,11 @@ Ví dụ: Tạo table `promotion` cho demo
 
 ```sql
 CREATE TABLE dbo.promotions (
-    promotion_id INT PRIMARY KEY IDENTITY (1, 1),
-    promotion_name VARCHAR (255) NOT NULL,
-    discount DECIMAL (4, 2) DEFAULT 0,
-    start_date DATE NOT NULL, --Kiểu ngày yyyy-mm-dd
-    expired_date DATE NOT NULL --Kiểu ngày yyyy-mm-dd
+    promotion_id INT,
+    promotion_name VARCHAR (255) ,
+    discount DECIMAL (4, 2),
+    start_date DATE, --Kiểu ngày yyyy-mm-dd
+    expired_date DATE --Kiểu ngày yyyy-mm-dd
 ); 
 ```
 
@@ -178,16 +178,15 @@ Ví dụ có bảng
 
 ```sql
 CREATE TABLE dbo.visits (
-    visit_id INT PRIMARY KEY IDENTITY,
-    customer_name VARCHAR (50) NOT NULL,
+    visit_id INT,
+    customer_name VARCHAR (50),
     phone VARCHAR (25),
-    store_id INT NOT NULL,
-    visit_on DATE NOT NULL,
-    start_at TIME (0) NOT NULL,
-    end_at TIME (0) NOT NULL,
-    create_at DATETIME2 NOT NULL, --kiểu yyyy-mm-dd H:i:s, không tự động tạo
-    modified_at DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP --kiểu yyyy-mm-dd H:i:s, tự động tạo
-    FOREIGN KEY (store_id) REFERENCES sales.stores (store_id)
+    store_id INT ,
+    visit_on DATE,
+    start_at TIME (0),
+    end_at TIME (0),
+    create_at DATETIME2, --kiểu yyyy-mm-dd H:i:s,
+    modified_at DATETIME2 --kiểu yyyy-mm-dd H:i:s, 
 );
 
 --Chèn dữ liệu
@@ -336,10 +335,6 @@ Thông thường câu lệnh DELETE đi kèm điều kiện WHERE để xác đ�
 ```sql
 DELETE FROM dbo.commissions WHERE staff_id = 1
 ```
-
-
-
-
 
 
 ## 💛 SQL CONSTRAINT
