@@ -272,17 +272,6 @@ Theo trên khi thiết kế CSDL chúng ta nên tuân theo các nguyên tắc `N
 Mục đích của việc không chuẩn hóa trong một số trường hợp nhất định là để đạt được hiệu suất truy vấn cao hơn.
 
 
-## 💛Session 03 - Introduction to SQL Server 2019
-
-- Cách cài đặt phần mềm
-  - SQL SERVER 2019 EXPRESS EDITION: https://www.microsoft.com/en-us/sql-server/sql-server-downloads --> Tải bản Express
-  - SQL SERVER MANAGEMENT STUDIO (SSMS): https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
-
-- Hướng dẫn cài đặt: https://youtu.be/JIvu6wx8BSY
-
-
-////////////////////////////////////////////
-
 ---
 
 
