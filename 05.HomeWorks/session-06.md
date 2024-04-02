@@ -21,4 +21,4 @@ Làm các yêu cầu tại mục 1 - phần A
 - Tạo Database bằng câu lệnh SQL Query
 
 
-1. Làm các yêu cầu phần B
+2. Làm các yêu cầu phần B
