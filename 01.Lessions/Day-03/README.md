@@ -15,8 +15,6 @@ Hướng dẫn cài đặt:
 
 
 
-
-////////////////////////////////////////////
 ---
 
 ## 💛 Session 05- Creating and Managing Databases
@@ -67,9 +65,14 @@ Trong đó database_name là tên mà bạn đặt cho Database bạn muốn t�
 
 #### 🔹 Xóa bằng dòng lệnh 
 
+Cú pháp:
+
 ```sql
-DROP DATABASE <database_name>
+DROP DATABASE  [ IF EXISTS ]
+    database_name 
+    [,database_name2,...];
 ```
+
 Trong đó database_name là tên Database bạn muốn xóa
 
 ---
@@ -135,6 +138,20 @@ Mỗi Table trong Database có thể liên kết với một hoặc nhiều Tabl
 
 Tạo Table với các column, và kiểu Data type
 
+Cú Pháp: 
+
+```sql
+CREATE TABLE [database_name.][schema_name.]table_name (
+    pk_column data_type PRIMARY KEY,
+    column_1 data_type NOT NULL,
+    column_2 data_type,
+    ...,
+    table_constraints
+);
+```
+
+Ví dụ:
+
 ```sql
 --Create table categories
 CREATE TABLE [dbo].[categories] (
@@ -176,10 +193,12 @@ GO
 
 #### 🔹 Tạo table và chỉ định lưu vào một filegroup cụ thể
 
+Với cách làm này, các table sẽ được tách ra khỏi file `.mdf` giúp tăng hiệu suất truy vấn.
+
 Cú pháp:
 
 ```sql
-CREATE TABLE TenBang
+CREATE TABLE [dbo].[TenBang]
 (
     Cot1 datatype1,
     Cot2 datatype2,
@@ -191,7 +210,7 @@ ON TenFileGroup
 Ví dụ
 
 ```sql
-CREATE TABLE Employees
+CREATE TABLE [dbo].[Employees]
 (
     EmployeeID INT,
     EmployeeName NVARCHAR(100)
@@ -221,6 +240,28 @@ Lưu ý rằng quy tắc đặt tên có thể khác nhau tùy thuộc vào quy 
 
 ---
 
+Ví dụ 2: Các kiểu dữ liệu thường gặp
+
+```sql
+CREATE TABLE [dbo].[myTable] (
+    Id              INT,
+    Age             TINYINT,
+    Price           DECIMAL(18,2),
+    Discount        DECIMAL(4,2),
+    ProductName     NVARCHAR(255),
+    BirthDay        DATE, --Kiểu ngày yyyy-mm-dd
+    CreatedAt       DATETIME2, --kiểu yyyy-mm-dd H:i:s
+    StartAt         TIME (0), -- H:i:s
+    EndAt           TIME (0), -- H:i:s
+    IsActive        BIT, -- 0 or 1
+    Content         NVARCHAR(MAX), --Nội dung dài
+    ModuleId        UNIQUEIDENTIFIER DEFAULT NEWID()
+)
+```
+
+
+---
+
 ### 💥 Cách Xóa Table
 
 #### 🔹 Xóa bằng giao diện đồ họa GUI
@@ -229,6 +270,14 @@ Lưu ý rằng quy tắc đặt tên có thể khác nhau tùy thuộc vào quy 
 CLick phải lên tên table --> Delete.
 
 #### 🔹 Xóa bằng dòng lệnh 
+
+Cú pháp:
+
+```sql
+DROP TABLE [IF EXISTS]  [database_name.][schema_name.]table_name;
+```
+
+Ví dụ:
 
 ```sql
 -- Xóa table categories, Nếu table không tồn tại thì gây lỗi
@@ -247,7 +296,7 @@ Các thao tác này bạn có thể thực hiện với giao diện đồ họa 
 
 ```sql
 --Thêm vào table customers một cột email
-ALTER TABLE customers
+ALTER TABLE [dbo].[customers]
 ADD email varchar(255);
 ```
 
@@ -255,7 +304,7 @@ ADD email varchar(255);
 
 ```sql
 --Xóa cột email từ table customers
-ALTER TABLE customers
+ALTER TABLE [dbo].[customers]
 DROP COLUMN email;
 ```
 
@@ -270,7 +319,7 @@ Ref: https://learn.microsoft.com/vi-vn/sql/relational-databases/tables/rename-co
 #### 🔹 Thay đổi Data Type của Column Table
 
 ```sql
-ALTER TABLE customers
+ALTER TABLE [dbo].[customers]
 ALTER COLUMN email nvarchar(255);
 ```
 
