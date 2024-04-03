@@ -1,4 +1,4 @@
-# Day 7
+# Day 9
 
 
 ## 💛 Session 10- View, Stored Procedures and Querying Metadata

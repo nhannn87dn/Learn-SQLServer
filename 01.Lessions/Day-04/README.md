@@ -1,4 +1,4 @@
-# Day 04 - Session 06
+# Day 04 
 
 Chèn thông tin vào cho các table:
 

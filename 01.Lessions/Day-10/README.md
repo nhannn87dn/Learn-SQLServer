@@ -1,4 +1,4 @@
-# Day 8
+# Day 10
 
 
 ## 💛 Session 16 - Enhancements in SQL Server 2019
