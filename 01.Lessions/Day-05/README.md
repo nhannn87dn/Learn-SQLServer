@@ -5,8 +5,7 @@
 
 Bước 1: Tải 2 file .sql về máy tính mình ở thưc mục `02.Examples-SQL\BikeStores`
 
-- 1. BikeStores-Sample-Database-create-tables-Student.sql
-- 2. BikeStores-Sample-Database-load-data-Student.sql
+- BikeStores-Sample-Database-Full-28-12-23.sql
 
 Bước 2
 
