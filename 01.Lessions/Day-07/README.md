@@ -1,4 +1,4 @@
-# Day 6
+# Day 7
 
 ## 💛 Session 13 - Programming Transact-SQL
 

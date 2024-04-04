@@ -1,4 +1,4 @@
-# Day 5
+# Day 6
 
 ## 💛 Session 09- Advanced Queries and Joins - Part 1
 
@@ -712,6 +712,86 @@ FROM
   ON o.order_id = i.order_id
 ORDER BY
     order_id;
+```
+
+
+
+**UPDATE Với JOIN**
+
+Cú pháp:
+
+```sql
+UPDATE 
+    t1
+SET 
+    t1.c1 = t2.c2,
+    t1.c2 = expression,
+    ...   
+FROM 
+    t1
+    [INNER | LEFT] JOIN t2 ON join_predicate
+WHERE 
+    where_predicate;
+```
+
+Tạo dữ liệu demo
+
+```sql
+DROP TABLE IF EXISTS dbo.targets;
+
+CREATE TABLE dbo.targets
+(
+    target_id  INT	PRIMARY KEY, 
+    percentage DECIMAL(4, 2) 
+        NOT NULL DEFAULT 0
+);
+
+INSERT INTO 
+    dbo.targets(target_id, percentage)
+VALUES
+    (1,0.2),
+    (2,0.3),
+    (3,0.5),
+    (4,0.6),
+    (5,0.8);
+
+CREATE TABLE dbo.commissions
+(
+    staff_id    INT PRIMARY KEY, 
+    target_id   INT, 
+    base_amount DECIMAL(10, 2) 
+        NOT NULL DEFAULT 0, 
+    commission  DECIMAL(10, 2) 
+        NOT NULL DEFAULT 0, 
+    FOREIGN KEY(target_id) 
+        REFERENCES sales.targets(target_id), 
+    FOREIGN KEY(staff_id) 
+        REFERENCES sales.staffs(staff_id),
+);
+
+INSERT INTO 
+    dbo.commissions(staff_id, base_amount, target_id)
+VALUES
+    (1,100000,2),
+    (2,120000,1),
+    (3,80000,3),
+    (4,900000,4),
+    (5,950000,5);
+```
+
+Yêu cầu Cập nhật tiền thưởng (trường commissions) ở table `commissions` theo công thức: `commissions = base_amount * percentage` mặc định nhân viên mới sẽ có mức chiết khấu percentage = 0.1
+
+
+```sql
+UPDATE 
+    dbo.commissions
+SET  
+    dbo.commissions.commission = 
+        c.base_amount  * COALESCE(t.percentage,0.1) -- COALESCE trả về 0.1 nếu percentage là NULL
+FROM  
+    dbo.commissions AS c
+    LEFT JOIN dbo.targets t -- tham chiếu đến targets để lấy trường percentage
+        ON c.target_id = t.target_id;
 ```
 
 #### 🔹 RIGHT JOIN
