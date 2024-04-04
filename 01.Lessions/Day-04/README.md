@@ -741,3 +741,16 @@ CREATE TABLE [dbo].[products] (
 ```
 ==> Mục tiêu mọi thứ định nghĩa ra phải có tên rõ ràng để quản lý.
 
+## 💛Homeworks Guide 
+
+Tạo các bảng theo thứ tự : Đầy đủ Constraints
+
+- categories
+- brands
+- customers
+- staffs
+- products
+- stores
+- stocks
+- orders
+- order_items
