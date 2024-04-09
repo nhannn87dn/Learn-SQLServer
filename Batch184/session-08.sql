@@ -162,7 +162,19 @@ FROM
 	dbo.products
 WHERE model_year BETWEEN 2016 AND 2017
 
-
+-- TOAN TU IN
+-- Liet ke san pham co brand_id = 4 hoac 6
+SELECT
+	*
+FROM 
+	dbo.products
+WHERE brand_id = 4 OR brand_id = 6
+-- voi IN
+SELECT
+	*
+FROM 
+	dbo.products
+WHERE brand_id IN (4,6)
 
 --=============================
 -- 12. GROUP BY
