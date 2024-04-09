@@ -942,3 +942,10 @@ Vì vậy, khi sử dụng chỉ mục, cần cân nhắc kỹ lưỡng và thi�
 - Thu hẹp các khóa index bất cứ khi nào có thể: Liên tục thu hẹp index, chỉ một số cột nếu có thể. Những khóa số chính xác là những khóa index SQL hiệu quả nhất. Những khóa này cần ít dung lượng lưu trữ và chi phí bảo trì hơn.
 - Dùng index được nhóm trên các cột duy nhất - Xem xét các cột là duy nhất hay chứa nhiều giá trị riêng và tránh dùng chúng trên những cột thay đổi thường xuyên.
 - Index không theo nhóm trên cột được tìm kiếm thường xuyên.
+
+
+## 💛 Nguồn học Thêm
+
+Xem từ:
+
+- https://www.sqlservertutorial.net/sql-server-indexes/

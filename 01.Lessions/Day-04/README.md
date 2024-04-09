@@ -651,3 +651,7 @@ Tạo các bảng theo thứ tự : Đầy đủ Constraints
 - stocks
 - orders
 - order_items
+
+## 💛 Nguồn học Thêm
+
+Xem từ Sesion 11 - 14: https://www.sqlservertutorial.net/sql-server-basics/

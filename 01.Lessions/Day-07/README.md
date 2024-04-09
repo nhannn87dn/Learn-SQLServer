@@ -826,3 +826,11 @@ Là hàm trả về thông điệp lỗi gần nhất xảy ra.
 ## 💛 Review Homeworks
 
 Giải các bài tập homework theo nội dung vừa học, áp dụng view, store để tái sử dụng code
+
+
+## 💛 Nguồn học Thêm
+
+Xem từ:
+
+- https://www.sqlservertutorial.net/sql-server-stored-procedures/
+- https://www.sqlservertutorial.net/sql-server-user-defined-functions/

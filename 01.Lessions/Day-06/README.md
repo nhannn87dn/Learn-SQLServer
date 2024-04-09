@@ -1039,6 +1039,12 @@ FROM
 
 ---
 
+## 💛 Nguồn học Thêm
+
+Xem từ Sesion 5, 6,8, 9: https://www.sqlservertutorial.net/sql-server-basics/
+
+---
+
 ## 💛 SQL Cheet
 
 Xem link: https://pbs.twimg.com/media/FrqM3ZkXwAA8G69?format=jpg&name=4096x4096

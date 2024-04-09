@@ -710,3 +710,9 @@ WHERE
 EXEC sp_helptext 'dbo.trg_customers_LogAlterTable' ;
 
 ```
+
+## 💛 Nguồn học Thêm
+
+Xem từ:
+
+- https://www.sqlservertutorial.net/sql-server-triggers/

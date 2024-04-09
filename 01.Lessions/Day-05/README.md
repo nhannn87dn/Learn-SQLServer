@@ -540,6 +540,11 @@ Xem các hàm:
 
 ---
 
+## 💛 Nguồn học Thêm SELECT
+
+Xem từ Sesion 1 - 6: https://www.sqlservertutorial.net/sql-server-basics/
+
+---
 
 ## 💛 Session 07- Azure SQL
 

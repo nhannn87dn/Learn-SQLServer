@@ -632,5 +632,11 @@ Truy vấn metadata cung cấp cho bạn một cái nhìn tổng quan về cấu
 ---
 
 
-💛 Homeworks
+## 💛 Homeworks
 
+## 💛 Nguồn học Thêm
+
+Xem từ:
+
+- https://www.sqlservertutorial.net/sql-server-stored-procedures/
+- https://www.sqlservertutorial.net/sql-server-triggers/
