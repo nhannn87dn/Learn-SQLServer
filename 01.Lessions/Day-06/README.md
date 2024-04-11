@@ -847,13 +847,6 @@ Phép nối Full Join được biểu diễn với sơ đồ  Venn diagram
 
 SELF JOIN là một phép nối mà bạn kết hợp một bảng với chính nó. Nó cho phép bạn kết nối các hàng trong cùng một bảng dựa trên một điều kiện kết hợp, và do đó, tạo ra một tập hợp mới các cặp hàng trong bảng đó.
 
-Cú pháp:
-
-```sql
-SELECT t1.column_name, t2.column_name
-FROM table_name t1
-JOIN table_name t2 ON t1.column = t2.column;
-```
 
 Cùng quan sát table `staffs` chúng ta thấy có trường manager_id, là khóa ngoại nằm tham chiếu tới chính table `staffs`
 
@@ -864,6 +857,7 @@ Bạn có thể hiểu trong mô hình cây quản lý nhân sự: cấp trên <
 Dựa vào trường `manager_id` dễ dàng tìm ra ai là quản lý của một người
 
 ```sql
+
 SELECT
     e.first_name + ' ' + e.last_name employee,
     m.first_name + ' ' + m.last_name manager
