@@ -206,6 +206,9 @@ BEGIN
 END
 ```
 
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/else-if-else-transact-sql?view=sql-server-ver16
+
+
 #### 🔹  WHILE
 
 Cú pháp
@@ -226,6 +229,7 @@ BEGIN
 END
 ```
 
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/while-transact-sql?view=sql-server-ver16
 
 #### 🔹 BREAK
 
@@ -245,6 +249,8 @@ END
 
 ```
 
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/break-transact-sql?view=sql-server-ver16
+
 #### 🔹 CONTINUE
 
 CONTINUE được sử dụng để bỏ qua phần còn lại của vòng lặp hiện tại và chuyển đến lần lặp tiếp theo. Khi lệnh CONTINUE được thực thi, các lệnh sau nó trong vòng lặp sẽ bị bỏ qua và chương trình sẽ chuyển đến lần lặp tiếp theo của vòng lặp.
@@ -260,6 +266,8 @@ BEGIN
     PRINT @counter;
 END
 ```
+
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/continue-transact-sql?view=sql-server-ver16
 
 
 #### 🔹 GOTO
@@ -281,6 +289,8 @@ PRINT 'Done'
 
 Nếu gặp giá trị = 5, lập tức nhảy đến vị trí `label:` và chạy tiếp
 
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/goto-transact-sql?view=sql-server-ver16
+
 
 #### 🔹 RETURN
 
@@ -298,22 +308,70 @@ BEGIN
 END
 ```
 
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/return-transact-sql?view=sql-server-ver16
+
 
 #### 🔹 WAITFOR
 
-WAITFOR được sử dụng để tạm dừng thực thi một khối lệnh hoặc truy vấn trong một khoảng thời gian nhất định. Nó thường được sử dụng để tạo độ trễ hoặc đồng bộ hóa các hoạt động trong cơ sở dữ liệu.
+
+`WAITFOR` là một lệnh trong SQL Server, nó có thể tạm dừng thực thi một batch, stored procedure, hoặc transaction cho đến khi một khoảng thời gian nhất định trôi qua, hoặc một lệnh nhất định sửa đổi hoặc trả về ít nhất một hàng.
+
+Cú pháp của `WAITFOR` như sau:
 
 ```sql
-PRINT 'Start';
-WAITFOR DELAY '00:00:05'; --Dừng 5s rồi chạy lệnh Sau nó
-PRINT 'End';
+WAITFOR
+{   
+    DELAY 'time_to_pass'
+    |  TIME 'time_to_execute'
+    | [ (  receive_statement  ) | (  get_conversation_group_statement  ) ]    
+    [ ,  TIMEOUT  timeout ]   
+}
 ```
+
+Trong đó:
+- `DELAY 'time_to_pass'`: Chờ một khoảng thời gian nhất định trôi qua trước khi tiếp tục thực thi.
+- `TIME 'time_to_execute'`: Chờ đến một thời điểm nhất định để thực thi.
+- `receive_statement` và `get_conversation_group_statement` chỉ áp dụng cho Service Broker messages.
+- `TIMEOUT timeout` chỉ định khoảng thời gian, tính bằng mili giây, để chờ một tin nhắn đến hàng đợi.
+
+Ví dụ về `WAITFOR DELAY`:
+
+```sql
+-- Câu lệnh thứ nhất
+SELECT GETDATE() AS 'Thời gian hiện tại';
+
+-- Chờ 10 giây
+WAITFOR DELAY '00:00:10';
+
+-- Câu lệnh thứ hai
+SELECT GETDATE() AS 'Thời gian sau khi chờ 10 giây';
+```
+
+Trong ví dụ trên, sau khi chạy câu lệnh thứ nhất, SQL Server sẽ chờ 10 giây rồi mới tiếp tục chạy câu lệnh thứ hai.
+
+Ví dụ về `WAITFOR TIME`:
+
+```sql
+-- Câu lệnh thứ nhất
+SELECT GETDATE() AS 'Thời gian hiện tại';
+
+-- Chờ đến thời điểm 23:59:00
+WAITFOR TIME '23:59:00';
+
+-- Câu lệnh thứ hai
+SELECT GETDATE() AS 'Thời gian sau khi chờ đến 23:59:00';
+```
+
+
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/waitfor-transact-sql?view=sql-server-ver16
 
 ---
 
 ### 💥 Transact-SQL Functions
 
 T-SQL (Transact-SQL) Functions là các hàm được cung cấp bởi Microsoft SQL Server và Azure SQL Database để thực hiện các thao tác xử lý dữ liệu, tính toán và truy vấn trong môi trường CSDL. T-SQL Functions cho phép bạn thực hiện các phép tính, chuyển đổi dữ liệu, truy xuất thông tin và thực hiện các tác vụ xử lý dữ liệu phức tạp.
+
+Xem chi tiết: https://learn.microsoft.com/en-us/sql/t-sql/statements/create-function-transact-sql?view=sql-server-ver16
 
 Các nhóm Funtions trong SQL Server:
 
@@ -421,6 +479,19 @@ DROP FUNCTION [schema_name.]function_name;
 
 **Table-valued Functions**: nó nhận đầu vào và trả về một bảng (table)
 
+Cú pháp:
+
+```sql
+CREATE FUNCTION [schema_name.]function_name  
+( [ @parameter [ AS ] [type_schema_name.] datatype [ = default ] [ READONLY ] ] ) 
+RETURNS @table_variable TABLE (column_definitions)
+AS 
+BEGIN 
+    statements 
+    RETURN 
+END
+
+```
 
 Ví dụ: Viết một Table-valued Functions trả về danh sách các sản phẩm có giảm giá (discount > 0)
 
@@ -435,6 +506,23 @@ RETURN
     FROM dbo.products
     WHERE discount > 0
 )
+-- Hoặc
+-- Tạo table function
+CREATE FUNCTION get_orders(@customer_id INT)
+RETURNS @orders TABLE (
+    OrderID INT,
+    OrderDate DATETIME,
+    Amount DECIMAL(10, 2)
+)
+AS
+BEGIN
+    INSERT INTO @orders
+    SELECT OrderID, OrderDate, Amount
+    FROM Orders
+    WHERE CustomerID = @customer_id;
+
+    RETURN;
+END;
 ```
 
 Sử dụng funtion
@@ -442,6 +530,8 @@ Sử dụng funtion
 
 ```sql
 SELECT * FROM dbo.udtf_PromotionProducts()
+--hoặc
+SELECT * FROM get_orders(1);
 ```
 ---
 
@@ -660,13 +750,18 @@ Cú pháp:
 
 ```sql
 BEGIN TRY  
-   -- statements that may cause exceptions
-END TRY 
+     { sql_statement | statement_block }  
+END TRY  
 BEGIN CATCH  
-   -- statements that handle exception
+     [ { sql_statement | statement_block } ]  
 END CATCH  
+[ ; ]
 
 ```
+
+Xem chi tiết: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/try-catch-transact-sql?view=sql-server-ver16
+
+
 
 Ví dụ:
 
@@ -722,6 +817,7 @@ BEGIN
 END;
 ```
 
+
 ---
 
 ### 💥 RAISERROR
@@ -750,6 +846,15 @@ Levels of severity: https://learn.microsoft.com/en-us/sql/relational-databases/e
 
 Là câu lệnh dùng để tạo ra một lỗi do người dùng tự định nghĩa. Được giới thiệu từ phiên bản SQL Server 2012. Do đơn giản hơn RAISERROR nên nên được ưu tiên sử dụng.
 
+Cú pháp:
+
+```sql
+THROW [ { error_number | @local_variable },  
+        { message | @local_variable },  
+        { state | @local_variable } ]   
+[ ; ]
+```
+
 Ví dụ: Tạo một lỗi do người dùng tự định nghĩa
 
 ```sql
@@ -776,6 +881,8 @@ BEGIN CATCH
 END CATCH
 
 ```
+
+Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/throw-transact-sql?view=sql-server-ver16
 
 ---
 
