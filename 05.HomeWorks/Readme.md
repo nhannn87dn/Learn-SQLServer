@@ -279,12 +279,12 @@
 1. Hiển thị tất cả các đơn hàng có trạng thái là CANCELED (order_status = 3)
 1. Hiển thị tất cả các đơn hàng có trạng thái là CANCELED (order_status = 3) trong ngày hôm nay
 1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong tháng này
-1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong tháng 1 năm 2021
-1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong năm 2021
+1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong tháng 1 năm 2018
+1. Hiển thị tất cả các đơn hàng có trạng thái là COMPLETED (order_status = 4) trong năm 2018
 1. Hiển thị tất cả các đơn hàng có hình thức thanh toán là CASH (payment_type = 4)
 1. Hiển thị tất cả các đơn hàng có hình thức thanh toán là CREADIT CARD (payment_type = 2)
 1. Hiển thị tất cả các đơn hàng có địa chỉ giao hàng ở thành phố `Houston`
-1. Hiển thị tất cả các nhân viên có sinh nhật là tháng này
+1. Hiển thị tất cả các khách hàng có sinh nhật là tháng này
 1. Hiển thị tất cả các thương hiệu (brands) có tên là: (Electra, Haro, Heller, Trek)
 1. Hiển thị tất cả các thương hiệu (brands) không có tên là: (Heller, Trek)
 1. Hiển thị tất cả các khách hàng có sinh nhật là ngày hôm nay.

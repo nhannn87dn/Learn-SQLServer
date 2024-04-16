@@ -550,7 +550,7 @@ END
 
 ### 💥 DDL Trigger
 
-DDL Trigger được kích hoạt bởi sự kiện ở cấp độ Server hoặc Databse. 
+DDL Trigger được kích hoạt bởi sự kiện ở cấp độ Server hoặc Database. 
 
 Các sự kiện này được tạo ra bởi câu lệnh Transact-SQL thường bắt đầu bằng một trong các từ khóa sau: CREATE, ALTER, DROP, GRANT, DENY, REVOKE hoặc UPDATE STATISTICS.
 
