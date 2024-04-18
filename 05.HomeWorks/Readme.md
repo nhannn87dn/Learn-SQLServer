@@ -268,7 +268,7 @@
 1. Hiển thị tất cả các khách hàng có địa chỉ ở `city = 'New York'`
 1. Hiển thị tất cả các khách hàng có địa chỉ ở `city = 'New York'` hoặc `city = 'Victoria'`
 1. Hiển thị tất cả các khách hàng có năm sinh 1990.
-1. Hiển thị tất cả các khách hàng có tuổi trên 60.
+1. Hiển thị tất cả các khách hàng có tuổi trên 52.
 1. Hiển thị tất cả các khách hàng có tuổi từ 20 đến 30.
 1. Hiển thị tất cả các khách hàng có số đuôi điện thoại '500'
 1. Hiển thị tất cả các khách hàng có tên chứa ký tự `de`.
