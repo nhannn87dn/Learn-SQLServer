@@ -551,11 +551,11 @@ Stored procedure (thủ tục lưu trữ) trong SQL có thể trả về một g
 Để tạo một stored procedure trả về giá trị, bạn sử dụng từ khóa `RETURN` trong thân của stored procedure. Ví dụ:
 
 ```sql
-CREATE PROCEDURE CheckOrderStatus
+CREATE PROCEDURE ups_CheckOrderStatus
     @OrderId INT
 AS
 BEGIN
-    IF EXISTS(SELECT 1 FROM Orders WHERE OrderId = @OrderId)
+    IF EXISTS(SELECT 1 FROM orders WHERE order_id = @OrderId)
         RETURN 1 -- Order exists
     ELSE
         RETURN 0 -- Order does not exist
@@ -630,6 +630,43 @@ WHERE name = 'Tên_View'
 Truy vấn metadata cung cấp cho bạn một cái nhìn tổng quan về cấu trúc và thông tin liên quan đến cơ sở dữ liệu và đối tượng trong SQL Server. Điều này giúp bạn hiểu rõ hơn về cấu trúc dữ liệu và có khả năng xây dựng các truy vấn và tác vụ phức tạp dựa trên thông tin metadata.
 
 ---
+
+## 💛 Dyamic SQL (Option) trong Stored Procedure
+
+```sql
+CREATE PROC usp_LayDanhSach_Filters (
+	@model_year SMALLINT = NULL,
+	@category_id INT = NULL
+)
+AS
+BEGIN
+	DECLARE @Sql NVARCHAR(MAX) = N'SELECT * FROM dbo.products WHERE ';
+	DECLARE @Where NVARCHAR(MAX) = N'';
+	--Them dieu kien model_year khi @model_year IS NOT NULL
+	IF @model_year IS NOT NULL
+	BEGIN
+		SET @Where = CONCAT(@Where, N' model_year = @model_year')
+	END
+	--Them dieu kien category_id khi @category_id IS NOT NULL
+	IF @category_id IS NOT NULL
+	BEGIN
+		IF LEN(@Where) > 0
+		BEGIN
+			SET @Where = CONCAT(@Where, N' AND')
+		END
+		SET @Where = CONCAT(@Where, N' category_id = @category_id')
+	END
+	SET @Sql = CONCAT(@Sql, @Where);
+	PRINT @Sql;
+	EXEC sp_executesql @Sql, N'@model_year SMALLINT, @category_id INT', @model_year, @category_id;
+END
+```
+
+Trong Ví dụ trên 2 tham số là mặc định. 
+- Nếu không truyền thì nó lấy tất cả sản phẩm
+- Nếu chỉ truyền @model_year thì nó đi lọc dựa vào model_year
+- nếu chỉ truyền @category_id thì nó đi lọc dựa vào category_id
+- Nếu truyền cả 2 thì lọc theo cả 2
 
 
 ## 💛 Homeworks
