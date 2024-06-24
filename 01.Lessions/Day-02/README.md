@@ -318,22 +318,40 @@ Data Control Language (DCL) là một phần của ngôn ngữ truy vấn trong 
 
 KIỂU DỮ LIỆU – DATA TYPE là một quy trình về cấu trúc, miền giá trị của dữ liệu có thể nhập vào và tập các phép toán / toán tử có thể tác động lên miền giá trị đó
 
+Xem đầy đủ ở link này: https://www.sqlservertutorial.net/sql-server-basics/sql-server-data-types/
+
 
 **🔹 Kiểu chuỗi - String Data Types**
 
-| Data type      | Description                                                                      | Max size                        | Storage                   |
-|----------------|----------------------------------------------------------------------------------|---------------------------------|---------------------------|
-| char(n)        | - Kiểu ký  tự - Không chứa Unicode - Bộ nhớ cấp phát tĩnh với tham số n          | 8,000 Ký tự                     | Defined width             |
-| varchar(n)     | - Kiểu ký tự - Không chứa Unicode - Bộ nhớ cấp phát động, không vượt quá n ô nhớ | 8,000 ký tự                     | 2 bytes + number of chars |
-| varchar(max)   | - Kiểu ký tự - Không chứa Unicode - Bộ nhớ cấp phát động, không giới hạn ô nhớ   | 1,073,741,824 Ký tự             | 2 bytes + number of chars |
-| text           | - Lưu văn bản có độ dài lớn - Không chứa Unicode                                 | 2GB of text data                | 4 bytes + number of chars |
-| nchar(n)       | - Kiểu ký  tự - Có thể chứa Unicode - Bộ nhớ cấp phát tĩnh với tham số n         | 4,000 ký  tự bao gồm cả Unicode | Defined width x 2         |
-| nvarchar(n)    | - Kiểu ký tự - Có thể chứa Unicode - Bộ nhớ cấp phát động, tối đa n ô nhớ        | 4,000 Ký tự bao gồm cả Unicode  |                           |
-| nvarchar(max)  | - Kiểu ký tự - Có thể chứa Unicode - Bộ nhớ cấp phát động, không giới hạn ô nhớ  | 536,870,912 Ký tự               |                           |
-| ntext          | - Lưu văn bản có độ dài lớn - Có thể chứa Unicode                                | 2GB of text data                |                           |
-| binary(n)      | - Chuổi nhị phân - Bộ nhớ cấp phát cứng n ô nhớ                                  | 8,000 bytes                     |                           |
-| varbinary(n)   | - Chuổi nhị phân - Bộ nhớ cấp phát động, tối đa n ô nhớ                          | 8,000 bytes                     |                           |
-| varbinary(max) | - Chuổi nhị phân - Bộ nhớ cấp phát động, không giới hạn ô nhớ                    | 2GB                             |                           |
+Dưới đây là bảng đã được sửa lại với các giá trị đúng cho cột "Bộ nhớ cần thiết":
+
+| Kiểu dữ liệu   | Mô tả                                                                                  | Kích thước tối đa                | Bộ nhớ cần thiết       |
+|----------------|----------------------------------------------------------------------------------------|----------------------------------|------------------------|
+| char(n)        | - Kiểu ký tự - Không chứa Unicode - Cấp phát tĩnh với tham số n                        | 8.000 ký tự                      | n byte                 |
+| varchar(n)     | - Kiểu ký tự biến thiên - Không chứa Unicode - Cấp phát động, không vượt quá n ô nhớ   | 8.000 ký tự                      | 2 byte + số ký tự      |
+| varchar(max)   | - Kiểu ký tự biến thiên - Không chứa Unicode - Cấp phát động, không giới hạn ô nhớ     | 1.073.741.824 ký tự              | 2 byte + số ký tự      |
+| text           | - Lưu trữ văn bản có kích thước lớn - Không chứa Unicode                                | 2GB dữ liệu văn bản              | 4 byte + số ký tự      |
+| nchar(n)       | - Kiểu ký tự - Có thể chứa Unicode - Cấp phát tĩnh với tham số n                        | 4.000 ký tự bao gồm Unicode      | 2n byte                |
+| nvarchar(n)    | - Kiểu ký tự biến thiên - Có thể chứa Unicode - Cấp phát động, tối đa n ô nhớ           | 4.000 ký tự bao gồm Unicode      | 2 byte + 2 × số ký tự  |
+| nvarchar(max)  | - Kiểu ký tự biến thiên - Có thể chứa Unicode - Cấp phát động, không giới hạn ô nhớ     | 536.870.912 ký tự               | 2 byte + 2 × số ký tự  |
+| ntext          | - Lưu trữ văn bản có kích thước lớn - Có thể chứa Unicode                                | 2GB dữ liệu văn bản              | 4 byte + 2 × số ký tự  |
+| binary(n)      | - Kiểu chuỗi nhị phân - Cấp phát cố định n ô nhớ                                        | 8.000 byte                       | n byte                 |
+| varbinary(n)   | - Kiểu chuỗi nhị phân biến thiên - Cấp phát động, tối đa n ô nhớ                        | 8.000 byte                       | 2 byte + số byte       |
+| varbinary(max) | - Kiểu chuỗi nhị phân biến thiên - Cấp phát động, không giới hạn ô nhớ                  | 2GB                              | 2 byte + số byte       |
+
+Giải thích chi tiết:
+
+- `char(n)`: Cấp phát tĩnh n byte.
+- `varchar(n)`: Cấp phát động, thêm 2 byte để lưu trữ độ dài, tổng là 2 byte + số ký tự thực tế.
+- `varchar(max)`: Cấp phát động, thêm 2 byte để lưu trữ độ dài, tổng là 2 byte + số ký tự thực tế.
+- `text`: Cấp phát động, thêm 4 byte để lưu trữ độ dài, tổng là 4 byte + số ký tự thực tế.
+- `nchar(n)`: Cấp phát tĩnh, mỗi ký tự Unicode chiếm 2 byte, tổng là 2n byte.
+- `nvarchar(n)`: Cấp phát động, mỗi ký tự Unicode chiếm 2 byte, thêm 2 byte để lưu trữ độ dài, tổng là 2 byte + 2 × số ký tự thực tế.
+- `nvarchar(max)`: Cấp phát động, mỗi ký tự Unicode chiếm 2 byte, thêm 2 byte để lưu trữ độ dài, tổng là 2 byte + 2 × số ký tự thực tế.
+- `ntext`: Cấp phát động, mỗi ký tự Unicode chiếm 2 byte, thêm 4 byte để lưu trữ độ dài, tổng là 4 byte + 2 × số ký tự thực tế.
+- `binary(n)`: Cấp phát tĩnh n byte.
+- `varbinary(n)`: Cấp phát động, thêm 2 byte để lưu trữ độ dài, tổng là 2 byte + số byte thực tế.
+- `varbinary(max)`: Cấp phát động, thêm 2 byte để lưu trữ độ dài, tổng là 2 byte + số byte thực tế.
 
 
 **🔹 Kiểu Số - Numeric Data Types**

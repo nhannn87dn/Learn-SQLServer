@@ -86,6 +86,57 @@ Trong đó database_name là tên Database bạn muốn xóa
 ```
 ---
 
+
+### 💥 FileGroup
+
+#### Tạo FileGroup
+
+Click phải lên Database chọn `Properties` >> chọn `Filegroups` sau đó click `Add Filegroup` như hình dưới đây:
+
+![fg](img/filegroup-create-secondary-filgroup.jpg)
+
+Kết quả được như hình sau
+
+![fg](img/filegroup-new-fg.jpg)
+
+Hoặc bạn có thể tạo bằng lệnh
+
+```sql
+USE [master]
+GO
+ALTER DATABASE [DemoDatabase] ADD FILEGROUP [Secondary ]
+GO
+```
+
+Bước tiếp theo. Liên kết file vật lý với File Group
+
+![fg](img/filegroup-add-files-to-fg.jpg)
+
+Sau đó. Cấu hình như hình
+
+![fg](img/filegroup-filename.jpg)
+
+Kết quả lưu ở vật lý
+
+
+![fg](img/filefroup-secondary-result.jpg)
+
+Hoặc với dùng lệnh để add file
+
+```sql
+USE [master]
+GO
+ALTER DATABASE [DemoDatabase] ADD FILE ( NAME = N'DemoDatabase_tblRecords', FILENAME =
+N'E:\MS_SQL\SQL2017_Data\DemoDatabase_tblRecords.ndf' , SIZE = 8192KB , FILEGROWTH = 102400KB ) TO FILEGROUP [Secondary]
+GO
+```
+
+Xem thêm: 
+
+- https://www.sqlshack.com/managing-file-groups-of-sql-databases/
+- https://codingsight.com/moving-existing-table-from-primary-filegroup-to-different-filegroup
+
+
 ### 💥 Backup và Restore Một Database
 
 - Backup và restore từ file .bak

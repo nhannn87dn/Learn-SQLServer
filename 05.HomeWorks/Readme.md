@@ -90,8 +90,8 @@
 | 4   | phone      | VARCHAR  | 50       |            |             |             |              | UNIQUE                      |                            |
 | 5   | email      | VARCHAR  | 150      |            |             |             |              | UNIQUE                      |                            |
 | 5   | active     | TINYINT  |          |            |             |             | 0            |                             | 0 = no active, 1 = actived |
-| 5   | store_id   | INIT     |          |            |             | Foreign Key |              | Reference stores (store_id) |                            |
-| 5   | manage_id  | INIT     |          |            |             | Foreign Key |              | Reference staffs (staff_id) |                            |
+| 5   | store_id   | INT     |          |            |             | Foreign Key |              | Reference stores (store_id) |                            |
+| 5   | manage_id  | INT     |          |            |             | Foreign Key |              | Reference staffs (staff_id) |                            |
 
 **Sample Data Staffs**
 
@@ -116,7 +116,7 @@
 | 5   | category_id  | INT            |          |            |             | Foreign Key |              | Reference categories (category_id) |       |
 | 6   | brand_id     | INT            |          |            |             | Foreign Key |              | Reference brands (brand_id)        |       |
 | 7   | description  | NVARCHAR       | MAX      | Yes        |             |             |              |                                    |       |
-| 8   | model_year   | SMALL INIT     |          |            |             |             |              |                                    |       |
+| 8   | model_year   | SMALL INT     |          |            |             |             |              |                                    |       |
 
 
 **Sample Data Products**
@@ -173,8 +173,8 @@
 | No. | FieldName  | DataType | DataSize | Allow null | Key         | Foreign Key | DefaultValue | Constraint                      |
 | --- | ---------- | -------- | -------- | ---------- | ----------- | ----------- | ------------ | ------------------------------- |
 | 1   | store_id   | INT      |          |            | Primary Key | Foreign Key |              | Reference stores (store_id)     |
-| 2   | product_id | INIT     |          |            | Primary Key | Foreign Key |              | Reference products (product_id) |
-| 3   | quantity   | INIT     |          |            |             |             | 0            |                                 |
+| 2   | product_id | INT     |          |            | Primary Key | Foreign Key |              | Reference products (product_id) |
+| 3   | quantity   | INT     |          |            |             |             | 0            |                                 |
 
 
 **Sample Data Stocks**
@@ -203,13 +203,13 @@
 | No. | FieldName        | DataType       | DataSize | Allow null | Key         | Foreign Key | DefaultValue | Constraint                        | Notes                                                                  |
 | --- | ---------------- | -------------- | -------- | ---------- | ----------- | ----------- | ------------ | --------------------------------- | ---------------------------------------------------------------------- |
 | 1   | order_id         | INT            |          |            | Primary Key |             |              | IDENTITY(1, 1)                    |                                                                        |
-| 2   | customer_id      | INIT           |          |            |             | Foreign Key |              | Reference customers (customer_id) |                                                                        |
+| 2   | customer_id      | INT           |          |            |             | Foreign Key |              | Reference customers (customer_id) |                                                                        |
 | 3   | order_status     | TINYINT        |          |            |             |             |              | 1/2/3/4                           | Order status: 1 = Pending; 2 = Processing; 3 = Rejected; 4 = Completed |
 | 4   | order_date       | VARCHAR        | 50       |            |             |             | NOW          |                                   |                                                                        |
 | 5   | require_date     | DATETIME       |          | YES        |             |             |              |                                   |                                                                        |
 | 6   | shipping_date    | DATETIME       |          |            |             |             |              |                                   |                                                                        |
-| 7   | store_id         | INIT           | 50       |            |             | Foreign Key |              | Reference stores (store_id)       |                                                                        |
-| 8   | staff_id         | INIT           | 20       |            |             | Foreign Key |              | Reference staffs (staff_id)       |                                                                        |
+| 7   | store_id         | INT           | 50       |            |             | Foreign Key |              | Reference stores (store_id)       |                                                                        |
+| 8   | staff_id         | INT           | 20       |            |             | Foreign Key |              | Reference staffs (staff_id)       |                                                                        |
 | 9   | order_note       | NVARCHAR       |          | YES        |             |             |              |                                   |                                                                        |
 | 10  | shipping_address | NVARCHAR       |          | YES        |             |             |              |                                   |                                                                        |
 | 11  | shipping_city    | NVARCHAR       |          | YES        |             |             |              |                                   |                                                                        |
@@ -225,7 +225,7 @@
 | 1   | order_id   | INT            |          |            | Primary Key | Foreign Key |              | Reference orders (order_id)      |
 | 2   | item_id    | INT            |          |            | Primary Key |             |              |                                  |
 | 3   | product_id | INT            |          |            |             | Foreign Key |              | Reference products (product_id)  |
-| 3   | quantity   | INIT           |          |            |             |             | 0            | Check: quantity >= 0             |
+| 3   | quantity   | INT           |          |            |             |             | 0            | Check: quantity >= 0             |
 | 4   | price      | DECIMAL(18, 2) |          |            |             |             | 0            | Check: price >= 0                |
 | 5   | discount   | DECIMAL(18, 2) |          |            |             |             | 0            | Check: discount BETWEEN 0 AND 70 |
 
