@@ -73,6 +73,17 @@ Giải thích các thành phần chính của cú pháp:
 
 Lưu ý rằng không phải tất cả các thành phần đều bắt buộc trong một câu lệnh SELECT. Bạn có thể điều chỉnh cú pháp để phù hợp với yêu cầu truy vấn cụ thể của mình.
 
+#### 🔹 SELECT Không có (without) FROM
+
+```sql
+-- Trả về ngày hiện tại
+SELECT GETDATE() 
+-- Lấy 3 kí tự bên trái của chuỗi
+SELECT LEFT('SQL Tutorial', 3) AS ExtractString;
+-- Chuyển chuỗi thành kí tự thường
+SELECT LOWER('SQL Tutorial is FUN!');
+```
+
 #### 🔹 SELECT * - Lấy tất cả
 
 Lấy tất cả các column từ table `categories`
@@ -519,16 +530,7 @@ FROM customers;
 
 Bạn có thể tận dụng tính năng này để backup một table
 
-#### 🔹 SELECT Không có (without) FROM
 
-```sql
--- Trả về ngày hiện tại
-SELECT GETDATE() 
--- Lấy 3 kí tự bên trái của chuỗi
-SELECT LEFT('SQL Tutorial', 3) AS ExtractString;
--- Chuyển chuỗi thành kí tự thường
-SELECT LOWER('SQL Tutorial is FUN!');
-```
 
 Xem các hàm:
 
@@ -539,6 +541,13 @@ Xem các hàm:
 
 
 ---
+
+
+Thứ tự thực hiện trong một câu lệnh SELECT
+
+
+![order](img/query-order.png)
+
 
 ## 💛 Nguồn học Thêm SELECT
 
