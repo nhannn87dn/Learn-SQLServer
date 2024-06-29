@@ -114,6 +114,116 @@ SELECT [customer_id], [first_name], [last_name], [first_name] + ' ' + [last_name
 - Dùng mệnh đề AS để đặt tên / Đổi tên cho một Cột
 
 
+#### 🔹 SELECT với mệnh đề DISTINCT
+
+Dùng để loại bỏ các giá trị trùng lặp trong kết quả truy vấn.
+
+```sql
+--- Lấy danh sách city từ Table customers
+SELECT city
+FROM customers
+ORDER BY city ASC
+---
+--- Kết quả trùng lặp các giá trị và bạn muốn khử trùng lặp thì dùng DISTINCT
+---
+
+SELECT DISTINCT city
+FROM customers
+ORDER BY city ASC
+```
+
+
+Nếu bạn chỉ định nhiều cột, mệnh đề DISTINCT sẽ đánh giá sự trùng lặp dựa trên sự kết hợp các giá trị của các cột này.
+
+```sql
+SELECT 
+	city, 
+	state, 
+	zip_code
+FROM 
+	customers
+GROUP BY 
+	city, state, zip_code
+ORDER BY
+	city, state, zip_code;
+```
+
+Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-select-distinct/
+
+#### 🔹 SELECT với mệnh đề TOP & TOP PERCENT
+
+Mệnh đề SELECT TOP được sử dụng để chỉ định số lượng bản ghi cần trả về.
+
+Ví dụ: Lấy 10 bản ghi đầu tiên trong kết quả trả về table products
+
+```sql
+SELECT TOP 10 * 
+FROM products
+```
+
+Ví dụ lấy 5% số lượng bản từ table products
+
+```sql
+--- Ngẩu nhiên --> Mang tính tương đối
+SELECT TOP 5 PERCENT * 
+FROM products
+```
+
+#### 🔹 SELECT với mệnh đề WITH TIES
+
+Câu lệnh `SELECT TOP WITH TIES` trong SQL Server được sử dụng khi bạn muốn lấy một số lượng hàng nhất định từ một bảng, nhưng bạn cũng muốn bao gồm thêm các hàng khác có giá trị bằng với giá trị của hàng cuối cùng được chọn. Điều này rất hữu ích trong các tình huống mà bạn muốn đảm bảo rằng tất cả các hàng có giá trị tương đương đều được lấy, ngay cả khi vượt quá số lượng hàng được chỉ định ban đầu.
+
+Ví dụ Cụ Thể
+
+Giả sử bạn có một bảng `Products` với các cột `ProductID`, `ProductName`, và `Price`. Bạn muốn lấy 3 sản phẩm có giá cao nhất, nhưng nếu có nhiều sản phẩm có cùng giá với sản phẩm thứ 3, bạn muốn lấy tất cả các sản phẩm đó.
+
+**Bảng `Products`**
+
+| ProductID | ProductName | Price |
+|-----------|-------------|-------|
+| 1         | Product A   | 100   |
+| 2         | Product B   | 200   |
+| 3         | Product C   | 300   |
+| 4         | Product D   | 300   |
+| 5         | Product E   | 300   |
+| 6         | Product F   | 400   |
+| 7         | Product G   | 500   |
+
+**Câu lệnh SQL**
+
+```sql
+SELECT TOP 3 WITH TIES
+    ProductID,
+    ProductName,
+    Price
+FROM
+    Products
+ORDER BY
+    Price DESC;
+```
+
+#### Kết quả
+
+| ProductID | ProductName | Price |
+|-----------|-------------|-------|
+| 7         | Product G   | 500   |
+| 6         | Product F   | 400   |
+| 3         | Product C   | 300   |
+| 4         | Product D   | 300   |
+| 5         | Product E   | 300   |
+
+
+**Khi Nào Sử Dụng `WITH TIES`**
+
+1. **Khi bạn muốn bao gồm tất cả các hàng có giá trị tương đương với hàng cuối cùng được chọn**: Điều này đảm bảo rằng bạn không bỏ sót bất kỳ hàng nào có giá trị tương đương, đặc biệt hữu ích khi các giá trị này có ý nghĩa quan trọng trong ngữ cảnh của bạn.
+
+2. **Thống kê và báo cáo**: Khi bạn tạo báo cáo và muốn chắc chắn rằng bạn không bỏ sót các mục có cùng giá trị, `WITH TIES` có thể đảm bảo sự toàn diện của dữ liệu.
+
+3. **Cạnh tranh và xếp hạng**: Trong các ứng dụng xếp hạng hoặc cạnh tranh, bạn có thể sử dụng `WITH TIES` để bao gồm tất cả các mục cùng thứ hạng.
+
+
+
+
 #### 🔹 SELECT với mệnh đề WHERE
 
 - Dùng khi bạn muốn truy vấn muốn nhận kết quả dựa vào điều kiện nào đó.
@@ -384,72 +494,6 @@ Lưu ý: Mệnh đề OFFSET-FETCH chỉ được hỗ trợ từ SQL Server 201
 Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-offset-fetch/
 
 
-#### 🔹 SELECT với mệnh đề DISTINCT
-
-Dùng để loại bỏ các giá trị trùng lặp trong kết quả truy vấn.
-
-```sql
---- Lấy danh sách city từ Table customers
-SELECT city
-FROM customers
-ORDER BY city ASC
----
---- Kết quả trùng lặp các giá trị và bạn muốn khử trùng lặp thì dùng DISTINCT
----
-
-SELECT DISTINCT city
-FROM customers
-ORDER BY city ASC
-```
-
-
-Nếu bạn chỉ định nhiều cột, mệnh đề DISTINCT sẽ đánh giá sự trùng lặp dựa trên sự kết hợp các giá trị của các cột này.
-
-```sql
-SELECT 
-	city, 
-	state, 
-	zip_code
-FROM 
-	customers
-GROUP BY 
-	city, state, zip_code
-ORDER BY
-	city, state, zip_code;
-```
-
-Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-select-distinct/
-
-#### 🔹 SELECT với mệnh đề TOP & TOP PERCENT
-
-Mệnh đề SELECT TOP được sử dụng để chỉ định số lượng bản ghi cần trả về.
-
-Ví dụ: Lấy 10 bản ghi đầu tiên trong kết quả trả về table products
-
-```sql
-SELECT TOP 10 * 
-FROM products
-```
-
-Ví dụ lấy 5% số lượng bản từ table products
-
-```sql
---- Ngẩu nhiên --> Mang tính tương đối
-SELECT TOP 5 PERCENT * 
-FROM products
-```
-
-#### 🔹 SELECT với mệnh đề WITH TIES
-
-Mệnh đề WITH TIES được sử dụng trong câu lệnh ORDER BY của SQL để bao gồm các hàng có giá trị "ràng buộc" (ties) trong kết quả sắp xếp. Một "ràng buộc" xảy ra khi hai hoặc nhiều hàng có giá trị sắp xếp bằng nhau theo cùng một tiêu chí.
-
-Khi sử dụng WITH TIES, các hàng có giá trị "ràng buộc" sẽ được bao gồm trong kết quả cuối cùng của câu lệnh ORDER BY, chứ không chỉ có các hàng có giá trị duy nhất.
-
-```sql
-SELECT TOP 10 WITH TIES product_id, product_name, price 
-FROM products
-ORDER BY price DESC
-```
 
 
 #### 🔹 SELECT với mệnh đề GROUP BY,GROUP BY với HAVING
