@@ -6,12 +6,11 @@
 
 Mục đích của GROUP BY là nhóm các bản ghi có cùng giá trị của một hoặc nhiều cột. Khi kết hợp với WHERE, GROUP BY sẽ nhóm các bản ghi thỏa mãn điều kiện của WHERE.
 
-
 Ví dụ: Liệt kê danh sách giảm giá của những sản phẩm có giá trên 2000
 
 ```sql
-SELECT 
-  discount, 
+SELECT
+  discount,
   COUNT(product_id) AS Total --- Đếm dựa vào ID và đặt tên là Total
 FROM products
 WHERE price > 2000
@@ -40,26 +39,6 @@ Bạn sẽ thấy giá trị NULL được liệt kê ra ở đầu danh sách.
 
 ---
 
-### 💥 GROUP BY với ALL
-
-Trong SQL Server, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng, bao gồm cả các bản ghi trùng lặp. Điều này có nghĩa là tất cả các bản ghi sẽ được coi là cùng một nhóm.
-
-Dưới đây là một ví dụ để hiểu cách sử dụng mệnh đề GROUP BY ALL trong SQL Server:
-
-Giả sử bạn có một bảng "Orders" với các cột "order_id", "customer_id" và "order_amount". Bạn muốn tính tổng số lượng đơn hàng và tổng số tiền cho tất cả các đơn hàng, bao gồm cả các đơn hàng trùng lặp:
-
-```sql
-SELECT order_id, customer_id, SUM(order_amount) AS TotalAmount
-FROM orders
-GROUP BY ALL order_id, customer_id;
-```
-
-Trong ví dụ trên, mệnh đề GROUP BY ALL được sử dụng để áp dụng phép nhóm cho tất cả các bản ghi trong bảng "orders". Kết quả trả về sẽ bao gồm tất cả các cặp order_id và customer_id có trong bảng, bất kể chúng có trùng lặp hay không. Tổng số tiền cho mỗi cặp order_id và customer_id sẽ được tính bằng hàm SUM(TotalAmount).
-
-Lưu ý rằng mệnh đề GROUP BY ALL không phổ biến và thường không được sử dụng trong các trường hợp thông thường. Nó cung cấp một cách để xử lý các bản ghi trùng lặp trong quá trình nhóm dữ liệu.
-
----
-
 ### 💥 GROUPING SETS
 
 là một cú pháp mở rộng của mệnh đề GROUP BY để cho phép bạn `nhóm dữ liệu theo nhiều tập hợp khác nhau trong một câu truy vấn duy nhất`. Nó cho phép bạn tạo các kết quả tổng hợp từ các nhóm dữ liệu khác nhau một cách thuận tiện.
@@ -67,10 +46,10 @@ là một cú pháp mở rộng của mệnh đề GROUP BY để cho phép bạ
 Với GROUPING SETS, bạn có thể chỉ định một danh sách các cột hoặc biểu thức nhóm để tạo các tập hợp nhóm khác nhau. Cú pháp của GROUPING SETS như sau:
 
 ```sql
-SELECT 
+SELECT
     column1, column2, ..., aggregate_function(column)
 FROM table
-GROUP BY 
+GROUP BY
     GROUPING SETS (column1, column2, ..., ())
 ```
 
@@ -103,6 +82,7 @@ ORDER BY
     c.category_name,
     p.model_year;
 ```
+
 Bạn sẽ nhận được một bảng dữ liệu tổng hợp doanh thu theo `brand`, `categories` và `year_model`
 
 ![grou-set](img/SQL-Server-GROUPING-SETS-sample-table.png)
@@ -151,6 +131,7 @@ GROUP BY
 ORDER BY
     category;
 ```
+
 Và một nhóm tổng hợp: tổng doanh thu của tất cả `brand` và `categories`
 
 ```sql
@@ -168,6 +149,7 @@ Như vậy chúng ta có 4 nhóm dữ liệu:
 (category)
 ()
 ```
+
 Để có một báo cáo tổng hợp thông tin 4 nhóm trên bạn có thể dùng mệnh đề `UNION ALL` để nối lại như sau:
 
 ```sql
@@ -230,6 +212,7 @@ ORDER BY
 	brand,
 	category;
 ```
+
 Hàm GROUPING cho biết liệu một cột được chỉ định trong mệnh đề GROUP BY có được tổng hợp hay không. Nó trả về 1 nếu được tổng hợp hoặc 0 nếu không được tổng hợp trong tập kết quả.
 
 ```sql
@@ -273,16 +256,17 @@ FROM
     table_name
 GROUP BY
     GROUPING SETS (
-        (d1,d2,d3), 
+        (d1,d2,d3),
         (d1,d2),
         (d1,d3),
         (d2,d3),
         (d1),
         (d2),
-        (d3), 
+        (d3),
         ()
      );
 ```
+
 Rất dài dòng, thay vì thế dùng ngay `CUBE`
 
 ```sql
@@ -313,9 +297,7 @@ ORDER BY
 	category;
 ```
 
-
 ---
-
 
 ### 💥 GROUP BY với ROLLUP
 
@@ -337,6 +319,7 @@ ROLLUP thường được sử dụng để tạo subtotals và totals cho mục
 (d3)
 ()
 ```
+
 Trong khi `ROLLUP(d1,d2,d3)` tạo `4` grouping sets, theo cấu trúc phân cấp d1 > d2> d3
 
 ```sql
@@ -360,7 +343,7 @@ GROUP BY
     ROLLUP (d1, d2, d3);
 ```
 
-Nối tiếp ví dụ trên 
+Nối tiếp ví dụ trên
 
 ```sql
 SELECT
@@ -372,7 +355,8 @@ FROM
 GROUP BY
     ROLLUP(brand, category);
 ```
-Kết quả được canh theo cột brand:  brand > category
+
+Kết quả được canh theo cột brand: brand > category
 
 ---
 
@@ -400,7 +384,7 @@ Dùng để tính tổng các giá trị trong một cột.
 ```sql
 -- Tính tổng số lượng tồn kho theo từng nhóm category_id
 SELECT
-    category_id, 
+    category_id,
     SUM(Stock) AS 'total_stock'
 FROM products
 GROUP BY category_id
@@ -413,24 +397,26 @@ Dùng để lấy giá trị nhỏ nhất của các giá trị trong một cộ
 ```sql
 -- Hiển thị sản phẩm có giá thấp nhất theo từng nhóm category_id
 SELECT
-    category_id, 
+    category_id,
     MIN(price) AS 'min_price'
 FROM products
 GROUP BY category_id
 ```
 
-#### 🔹 MIN
+#### 🔹 MAX
 
 Dùng để lấy giá trị lớn nhất của các giá trị trong một cột.
 
 ```sql
 -- Hiển thị sản phẩm có giá cao nhất theo từng nhóm category_id
 SELECT
-    category_id, 
+    category_id,
     MAX(price) AS 'max_price'
 FROM products
 GROUP BY category_id
 ```
+
+Xem thêm tại: https://learn.microsoft.com/en-us/sql/t-sql/queries/select-group-by-transact-sql?view=sql-server-ver16
 
 ---
 
@@ -439,7 +425,6 @@ GROUP BY category_id
 Subquery (hoặc còn gọi là inner query hoặc nested query) là một câu truy vấn SELECT được nhúng bên trong một câu truy vấn khác. Nó cho phép bạn sử dụng kết quả của một câu truy vấn như là một tập dữ liệu đầu vào cho câu truy vấn chính.
 
 Ví dụ: Liệt kê danh sách danh mục kèm số lượng sản phẩm có trong danh mục đó
-
 
 ```sql
 SELECT
@@ -517,19 +502,18 @@ WHERE
     )
 ```
 
-
 #### 🔹 Sub Query and ALL
 
 ALL có cách dùng tương tự nhưng khác một chỗ là khi dùng `ALL` trả về `TRUE` nếu `scalar_expression` thõa điều kiện `comparison_operator` với TẤT CẢ giá trị từ (v1, v2, … vn). Ngược lại trả về `FALSE`
 
-
-#### 🔹 Sub Query and EXISTS, NOT EXISTS 
+#### 🔹 Sub Query and EXISTS, NOT EXISTS
 
 Cú pháp
 
 ```sql
 WHERE [NOT] EXISTS (subquery)
 ```
+
 EXISTS trả về `TRUE` nếu `subquery` trả về kết quả; ngược lại trả về `FALSE`.
 
 NOT EXISTS phủ định của EXISTS
@@ -561,9 +545,6 @@ ORDER BY
 ```
 
 Xem thêm: https://www.sqlservertutorial.net/sql-server-basics/sql-server-subquery/
-
-
-
 
 ## 💛 Session 09- Advanced Queries and Joins - Part 2
 
@@ -620,7 +601,7 @@ Kết quả được
 
 ![innner join](img/join-inner-join-example.png)
 
-Phép nối Inner Join được biểu diễn với sơ đồ  Venn diagram
+Phép nối Inner Join được biểu diễn với sơ đồ Venn diagram
 
 ![innner join](img/Join-Inner-Join.png)
 
@@ -633,7 +614,7 @@ SELECT
     price
 FROM
     dbo.products p
-INNER JOIN dbo.categories c 
+INNER JOIN dbo.categories c
     ON c.category_id = p.category_id -- mối quan hệ giữ 2 bảng
 ORDER BY
     product_name DESC;
@@ -643,11 +624,11 @@ Kết quả
 
 ![query inner join](img/SQL-Server-Inner-Join-example.png)
 
-Bảng `products` có trường khóa ngoại `category_id`, dựa vào đó bạn móc nối với Bảng `categories` để lấy tên danh mục dựa vào khóa chính  `category_id`
+Bảng `products` có trường khóa ngoại `category_id`, dựa vào đó bạn móc nối với Bảng `categories` để lấy tên danh mục dựa vào khóa chính `category_id`
 
 #### 🔹 OUTER JOIN
 
-OUTER JOIN là một loại phép nối  được sử dụng để kết hợp các hàng từ hai hoặc nhiều bảng dựa trên một điều kiện kết hợp, nhưng khác với INNER JOIN, OUTER JOIN có thể bao gồm các hàng không khớp từ ít nhất một bảng.
+OUTER JOIN là một loại phép nối được sử dụng để kết hợp các hàng từ hai hoặc nhiều bảng dựa trên một điều kiện kết hợp, nhưng khác với INNER JOIN, OUTER JOIN có thể bao gồm các hàng không khớp từ ít nhất một bảng.
 
 Có ba loại OUTER JOIN chính: LEFT OUTER JOIN (hoặc LEFT JOIN), RIGHT OUTER JOIN (hoặc RIGHT JOIN), FULL OUTER JOIN (hoặc FULL JOIN)
 
@@ -663,7 +644,7 @@ SELECT
     fruit_b
 FROM
     basket_a
-LEFT JOIN basket_b 
+LEFT JOIN basket_b
    ON fruit_a = fruit_b;
 ```
 
@@ -671,7 +652,7 @@ Kết quả
 
 ![join-left-join-example](img/join-left-join-example.png)
 
-Phép nối Left Join được biểu diễn với sơ đồ  Venn diagram
+Phép nối Left Join được biểu diễn với sơ đồ Venn diagram
 
 ![innner join](img/Join-Left-Join.png)
 
@@ -714,23 +695,21 @@ ORDER BY
     order_id;
 ```
 
-
-
 **UPDATE Với JOIN**
 
 Cú pháp:
 
 ```sql
-UPDATE 
+UPDATE
     t1
-SET 
+SET
     t1.c1 = t2.c2,
     t1.c2 = expression,
-    ...   
-FROM 
+    ...
+FROM
     t1
     [INNER | LEFT] JOIN t2 ON join_predicate
-WHERE 
+WHERE
     where_predicate;
 ```
 
@@ -741,12 +720,12 @@ DROP TABLE IF EXISTS dbo.targets;
 
 CREATE TABLE dbo.targets
 (
-    target_id  INT	PRIMARY KEY, 
-    percentage DECIMAL(4, 2) 
+    target_id  INT	PRIMARY KEY,
+    percentage DECIMAL(4, 2)
         NOT NULL DEFAULT 0
 );
 
-INSERT INTO 
+INSERT INTO
     dbo.targets(target_id, percentage)
 VALUES
     (1,0.2),
@@ -757,19 +736,19 @@ VALUES
 
 CREATE TABLE dbo.commissions
 (
-    staff_id    INT PRIMARY KEY, 
-    target_id   INT, 
-    base_amount DECIMAL(10, 2) 
-        NOT NULL DEFAULT 0, 
-    commission  DECIMAL(10, 2) 
-        NOT NULL DEFAULT 0, 
-    FOREIGN KEY(target_id) 
-        REFERENCES sales.targets(target_id), 
-    FOREIGN KEY(staff_id) 
+    staff_id    INT PRIMARY KEY,
+    target_id   INT,
+    base_amount DECIMAL(10, 2)
+        NOT NULL DEFAULT 0,
+    commission  DECIMAL(10, 2)
+        NOT NULL DEFAULT 0,
+    FOREIGN KEY(target_id)
+        REFERENCES sales.targets(target_id),
+    FOREIGN KEY(staff_id)
         REFERENCES sales.staffs(staff_id),
 );
 
-INSERT INTO 
+INSERT INTO
     dbo.commissions(staff_id, base_amount, target_id)
 VALUES
     (1,100000,2),
@@ -781,14 +760,13 @@ VALUES
 
 Yêu cầu Cập nhật tiền thưởng (trường commissions) ở table `commissions` theo công thức: `commissions = base_amount * percentage` mặc định nhân viên mới sẽ có mức chiết khấu percentage = 0.1
 
-
 ```sql
-UPDATE 
+UPDATE
     dbo.commissions
-SET  
-    dbo.commissions.commission = 
+SET
+    dbo.commissions.commission =
         c.base_amount  * COALESCE(t.percentage,0.1) -- COALESCE trả về 0.1 nếu percentage là NULL
-FROM  
+FROM
     dbo.commissions AS c
     LEFT JOIN dbo.targets t -- tham chiếu đến targets để lấy trường percentage
         ON c.target_id = t.target_id;
@@ -813,7 +791,7 @@ Kết quả
 
 ![join-right-join-example](img/join-right-join-example.png)
 
-Phép nối Rigth Join được biểu diễn với sơ đồ  Venn diagram
+Phép nối Rigth Join được biểu diễn với sơ đồ Venn diagram
 
 ![right join](img/Join-Right-Join.png)
 
@@ -831,7 +809,7 @@ SELECT
     fruit_b
 FROM
     basket_a
-FULL OUTER JOIN basket_b 
+FULL OUTER JOIN basket_b
     ON fruit_a = fruit_b;
 ```
 
@@ -839,14 +817,13 @@ Kết quả
 
 ![join-full-outer-join-example](img/join-full-outer-join-example.png)
 
-Phép nối Full Join được biểu diễn với sơ đồ  Venn diagram
+Phép nối Full Join được biểu diễn với sơ đồ Venn diagram
 
 ![full join](img/Join-Full-Outer-Join.png)
 
 #### 🔹 SEFT JOIN
 
 SELF JOIN là một phép nối mà bạn kết hợp một bảng với chính nó. Nó cho phép bạn kết nối các hàng trong cùng một bảng dựa trên một điều kiện kết hợp, và do đó, tạo ra một tập hợp mới các cặp hàng trong bảng đó.
-
 
 Cùng quan sát table `staffs` chúng ta thấy có trường manager_id, là khóa ngoại nằm tham chiếu tới chính table `staffs`
 
@@ -885,6 +862,7 @@ Cú pháp của CTE bao gồm hai phần chính: phần WITH và phần truy v�
 Phần WITH xác định tên của CTE và các cột (nếu cần) trong CTE. Đây là nơi bạn xác định truy vấn con và đặt tên cho nó. Ví dụ:
 
 ```sql
+--Dinh nghi CTE
 WITH cte_name (column1, column2, ...)
 AS (
     -- Truy vấn con
@@ -892,6 +870,8 @@ AS (
     FROM table_name
     WHERE condition
 )
+-- Truy van voi CTE
+SELECT * FROM cte_name
 ```
 
 Phần truy vấn chính sử dụng tên CTE đã định nghĩa trong phần WITH để tham chiếu đến kết quả của truy vấn con. Ví dụ:
@@ -917,23 +897,23 @@ Ví dụ: Thống kê doanh thu bán ra theo nhân viên trong năm 2018
 ```sql
 -- Truy vấn và tạo bảng ảo
 WITH cte_sales_amounts (staff, sales, year) AS (
-    SELECT    
-        first_name + ' ' + last_name, 
+    SELECT
+        first_name + ' ' + last_name,
         SUM(quantity * price * (1 - discount)),
         YEAR(order_date)
-    FROM    
+    FROM
         dbo.orders o
     INNER JOIN dbo.order_items i ON i.order_id = o.order_id
     INNER JOIN dbo.staffs s ON s.staff_id = o.staff_id
-    GROUP BY 
+    GROUP BY
         first_name + ' ' + last_name,
         year(order_date)
 )
 -- Câu lệnh SELECT này phải thực hiện đồng thời với câu lệnh trên.
 SELECT
-    staff, 
+    staff,
     sales
-FROM 
+FROM
     cte_sales_amounts
 WHERE
     year = 2018;
