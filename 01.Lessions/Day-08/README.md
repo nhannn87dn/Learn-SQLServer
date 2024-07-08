@@ -289,6 +289,92 @@ END CATCH
 
 ```
 
+### 💥 SET XACT_ABORT ON
+
+Khi `SET XACT_ABORT ON` được thiết lập, nếu một lỗi xảy ra trong một giao dịch, nó sẽ tự động kết thúc giao dịch đó và rollback (hoàn tác). Tất cả các thay đổi đã được thực hiện trong giao dịch. Điều này đảm bảo tính toàn vẹn dữ liệu và giúp tránh tình trạng dữ liệu không nhất quán.
+
+---
+
+### 💥 `@@TRANCOUNT` trong SQL Server
+
+`@@TRANCOUNT` là một hàm hệ thống trong SQL Server trả về số lượng giao dịch đang hoạt động trong phiên hiện tại. Nó giúp bạn kiểm tra mức độ lồng nhau của các giao dịch và xác định xem có giao dịch nào đang mở hay không.
+
+#### Các tình huống sử dụng `@@TRANCOUNT`
+
+1. **Kiểm tra trạng thái giao dịch**:
+   - Bạn có thể sử dụng `@@TRANCOUNT` để kiểm tra xem có giao dịch nào đang mở trước khi thực hiện các thao tác như COMMIT hoặc ROLLBACK.
+2. **Quản lý giao dịch lồng nhau**:
+   - Trong các giao dịch lồng nhau, `@@TRANCOUNT` giúp xác định mức độ lồng nhau của các giao dịch, từ đó quản lý chúng một cách hiệu quả.
+
+#### Ví dụ về `@@TRANCOUNT`
+
+**Ví dụ 1: Kiểm tra số lượng giao dịch đang hoạt động**
+
+```sql
+-- Kiểm tra số lượng giao dịch đang hoạt động trước khi bắt đầu một giao dịch mới
+SELECT @@TRANCOUNT AS TranCountBefore;
+
+-- Bắt đầu một giao dịch mới
+BEGIN TRANSACTION;
+
+-- Kiểm tra số lượng giao dịch đang hoạt động sau khi bắt đầu giao dịch
+SELECT @@TRANCOUNT AS TranCountAfterBegin;
+
+-- Hoàn thành giao dịch
+COMMIT;
+
+-- Kiểm tra số lượng giao dịch đang hoạt động sau khi hoàn thành giao dịch
+SELECT @@TRANCOUNT AS TranCountAfterCommit;
+```
+
+**Kết quả**:
+
+```
+TranCountBefore  |  TranCountAfterBegin  |  TranCountAfterCommit
+-----------------------------------------------------------------
+        0        |            1          |           0
+```
+
+**Ví dụ 2: Giao dịch lồng nhau**
+
+```sql
+-- Kiểm tra số lượng giao dịch đang hoạt động ban đầu
+SELECT @@TRANCOUNT AS TranCountInitial;
+
+-- Bắt đầu giao dịch ngoài cùng
+BEGIN TRANSACTION;
+SELECT @@TRANCOUNT AS TranCountAfterOuterBegin;
+
+-- Bắt đầu giao dịch lồng nhau
+BEGIN TRANSACTION;
+SELECT @@TRANCOUNT AS TranCountAfterNestedBegin;
+
+-- Hoàn thành giao dịch lồng nhau
+COMMIT;
+SELECT @@TRANCOUNT AS TranCountAfterNestedCommit;
+
+-- Hoàn thành giao dịch ngoài cùng
+COMMIT;
+SELECT @@TRANCOUNT AS TranCountAfterOuterCommit;
+```
+
+**Kết quả**:
+
+```
+TranCountInitial  |  TranCountAfterOuterBegin  |  TranCountAfterNestedBegin  |  TranCountAfterNestedCommit  |  TranCountAfterOuterCommit
+--------------------------------------------------------------------------------------------------------------------------------------
+        0         |             1              |              2              |              1               |              0
+```
+
+#### Ghi chú
+
+- **Giao dịch lồng nhau**: Khi bắt đầu giao dịch bên trong một giao dịch hiện tại, giá trị của `@@TRANCOUNT` sẽ tăng lên. Tuy nhiên, chỉ khi giao dịch ngoài cùng được commit hoặc rollback, tất cả các thay đổi mới được áp dụng hoặc hủy bỏ.
+- **COMMIT và ROLLBACK**: Khi gọi COMMIT, `@@TRANCOUNT` giảm đi 1. Khi gọi ROLLBACK, `@@TRANCOUNT` giảm xuống 0, nghĩa là tất cả các giao dịch mở hiện tại đều bị hủy bỏ.
+
+#### Kết luận
+
+`@@TRANCOUNT` là công cụ hữu ích để quản lý các giao dịch trong SQL Server, đặc biệt khi làm việc với các giao dịch lồng nhau hoặc khi cần kiểm tra trạng thái của các giao dịch hiện tại. Sử dụng `@@TRANCOUNT` giúp bạn kiểm soát tốt hơn và tránh các lỗi không mong muốn liên quan đến giao dịch.
+
 ---
 
 ### 💥 Các chế độ thực hiện transaction như sau
