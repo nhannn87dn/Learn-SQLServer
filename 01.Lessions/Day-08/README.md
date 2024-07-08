@@ -1,5 +1,4 @@
-# Day 08 
-
+# Day 08
 
 ## 💛 Session 14 - Transactions
 
@@ -21,35 +20,14 @@ Transaction được xác định bằng ba tính chất ACID:
 
 4. Durability (Bền vững): Một khi một transaction đã được hoàn thành thành công, các thay đổi dữ liệu phải được lưu trữ vĩnh viễn và không bị mất trong trường hợp xảy ra sự cố hệ thống.
 
-
 Các ứng dụng của transaction:
 
 - Transaction được sử dụng để đảm bảo tính toàn vẹn của dữ liệu trong các ứng dụng doanh nghiệp.
 - Transaction có thể được sử dụng để thực hiện các thao tác như: chuyển tiền, thanh toán hóa đơn, đặt hàng, ...
 
-
-Trong SQL Server, có các chế độ thực hiện transaction như sau:
-
-1. **Autocommit Transactions**: 
-
-Mặc định là chế độ này.
-
-Khi ở chế độ `Autocommit Transactions`, mỗi lệnh DML (Data Manipulation Language) như `INSERT`, `UPDATE`, `DELETE` tự động bắt đầu một transaction ngầm định. 
-
-Nếu lệnh DML hoàn thành thành công, SQL Server sẽ tự động COMMIT transaction. Nếu có lỗi xảy ra, SQL Server sẽ tự động ROLLBACK transaction.
-
-Lưu ý rằng các lệnh điều khiển transaction chỉ được sử dụng với các lệnh thao tác dữ liệu DML như `INSERT`, `UPDATE` và `DELETE`. Chúng không thể được sử dụng trong lệnh `CREATE TABLE` hoặc `DROP TABLE` vì các hoạt động này được tự động được commit trong cơ sở dữ liệu.
-
-
-2. **Explicit Transactions**: Mỗi transaction explicit (tường minh) bắt đầu với câu lệnh `BEGIN TRANSACTION` và kết thúc bằng `ROLLBACK` hoặc `COMMIT` transaction.
-
-3. **Implicit Transactions**: Một transaction mới được bắt đầu một cách ngầm định khi transaction trước đó hoàn thành, nhưng mỗi transaction được hoàn thành một cách rõ ràng với một câu lệnh `COMMIT` hoặc `ROLLBACK`.
-
-4. **Batch-scoped Transactions**: Chỉ áp dụng cho các tập kết quả hoạt động đa dạng (MARS), một transaction SQL rõ ràng hoặc ngầm định bắt đầu dưới một phiên MARS trở thành một transaction phạm vi batch.
-
 ---
 
-### 💥  Các lệnh quản lý transaction
+### 💥 Các lệnh quản lý transaction
 
 - **BEGIN TRANSACTION** : Dùng để bắt đầu một transaction.
 
@@ -147,7 +125,6 @@ Kết quả của một tập hợp các câu lệnh truy vấn trên:
 - Nếu 1 trong 3 câu lệnh THẤT BẠI ==> Tất cả sẽ đều THẤT BẠI, trả lại trạng thái ban đầu.
 - Nếu cả 3 THÀNH CÔNG ==> TRANSACTION thành công, dữ liệu được cập nhật.
 
-
 Bạn có thể TEST trường hợp thất bại với câu lệnh INSERT bị lỗi
 
 ```sql
@@ -183,7 +160,6 @@ select * from invoice_items
 ```
 
 Bạn có thể kiểm tra dữ liệu, Chỉ cần 1 trong 3 câu lệnh bị lỗi thì toàn bộ transaction sẽ bị hủy.
-
 
 Ví dụ 2:
 
@@ -303,7 +279,7 @@ BEGIN TRY
 END TRY
 BEGIN CATCH
     -- Xử lý lỗi
-    SELECT 
+    SELECT
         ERROR_NUMBER() AS ErrorNumber,
         ERROR_MESSAGE() AS ErrorMessage;
 
@@ -315,6 +291,208 @@ END CATCH
 
 ---
 
+### 💥 Các chế độ thực hiện transaction như sau
+
+1. **Autocommit Transactions**:
+
+Mặc định là chế độ này.
+
+Khi ở chế độ `Autocommit Transactions`, mỗi lệnh DML (Data Manipulation Language) như `INSERT`, `UPDATE`, `DELETE` tự động bắt đầu một transaction ngầm định. Ở chế độ này cấu hình là: `SET IMPLICIT_TRANSACTIONS OFF`
+
+Nếu lệnh DML hoàn thành thành công, SQL Server sẽ tự động COMMIT transaction. Nếu có lỗi xảy ra, SQL Server sẽ tự động ROLLBACK transaction.
+
+Lưu ý rằng các lệnh điều khiển transaction chỉ được sử dụng với các lệnh thao tác dữ liệu DML như `INSERT`, `UPDATE` và `DELETE`. Chúng không thể được sử dụng trong lệnh `CREATE TABLE` hoặc `DROP TABLE` vì các hoạt động này được tự động được commit trong cơ sở dữ liệu.
+
+2. **Explicit Transactions**: Mỗi transaction explicit (tường minh) bắt đầu với câu lệnh `BEGIN TRANSACTION` và kết thúc bằng `ROLLBACK` hoặc `COMMIT` transaction. Trong một explicit transaction, bạn có toàn quyền kiểm soát thời điểm bắt đầu và kết thúc giao dịch.
+
+3. **Implicit Transactions**: Một transaction tự động bắt đầu mà không cần lệnh `BEGIN TRANSACTION`, nhưng bạn vẫn cần kết thúc chúng bằng lệnh `COMMIT` hoặc `ROLLBACK`. Chế độ này được kích hoạt bằng cách sử dụng SET `IMPLICIT_TRANSACTIONS ON`. Mỗi lệnh SQL đầu tiên sau khi lệnh trước đó được kết thúc sẽ tự động bắt đầu một giao dịch mới.
+
+4. **Batch-scoped Transactions**: Chỉ áp dụng cho các tập kết quả hoạt động đa dạng (MARS), một transaction SQL rõ ràng hoặc ngầm định bắt đầu dưới một phiên MARS trở thành một transaction phạm vi batch.
+
+---
+
+### 💥 Các chế độ thực hiện transaction như sau
+
+**Isolation levels** trong SQL Server xác định mức độ cách ly giữa các giao dịch đang thực thi. Mỗi isolation level xác định cách một giao dịch có thể nhìn thấy các thay đổi do các giao dịch khác thực hiện. Dưới đây là các isolation levels trong SQL Server:
+
+#### 1. Read Uncommitted
+
+- **Mô tả**: Giao dịch có thể đọc các thay đổi chưa được commit từ các giao dịch khác, dẫn đến hiện tượng "dirty read".
+- **Ưu điểm**: Nhanh nhất, không khóa các tài nguyên.
+- **Nhược điểm**: Có thể dẫn đến dữ liệu không nhất quán và lỗi.
+
+```sql
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+```
+
+Ví dụ:
+
+Giao dịch 1: Chuyển 50 USD từ tài khoản A sang tài khoản B
+Giao dịch 2: Đọc số dư của tài khoản A và B
+
+```sql
+-- Giao dịch 1
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance - 50 WHERE name = 'A';
+-- Chưa commit
+
+-- Giao dịch 2
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+SELECT balance FROM dbo.bank WHERE name = 'A'; -- Có thể đọc số dư đã bị trừ 50 USD mặc dù Giao dịch 1 chưa commit
+
+```
+
+Giao dịch có thể đọc các thay đổi chưa được commit từ các giao dịch khác, dẫn đến hiện tượng "dirty read".
+
+#### 2. Read Committed
+
+- **Mô tả**: Giao dịch chỉ có thể đọc các thay đổi đã được commit từ các giao dịch khác. Đây là mức cách ly mặc định trong SQL Server.
+- **Ưu điểm**: Tránh được hiện tượng "dirty read".
+- **Nhược điểm**: Có thể dẫn đến hiện tượng "non-repeatable read" và "phantom read".
+
+```sql
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+```
+
+Ví dụ:
+
+Giao dịch 1: Chuyển 50 USD từ tài khoản A sang tài khoản B
+Giao dịch 2: Đọc số dư của tài khoản A và B
+
+```sql
+-- Giao dịch 1
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance - 50 WHERE name = 'A';
+-- Chưa commit
+
+-- Giao dịch 2
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+SELECT balance FROM dbo.bank WHERE name = 'A'; -- Không thể đọc số dư bị trừ 50 USD cho đến khi Giao dịch 1 commit
+
+```
+
+Giao dịch chỉ có thể đọc các thay đổi đã được commit từ các giao dịch khác. Đây là mức cách ly mặc định trong SQL Server.
+
+#### 3. Repeatable Read
+
+- **Mô tả**: Đảm bảo rằng nếu một giao dịch đọc dữ liệu một lần, nó sẽ thấy cùng dữ liệu đó nếu nó đọc lại trong cùng một giao dịch (ngăn chặn "non-repeatable read").
+- **Ưu điểm**: Tránh được hiện tượng "dirty read" và "non-repeatable read".
+- **Nhược điểm**: Có thể dẫn đến hiện tượng "phantom read".
+
+```sql
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+```
+
+Ví dụ:
+
+Giao dịch 1: Chuyển 50 USD từ tài khoản A sang tài khoản B
+Giao dịch 2: Đọc số dư của tài khoản A và B hai lần
+
+```sql
+-- Giao dịch 2
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+BEGIN TRANSACTION;
+SELECT balance FROM dbo.bank WHERE name = 'A'; -- Lần đọc đầu tiên
+
+-- Giao dịch 1
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance - 50 WHERE name = 'A';
+COMMIT;
+
+-- Giao dịch 2
+SELECT balance FROM dbo.bank WHERE name = 'A'; -- Lần đọc thứ hai, vẫn thấy số dư như lần đọc đầu tiên
+COMMIT;
+
+```
+
+Đảm bảo rằng nếu một giao dịch đọc dữ liệu một lần, nó sẽ thấy cùng dữ liệu đó nếu nó đọc lại trong cùng một giao dịch
+
+#### 4. Serializable
+
+- **Mô tả**: Giao dịch đảm bảo tính tuần tự, nghĩa là các giao dịch được thực hiện một cách tuần tự, một sau một (ngăn chặn cả "non-repeatable read" và "phantom read").
+- **Ưu điểm**: Cung cấp mức độ cách ly cao nhất.
+- **Nhược điểm**: Hiệu suất chậm nhất do các khóa lâu dài.
+
+```sql
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+```
+
+Ví dụ:
+
+Giao dịch 1: Chuyển 50 USD từ tài khoản A sang tài khoản B
+Giao dịch 2: Đọc và cập nhật số dư của tài khoản A
+
+```sql
+-- Giao dịch 2
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN TRANSACTION;
+SELECT balance FROM dbo.bank WHERE name = 'A'; -- Đọc số dư
+
+-- Giao dịch 1
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance - 50 WHERE name = 'A'; -- Sẽ bị khóa và chờ cho đến khi Giao dịch 2 hoàn thành
+COMMIT;
+
+-- Giao dịch 2
+UPDATE dbo.bank SET balance = balance + 10 WHERE name = 'A'; -- Cập nhật số dư
+COMMIT;
+
+```
+
+Giao dịch đảm bảo tính tuần tự, nghĩa là các giao dịch được thực hiện một cách tuần tự, một sau một.
+
+#### 5. Snapshot
+
+- **Mô tả**: Giao dịch đọc các bản sao nhất quán của dữ liệu tại thời điểm giao dịch bắt đầu. Giao dịch không bị khóa bởi các thay đổi chưa commit từ các giao dịch khác.
+- **Ưu điểm**: Tránh được cả "dirty read", "non-repeatable read", và "phantom read".
+- **Nhược điểm**: Sử dụng nhiều tài nguyên để lưu trữ các bản sao dữ liệu.
+
+```sql
+SET TRANSACTION ISOLATION LEVEL SNAPSHOT;
+```
+
+Ví dụ:
+
+Giao dịch 1: Chuyển 50 USD từ tài khoản A sang tài khoản B
+Giao dịch 2: Đọc số dư của tài khoản A và B trong cùng một thời điểm
+
+```sql
+-- Giao dịch 2
+SET TRANSACTION ISOLATION LEVEL SNAPSHOT;
+BEGIN TRANSACTION;
+SELECT balance FROM dbo.bank WHERE name = 'A'; -- Đọc số dư tại thời điểm bắt đầu giao dịch
+
+-- Giao dịch 1
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance - 50 WHERE name = 'A';
+COMMIT;
+
+-- Giao dịch 2
+SELECT balance FROM dbo.bank WHERE name = 'A'; -- Vẫn thấy số dư như tại thời điểm bắt đầu giao dịch
+COMMIT;
+
+```
+
+Giao dịch đọc các bản sao nhất quán của dữ liệu tại thời điểm giao dịch bắt đầu
+
+#### Tóm tắt các hiện tượng có thể xảy ra
+
+- **Dirty Read**: Đọc dữ liệu chưa được commit từ một giao dịch khác.
+- **Non-repeatable Read**: Dữ liệu thay đổi giữa các lần đọc trong cùng một giao dịch do các giao dịch khác commit thay đổi.
+- **Phantom Read**: Kết quả của một truy vấn thay đổi vì một giao dịch khác đã thêm hoặc xóa hàng.
+
+#### Bảng so sánh
+
+| Isolation Level  | Dirty Read | Non-repeatable Read | Phantom Read |
+| ---------------- | ---------- | ------------------- | ------------ |
+| Read Uncommitted | Có         | Có                  | Có           |
+| Read Committed   | Không      | Có                  | Có           |
+| Repeatable Read  | Không      | Không               | Có           |
+| Serializable     | Không      | Không               | Không        |
+| Snapshot         | Không      | Không               | Không        |
+
+Việc chọn isolation level phù hợp phụ thuộc vào yêu cầu về hiệu suất và tính nhất quán dữ liệu của ứng dụng.
+
 ### 💥 Locks
 
 Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm soát truy cập và sửa đổi dữ liệu trong quá trình thực hiện các transaction. Khi một transaction yêu cầu truy cập vào dữ liệu, SQL Server áp dụng các locks trên dữ liệu tương ứng để đảm bảo tính nhất quán và độc lập của dữ liệu trong môi trường đa người dùng.
@@ -322,28 +500,123 @@ Trong SQL Server, locks (khóa) là cơ chế được sử dụng để kiểm 
 Có nhiều loại lock khác nhau trong SQL Server, bao gồm:
 
 1. Shared Lock (Shared Read Lock):
+
    - Được sử dụng khi transaction muốn đọc (truy vấn) dữ liệu.
    - Nhiều shared locks có thể được áp dụng trên cùng một dữ liệu.
    - Shared locks không ngăn được các shared locks khác trên cùng một dữ liệu.
    - Shared locks không cho phép exclusive lock được áp dụng lên dữ liệu.
 
+```sql
+-- Giao dịch 1
+BEGIN TRANSACTION;
+SELECT * FROM dbo.bank WHERE name = 'A';
+-- Shared lock được đặt trên bảng `bank`
+
+-- Giao dịch 2
+BEGIN TRANSACTION;
+SELECT * FROM dbo.bank WHERE name = 'A';
+-- Cũng đặt shared lock trên bảng `bank` và không gây xung đột với Giao dịch 1
+
+COMMIT; -- Kết thúc giao dịch 1
+COMMIT; -- Kết thúc giao dịch 2
+
+```
+
 2. Exclusive Lock (Write Lock):
+
    - Được sử dụng khi transaction muốn thay đổi (ghi) dữ liệu.
    - Không thể có bất kỳ shared locks hoặc exclusive locks khác trên cùng một dữ liệu.
    - Exclusive locks ngăn cả shared locks và exclusive locks khác.
 
+```sql
+-- Giao dịch 1
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance - 50 WHERE name = 'A';
+-- Exclusive lock được đặt trên bảng `bank`
+
+-- Giao dịch 2
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance + 50 WHERE name = 'A';
+-- Giao dịch 2 phải chờ cho đến khi Giao dịch 1 kết thúc vì exclusive lock
+
+COMMIT; -- Kết thúc giao dịch 1
+-- Giao dịch 2 bây giờ có thể tiếp tục và đặt exclusive lock
+
+COMMIT; -- Kết thúc giao dịch 2
+
+```
+
 3. Update Lock:
+
    - Được sử dụng trong các trường hợp cần đảm bảo rằng dữ liệu không được đọc hoặc chỉnh sửa trong quá trình thực hiện transaction.
    - Update locks được nâng cấp thành exclusive lock khi transaction cần thực hiện các thay đổi.
 
+```sql
+-- Giao dịch 1
+BEGIN TRANSACTION;
+SELECT * FROM dbo.bank WITH (UPDLOCK) WHERE name = 'A';
+-- Update lock được đặt trên bảng `bank`
+
+-- Giao dịch 2
+BEGIN TRANSACTION;
+SELECT * FROM dbo.bank WITH (UPDLOCK) WHERE name = 'A';
+-- Giao dịch 2 phải chờ cho đến khi Giao dịch 1 hoàn thành vì update lock
+
+COMMIT; -- Kết thúc giao dịch 1
+-- Giao dịch 2 bây giờ có thể tiếp tục và đặt update lock
+
+COMMIT; -- Kết thúc giao dịch 2
+
+```
+
 4. Intent Lock:
+
    - Là các locks nhỏ hơn được áp dụng trên các cấu trúc dữ liệu phức tạp hơn như bảng, trang, phân vùng.
    - Intent locks đại diện cho ý định của transaction để áp dụng shared locks hoặc exclusive locks trên các đối tượng con của cấu trúc dữ liệu.
+
+```sql
+-- Giao dịch 1
+BEGIN TRANSACTION;
+SELECT * FROM dbo.bank WHERE name = 'A';
+-- Intent shared lock (IS) được đặt trên bảng `bank`
+
+-- Giao dịch 2
+BEGIN TRANSACTION;
+UPDATE dbo.bank SET balance = balance - 50 WHERE name = 'A';
+-- Intent exclusive lock (IX) được đặt trên bảng `bank`
+
+COMMIT; -- Kết thúc giao dịch 1
+-- Giao dịch 2 có thể tiếp tục và đặt exclusive lock trên hàng cụ thể
+
+COMMIT; -- Kết thúc giao dịch 2
+
+```
 
 5. Schema Lock:
    - Được sử dụng khi transaction thay đổi cấu trúc của cơ sở dữ liệu như tạo, sửa đổi hoặc xóa bảng, quyền truy cập, thủ tục lưu trữ, v.v.
 
 SQL Server cũng hỗ trợ các mức độ khóa khác nhau như row-level locks (khóa mức hàng), page-level locks (khóa mức trang) và table-level locks (khóa mức bảng) để tối ưu hiệu suất và sử dụng tài nguyên. Hệ thống quản lý locks trong SQL Server đảm bảo tính nhất quán và độc lập của dữ liệu trong quá trình thực hiện các transaction đồng thời.
+
+```sql
+-- Giao dịch 1
+BEGIN TRANSACTION;
+SELECT * FROM dbo.bank;
+-- Schema stability lock (Sch-S) được đặt trên bảng `bank`
+
+-- Giao dịch 2
+BEGIN TRANSACTION;
+ALTER TABLE dbo.bank ADD COLUMN new_column INT;
+-- Schema modification lock (Sch-M) phải chờ cho đến khi Sch-S lock được giải phóng
+
+COMMIT; -- Kết thúc giao dịch 1
+-- Giao dịch 2 có thể tiếp tục và đặt schema modification lock
+
+COMMIT; -- Kết thúc giao dịch 2
+```
+
+---
+
+### 💥 Xử lý Locks
 
 Ví dụ giả lập tình trạng Lock trong thực tế có thể xảy ra làm TREO CPU
 
@@ -359,7 +632,6 @@ Ví dụ giả lập tình trạng Lock trong thực tế có thể xảy ra là
 Lí do là bên cửa sổ 1. Transaction đã chạy rồi, nhưng không có lệnh để đóng transaction lại. ==> Thể hiện transaction chưa thực hiện xong.
 
 ==> Đó là hiện tượng LOCKED
-
 
 Làm sao để xử lý Lock để Server không bị ĐƠ (Quá tải CPU)
 
@@ -384,7 +656,6 @@ Bạn có thể click phải lên các dòng và chọn `Detail` để xem chi t
 
 ---
 
-
 ## 💛 Session 12 - Triggers
 
 ### 💥 Trigger là gì?
@@ -393,9 +664,7 @@ Bạn có thể click phải lên các dòng và chọn `Detail` để xem chi t
 
 - Không giống như stored procedure, trigger không được gọi bởi một ứng dụng hoặc một người dùng. Trigger được kích hoạt bởi một sự kiện như INSERT, UPDATE, DELETE và không thể được gọi như một stored procedure
 
-
-Xem Doc: https://learn.microsoft.com/en-us/sql/t-sql/statements/create-trigger-transact-sql?view=sql-server-ver16
----
+## Xem Doc: https://learn.microsoft.com/en-us/sql/t-sql/statements/create-trigger-transact-sql?view=sql-server-ver16
 
 ### 💥 DML Trigger
 
@@ -451,7 +720,7 @@ BEGIN
     END TRY
     BEGIN CATCH
         -- Nếu có lỗi xảy ra, hiển thị thông tin lỗi
-        SELECT 
+        SELECT
             ERROR_NUMBER() AS ErrorNumber,
             ERROR_MESSAGE() AS ErrorMessage;
     END CATCH
@@ -461,7 +730,6 @@ END;
 ---
 
 Ví dụ 2: Tạo một trigger AFTER để ngăn chặn việc cập nhật / xóa đơn hàng khi đơn hàng (orders) có trạng thái order_status = 4 (COMPLETED)
-
 
 ```sql
 CREATE TRIGGER trg_Orders_Prevent_UpdateDelete
@@ -485,7 +753,7 @@ END;
 
 Trong SQL Server, mỗi lệnh DML (Data Manipulation Language) như `INSERT`, `UPDATE`, `DELETE` tự động bắt đầu một transaction ngầm định, nên không cần phải gọi `BEGIN TRANSACTION` trước khi gọi ROLLBACK trong trigger.
 
- Lệnh `ROLLBACK` sẽ hủy bỏ tất cả các thay đổi được thực hiện trong giao dịch hiện tại, bao gồm cả thay đổi được thực hiện bởi lệnh UPDATE hoặc DELETE đã kích hoạt trigger.
+Lệnh `ROLLBACK` sẽ hủy bỏ tất cả các thay đổi được thực hiện trong giao dịch hiện tại, bao gồm cả thay đổi được thực hiện bởi lệnh UPDATE hoặc DELETE đã kích hoạt trigger.
 
 ---
 
@@ -533,7 +801,6 @@ BEGIN
 END
 ```
 
-
 Ví dụ: Tạo một trigger INSTEAD OF để ngăn chặn việc thêm dữ liệu vào bảng customers
 
 ```sql
@@ -550,7 +817,7 @@ END
 
 ### 💥 DDL Trigger
 
-DDL Trigger được kích hoạt bởi sự kiện ở cấp độ Server hoặc Database. 
+DDL Trigger được kích hoạt bởi sự kiện ở cấp độ Server hoặc Database.
 
 Các sự kiện này được tạo ra bởi câu lệnh Transact-SQL thường bắt đầu bằng một trong các từ khóa sau: CREATE, ALTER, DROP, GRANT, DENY, REVOKE hoặc UPDATE STATISTICS.
 
@@ -561,7 +828,6 @@ Các trigger DDL rất hữu ích trong các trường hợp sau:
 - Ghi lại các thay đổi trong cấu trúc CSDL.
 - Ngăn chặn một số thay đổi cụ thể trong cấu trúc CSDL.
 - Phản hồi một thay đổi trong cấu trúc CSDL.
-
 
 Lưu ý: Triggler loại này lưu ở `Databse Name --> Programmability --> Database Triggers`
 
@@ -575,7 +841,6 @@ FOR {event_type | event_group }
 AS {sql_statement}
 
 ```
-
 
 Ví dụ: Tạo một trigger để ngăn chặn việc xóa bảng customers
 
@@ -622,25 +887,24 @@ END
 
 ---
 
-
 ### 💥 Logon Trigger
 
 Xem Doc: https://learn.microsoft.com/en-us/sql/relational-databases/triggers/logon-triggers?view=sql-server-ver16
-
 
 ### 💥 Disable Trigger
 
 Vô hiệu hóa hoạt động của một Trigger
 
 ```sql
-DISABLE TRIGGER [schema_name.][trigger_name] 
+DISABLE TRIGGER [schema_name.][trigger_name]
 ON [object_name | DATABASE | ALL SERVER]
 
 ```
+
 Ví dụ:
 
 ```sql
-DISABLE TRIGGER dbo.trg_customers_LogAlterTable 
+DISABLE TRIGGER dbo.trg_customers_LogAlterTable
 ON dbo.customers;
 ```
 
@@ -649,8 +913,6 @@ Vô hiệu hóa tất cả trigger trên một table
 ```sql
 DISABLE TRIGGER ALL ON table_name;
 ```
-
-
 
 Vô hiệu hóa tất cả trigger trên một Databse
 
@@ -665,7 +927,7 @@ DISABLE TRIGGER ALL ON DATABASE;
 Kích hoạt lại Trigger
 
 ```sql
-ENABLE TRIGGER [schema_name.][trigger_name] 
+ENABLE TRIGGER [schema_name.][trigger_name]
 ON [object_name | DATABASE | ALL SERVER]
 ```
 
@@ -675,14 +937,13 @@ ON [object_name | DATABASE | ALL SERVER]
 
 Liệt kê danh sách tất cả Triggers
 
-
 ```sql
-SELECT  
+SELECT
     name,
     is_instead_of_trigger
-FROM 
-    sys.triggers  
-WHERE 
+FROM
+    sys.triggers
+WHERE
     type = 'TR';
 ```
 
@@ -693,19 +954,19 @@ WHERE
 Cú pháp:
 
 ```sql
-DROP TRIGGER [ IF EXISTS ] trigger_name [ ,...n ]   
+DROP TRIGGER [ IF EXISTS ] trigger_name [ ,...n ]
 ON { DATABASE | ALL SERVER };
 ```
 
 ### 💥 Xem chi tiết Triggers
 
 ```sql
-SELECT 
-    definition   
-FROM 
-    sys.sql_modules  
-WHERE 
-    object_id = OBJECT_ID('dbo.trg_customers_LogAlterTable'); 
+SELECT
+    definition
+FROM
+    sys.sql_modules
+WHERE
+    object_id = OBJECT_ID('dbo.trg_customers_LogAlterTable');
 --- Hoăc
 EXEC sp_helptext 'dbo.trg_customers_LogAlterTable' ;
 
