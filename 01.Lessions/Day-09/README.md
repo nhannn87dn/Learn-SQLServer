@@ -1,6 +1,5 @@
 # Day 9
 
-
 ## 💛 Session 10- View, Stored Procedures and Querying Metadata
 
 ### 💥 View
@@ -18,8 +17,6 @@ Việc sử dụng view trong SQL Server có nhiều lợi ích. Dưới đây l
 3. Đơn giản hóa quản lý dữ liệu: Khi cấu trúc CSDL thay đổi, bạn có thể thay đổi logic của view mà không cần thay đổi các ứng dụng sử dụng view đó. Điều này giảm thiểu sự phụ thuộc giữa ứng dụng và cấu trúc CSDL và đơn giản hóa quá trình quản lý và bảo trì dữ liệu.
 
 Xem Doc: https://learn.microsoft.com/en-us/sql/relational-databases/views/views?view=sql-server-ver16
-
-
 
 Ví dụ: Câu lệnh bên dưới trả về doanh số bán ra của mỗi sản phẩm theo ngày:
 
@@ -46,7 +43,7 @@ SQL Server cung cấp cho bạn một cách khác HAY HO hơn là `VIEW`, và d�
 ![view](img/SQL-Server-Views.png)
 
 - `View` là kết quả của một câu lênh truy vấn phức tạp lấy dữ liệu từ nhiều table.
-- Kết quả đó: được `View` giữ lại để sử dụng cho lần sau. 
+- Kết quả đó: được `View` giữ lại để sử dụng cho lần sau.
 - Bạn có thể hiểu khi đó `View` như là một table, bạn có thể làm mọi thứ trên nó INSERT, UPDATE, DELETE từ View, thậm chí là đánh Index các cột.
 
 ---
@@ -60,6 +57,7 @@ CREATE VIEW [OR ALTER] schema_name.view_name [(column_list)]
 AS
     select_statement;
 ```
+
 Trong đó:
 
 - schema_name: là tên schema
@@ -89,15 +87,16 @@ INNER JOIN dbo.products AS p
     ON p.product_id = i.product_id;
 --- ==> Kết quả nó tạo ra một table ảo, chứa kết quả của câu lệnh truy vấn SELECT
 ```
+
 Sau đó bạn tái sử dụng kết quả truy vấn bằng cách:
 
 ```sql
 -- SELECT mọi thứ từ một table ảo
-SELECT * FROM dbo.v_daily_sales 
+SELECT * FROM dbo.v_daily_sales
 -- SELECT và sắp xếp
-SELECT 
-    * 
-FROM 
+SELECT
+    *
+FROM
     dbo.v_daily_sales
 ORDER BY
     y, m, d, product_name;
@@ -113,7 +112,7 @@ Xem thêm: https://www.sqlservertutorial.net/sql-server-views/sql-server-create-
 
 - Tên VIEW không được đặt trùng nhau, không trùng với tên table thật.
 - Tên cột trong VIEW phải là duy nhất và không được trùng với tên cột trong các view hoặc bảng khác
-- VIEW không thể tạo từ  temporary tables
+- VIEW không thể tạo từ temporary tables
 - VIEW không thể có full-text index
 - VIEW không thể chưa giá trị định nghĩa DEFAULT
 - VIEW không thể dùng với ORDER BY trừ khi bạn dùng kèm với mệnh đề TOP
@@ -127,7 +126,7 @@ Xem thêm: https://www.sqlservertutorial.net/sql-server-views/sql-server-create-
 Sử dụng từ khóa `ALTER VIEW`
 
 ```sql
-ALTER VIEW dbo.v_daily_sales 
+ALTER VIEW dbo.v_daily_sales
 AS
 SELECT
     year(order_date) AS y,
@@ -159,15 +158,14 @@ SELECT * FROM sys.views
 
 Bạn có thể xóa bằng giao diện đồ họa trong SSMS. Hoặc dùng lệnh
 
-
 ```sql
 DROP VIEW IF EXISTS dbo.v_daily_sales
 -- Xóa nhiều VIEW
-DROP VIEW IF EXISTS 
+DROP VIEW IF EXISTS
     dbo.v_daily_sales, dbo.v_product_info
 ```
 
-#### 🔹 Đổi tên VIEW 
+#### 🔹 Đổi tên VIEW
 
 Bạn có thể đổi tên bằng giao diện đồ họa trong SSMS. Hoặc dùng lệnh:
 
@@ -177,22 +175,20 @@ DROP VIEW [dbo].[v_daily_sales];
 GO
 --tạo lại View với tên mới
 CREATE VIEW [dbo].[daily_sales]
-AS 
+AS
 <select_statement>
 GO
 --Hoặc
-EXEC sp_rename 
+EXEC sp_rename
     @objname = 'v_daily_sales',
     @newname = 'daily_sales';
 ```
-
 
 #### 🔹 Các tùy chọn khi tạo VIEW
 
 **WITH SCHEMABINDING**
 
 Với việc sử dụng WITH SCHEMABINDING, view sẽ được ràng buộc với các đối tượng khác trong cơ sở dữ liệu. Nếu bạn thực hiện thay đổi cấu trúc của các đối tượng được ràng buộc (như thay đổi tên cột, tên bảng, ...), bạn sẽ không thể thực hiện được.
-
 
 ```sql
 CREATE VIEW dbo.v_daily_sales
@@ -218,7 +214,6 @@ INNER JOIN dbo.products AS p
 
 Với việc sử dụng WITH ENCRYPTION, mã nguồn của đối tượng sẽ được mã hóa và không thể đọc hoặc truy cập trực tiếp thông qua các công cụ SQL Server Management Studio (SSMS) hoặc các công cụ khác. Khi một đối tượng được mã hóa, SQL Server sẽ chỉ thực thi đối tượng đó mà không cung cấp truy cập vào mã nguồn.
 
-
 ```sql
 CREATE VIEW dbo.v_daily_sales
 WITH ENCRYPTION -- Mã hóa, ko cho xem cấu trúc của VIEW
@@ -242,7 +237,6 @@ INNER JOIN dbo.products AS p
 **WITH CHECK OPTION**
 
 WITH CHECK OPTION là một cấu hình được sử dụng trong câu lệnh CREATE VIEW để đảm bảo rằng các dòng dự liệu được chọn trong View cũng phải thỏa mãn điều kiện của View. Nếu bạn thêm hoặc cập nhật dữ liệu thông qua View, nó chỉ cho phép các thay đổi đáp ứng điều kiện của View.
-
 
 ```sql
 CREATE VIEW dbo.v_daily_sales
@@ -300,12 +294,11 @@ INSERT dbo.v_daily_sales (
 )
 ```
 
-
 Giã sử câu lệnh UPDATE và INSERT trên chạy được thì nó làm cho cột `discount` trong VIEW có chứa những giá trị < `0.05`. Khi đó mệnh đề WHERE của VIEW sẽ không chạy được vì không thõa điệu kiện. Vì `0.04` không thể > `0.05`.
 
 Chính vì thế, mà VIEW sẽ ngăn không cho câu lệnh UPDATE, INSERT trên thực thi, để đảm bảo VIEW luôn luôn có tính khả dụng để CHẠY.
 
-#### 🔹 Xem cấu trúc của VIEW 
+#### 🔹 Xem cấu trúc của VIEW
 
 Bạn có thể đổi tên bằng giao diện đồ họa trong SSMS. Hoặc dùng lệnh:
 
@@ -319,7 +312,7 @@ EXEC sp_helptext 'v_daily_sales';
 
 ### 💥 Stored Procedures
 
-Trong SQL Server, Stored Procedures (thủ tục lưu trữ) là một khối mã SQL có thể được lưu trữ trong cơ sở dữ liệu. Một Stored Procedure là một tập hợp các câu lệnh SQL `được đặt tên` và gán một cách lưu trữ trong hệ thống quản lý cơ sở dữ liệu.
+Trong SQL Server, Stored Procedures (thủ tục lưu trữ) là một tập hợp các câu lệnh TransactSQL được lưu trữ dưới dạng đối tượng trong CDSL. Khi bạn gọi `store procudure` lần đầu tiên, SQL server tạo ra một kế hoạch thực thi và lưu trữ nó trong bộ nhớ đệm gọi là `plan cache`. Trong lần thực thi tiếp theo, SQL server sử dụng lại kế hoạch này để thực thi mà không phải đi phân tích lại. Nên kết quả cho hiệu suất truy vấn nhanh.
 
 Stored Procedures được sử dụng để thực hiện các tác vụ hoặc thao tác dữ liệu phức tạp trong cơ sở dữ liệu. Chúng có thể chứa các câu lệnh SELECT, INSERT, UPDATE, DELETE, và các câu lệnh điều khiển như IF, WHILE, và các cấu trúc điều khiển khác. Một Stored Procedure có thể nhận đầu vào (tham số) và trả về giá trị đầu ra (kết quả).
 
@@ -334,7 +327,6 @@ Một số lợi ích của Stored Procedures trong SQL Server bao gồm:
 4. Quản lý dữ liệu: Stored Procedures cho phép bạn thực hiện các thao tác dữ liệu phức tạp, xử lý logic phức tạp và thực hiện các tác vụ như ghi log, kiểm tra dữ liệu, và xử lý lỗi. Chúng giúp đơn giản hóa quá trình quản lý và bảo trì dữ liệu.
 
 #### 🔹 Tạo STORE
-
 
 Cú pháp đầy đủ:
 
@@ -357,8 +349,6 @@ AS { [ BEGIN ] sql_statement [;] [ ...n ] [ END ] }
 
 Xem Doc: https://learn.microsoft.com/vi-vn/sql/relational-databases/stored-procedures/create-a-stored-procedure?view=sql-server-ver16
 
-
-
 Ví dụ: Lấy danh sách sản phẩm
 
 ```sql
@@ -367,17 +357,17 @@ CREATE PROCEDURE usp_ProductList -- đặt tên với prefix usp_
 AS
 BEGIN
     BEGIN TRY
-        SELECT 
-            product_name, 
+        SELECT
+            product_name,
             price
-        FROM 
+        FROM
             dbo.products
-        ORDER BY 
+        ORDER BY
             product_name;
     END TRY
     BEGIN CATCH
         -- Nếu có lỗi xảy ra, hiển thị thông tin lỗi
-        SELECT 
+        SELECT
             ERROR_NUMBER() AS ErrorNumber,
             ERROR_MESSAGE() AS ErrorMessage;
         --Ném lỗi
@@ -385,9 +375,8 @@ BEGIN
     END CATCH;
 END;
 ```
+
 Sau khi tạo xong bạn có thể thấy store được lưu ở `Programmability > Stored Procedures`
-
-
 
 #### 🔹 Sử dụng STORE
 
@@ -409,7 +398,7 @@ BEGIN
         SELECT
             product_name,
             price
-        FROM 
+        FROM
             dbo.products
         WHERE
             model_year >= @model_year
@@ -418,7 +407,7 @@ BEGIN
     END TRY
     BEGIN CATCH
         -- Nếu có lỗi xảy ra, hiển thị thông tin lỗi
-        SELECT 
+        SELECT
             ERROR_NUMBER() AS ErrorNumber,
             ERROR_MESSAGE() AS ErrorMessage;
         --Ném lỗi
@@ -464,14 +453,14 @@ Xem thêm: https://www.sqlservertutorial.net/sql-server-stored-procedures/sql-se
 ALTER PROCEDURE usp_ProductList -- đặt tên với prefix usp_
 AS
 BEGIN
-    SELECT 
+    SELECT
         product_id, --thêm mới
         product_name, --thêm mới
         price,
         discount
-    FROM 
+    FROM
         dbo.products
-    ORDER BY 
+    ORDER BY
         product_id;
 END;
 ```
@@ -484,7 +473,7 @@ DROP PROCEDURE usp_ProductList;
 DROP PROC usp_ProductList;
 ```
 
-#### 🔹  Các tùy chọn khi tạo stored procedure
+#### 🔹 Các tùy chọn khi tạo stored procedure
 
 **WITH ENCRYPTION**
 
@@ -580,13 +569,11 @@ Xem thêm: https://learn.microsoft.com/vi-vn/sql/relational-databases/stored-pro
 
 #### 🔹 Xem Cấu trúc của Stored procedure
 
-
 ```sql
-EXEC sp_helptext N'dbo.uspLogError';  
+EXEC sp_helptext N'dbo.uspLogError';
 --Hoặc
 SELECT OBJECT_DEFINITION (OBJECT_ID(N'dbo.uspLogError'));
 ```
-
 
 ---
 
@@ -625,6 +612,7 @@ SELECT *
 FROM sys.views
 WHERE name = 'Tên_View'
 ```
+
 4. Truy vấn thông tin về ràng buộc (constraints), chỉ mục (indexes) và khóa ngoại (foreign keys): Bạn có thể sử dụng các hệ thống bảng như sys.foreign_keys, sys.indexes, sys.key_constraints để truy vấn thông tin chi tiết về các ràng buộc, chỉ mục và khóa ngoại trong cơ sở dữ liệu.
 
 Truy vấn metadata cung cấp cho bạn một cái nhìn tổng quan về cấu trúc và thông tin liên quan đến cơ sở dữ liệu và đối tượng trong SQL Server. Điều này giúp bạn hiểu rõ hơn về cấu trúc dữ liệu và có khả năng xây dựng các truy vấn và tác vụ phức tạp dựa trên thông tin metadata.
@@ -662,12 +650,12 @@ BEGIN
 END
 ```
 
-Trong Ví dụ trên 2 tham số là mặc định. 
+Trong Ví dụ trên 2 tham số là mặc định.
+
 - Nếu không truyền thì nó lấy tất cả sản phẩm
 - Nếu chỉ truyền @model_year thì nó đi lọc dựa vào model_year
 - nếu chỉ truyền @category_id thì nó đi lọc dựa vào category_id
 - Nếu truyền cả 2 thì lọc theo cả 2
-
 
 ## 💛 Homeworks
 
