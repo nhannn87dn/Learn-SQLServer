@@ -210,6 +210,16 @@ INNER JOIN dbo.products AS p
     ON p.product_id = i.product_id;
 ```
 
+Sau khi tạo View như trên thì bạn không thể đổi tên cột `product_name`, `discount`.
+Bạn có thể đổi tên những cột khác ngoài những cột trên (Nếu chúng không có sự phụ thuộc nào ví dụ như constraints)
+
+```sql
+-- Đổi tên cột discount thành discounts ==> LỖI
+EXEC sp_rename 'products.discount', 'discount', 'COLUMN';
+-- Đổi tên cột model_year thành model_years ==> Cho phép đổi
+EXEC sp_rename 'products.model_year', 'model_years', 'COLUMN';
+```
+
 **WITH ENCRYPTION**
 
 Với việc sử dụng WITH ENCRYPTION, mã nguồn của đối tượng sẽ được mã hóa và không thể đọc hoặc truy cập trực tiếp thông qua các công cụ SQL Server Management Studio (SSMS) hoặc các công cụ khác. Khi một đối tượng được mã hóa, SQL Server sẽ chỉ thực thi đối tượng đó mà không cung cấp truy cập vào mã nguồn.
