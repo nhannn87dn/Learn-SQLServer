@@ -1,6 +1,5 @@
 # Day 10
 
-
 ## 💛 Session 16 - Enhancements in SQL Server 2019
 
 Xem link: https://learn.microsoft.com/en-us/sql/sql-server/what-s-new-in-sql-server-2019?view=sql-server-ver16
@@ -15,7 +14,7 @@ CREATE TABLE [dbo].[tbl_Color](
     [Color Name] [varchar](3) NULL
 ) ON [PRIMARY]
 GO
- 
+
 INSERT INTO [dbo].[tbl_Color]
            ([Color Name])
      VALUES
@@ -27,15 +26,11 @@ GO
 
 ==> Khi chạy lênh trên bạn sẽ SQL Server 2019 báo lỗi cánh báo độ dài dữ liệu vượt quá cấu trúc dữ liệu đã khai báo.
 
-
-
 ### 💥 Verbose Truncation Warnings
 
 Vulnerability Assessment (đánh giá lỗ hổng) là quá trình xác định, đánh giá và đo lường các lỗ hổng bảo mật trong hệ thống, mạng, ứng dụng hoặc công nghệ thông tin. Mục tiêu của Vulnerability Assessment là tìm ra các điểm yếu và lỗ hổng trong hệ thống và đưa ra các khuyến nghị về biện pháp bảo mật để giảm thiểu nguy cơ xâm nhập hoặc tấn công.
 
-
-Click phải lên `Database` của bạn, sau đó chọn `Tasks` --> `Chọn Vulnerability assessment` =>  `Scan for Vulnerabilities`...
-
+Click phải lên `Database` của bạn, sau đó chọn `Tasks` --> `Chọn Vulnerability assessment` => `Scan for Vulnerabilities`...
 
 ![](https://learn.microsoft.com/en-us/sql/relational-databases/security/media/sql-vulnerability-assessment/1-ssmsgetstarted.png?view=sql-server-ver16)
 
@@ -53,7 +48,6 @@ Big Data Clusters cho phép người dùng lưu trữ và truy vấn dữ liệu
 
 Big Data Clusters trong SQL Server cũng cung cấp tính năng Scale-Out, cho phép mở rộng ngang dữ liệu và công việc xử lý trên nhiều nút (nodes) trong một cụm (cluster). Điều này giúp tăng khả năng xử lý và hiệu suất khi làm việc với dữ liệu lớn.
 
-
 ### 💥 JSON Data
 
 JSON (JavaScript Object Notation) là một định dạng dữ liệu phổ biến được sử dụng để truyền và lưu trữ dữ liệu có cấu trúc. SQL Server hỗ trợ lưu trữ và xử lý dữ liệu JSON bằng cách cung cấp các tính năng và hàm liên quan.
@@ -70,7 +64,7 @@ Dưới đây là một số tính năng và hàm quan trọng liên quan đến
 
 4. FOR JSON Clause: SQL Server cung cấp mệnh đề FOR JSON để truy vấn dữ liệu từ cơ sở dữ liệu và xuất kết quả dưới dạng JSON. Mệnh đề này cho phép bạn truy vấn dữ liệu từ các bảng SQL Server và định dạng kết quả trả về dưới dạng JSON.
 
-Các hàm JSON trong SQL Server:  
+Các hàm JSON trong SQL Server:
 
 #### 🔹 FOR JSON PATH
 
@@ -124,13 +118,11 @@ Dùng để chuyển một đối tượng JSON thành một bảng. Ví dụ: C
 SELECT * FROM OPENJSON('{"name": "John", "age": 30}')
 ```
 
-
 #### 🔹 Các vị dụ thao tác với dữ liệu JSON
 
 Trong SQL Server, bạn có thể thực hiện các thao tác thêm mới, sửa, xóa và cập nhật dữ liệu JSON bằng cách sử dụng các hàm và toán tử JSON tích hợp. Dưới đây là các ví dụ về cách thực hiện các thao tác này.
 
 1. Thêm mới dữ liệu JSON:
-
 
 ```sql
   CREATE TABLE People (
@@ -156,14 +148,14 @@ Trong SQL Server, bạn có thể thực hiện các thao tác thêm mới, sử
   }'
   INSERT INTO People (Info) VALUES (@info)
 
-   ```
+```
 
 2. Truy vấn dữ liệu JSON
 
 Bạn có thể sử dụng các hàm như JSON_VALUE, JSON_QUERY để trích xuất giá trị từ chuỗi JSON2. Ví dụ, để lấy địa chỉ và kỹ năng từ cột JSON trong bảng People, bạn có thể sử dụng câu lệnh sau:
 
 ```sql
-SELECT 
+SELECT
   JSON_VALUE(Info, '$.address.StreetAddress') AS Street,
   JSON_QUERY(Info, '$.skills') AS Skills
 FROM People
@@ -181,7 +173,6 @@ SET Info = JSON_MODIFY(Info, '$.age', 36)
 WHERE ID = 1
 
 ```
-
 
 ---
 
@@ -229,7 +220,6 @@ Sau đó tại dòng `Operation Mode (Requested)` --> chọn `Read Write`
 
 ![query-store](img/query-store.png)
 
-
 **Operation Mode**
 
 Giá trị hợp lệ bao gồm OFF, READ_ONLY và READ_WRITE. OFF tắt Query Store. Trong chế độ READ_WRITE, Query Store thu thập và lưu trữ thông tin về kế hoạch truy vấn và thống kê thực thi thời gian chạy. Trong chế độ READ_ONLY, thông tin có thể được đọc từ Query Store, nhưng thông tin mới không được thêm vào. Nếu không gian cấp phát tối đa của Query Store đã được sử dụng hết, chế độ hoạt động của Query Store sẽ chuyển sang chế độ READ_ONLY.
@@ -262,8 +252,6 @@ Lấy và đặt tổng không gian được cấp phát cho Query Store.
 - Auto: thu thập các truy vấn dựa trên sử dụng tài nguyên.
 - Custom: chế độ tùy chỉnh hơn
 
-
-
 **Stale Query Threshold (Days)**
 
 Lấy và đặt ngưỡng truy vấn đã lỗi thời. Cấu hình đối số STALE_QUERY_THRESHOLD_DAYS để chỉ định số ngày giữ lại dữ liệu trong Query Store.
@@ -272,15 +260,15 @@ Lấy và đặt ngưỡng truy vấn đã lỗi thời. Cấu hình đối số
 
 Xóa nội dung của Query Store.
 
-Xem thêm: 
+Xem thêm:
 
 - [https://learn.microsoft.com/en-us/sql/relational-databases/performance/manage-the-query-store?view=sql-server-ver16&tabs=tsql](https://learn.microsoft.com/en-us/sql/relational-databases/performance/manage-the-query-store?view=sql-server-ver16&tabs=tsql)
 
 - [https://www.sqlshack.com/sql-server-query-store-overview/](https://www.sqlshack.com/sql-server-query-store-overview/)
+
 ---
 
 #### Kích hoạt bằng T-SQL
-
 
 ```sql
 ALTER DATABASE [QueryStoreDB]
@@ -304,14 +292,14 @@ SET QUERY_STORE = ON
 
 Trong đó:
 
-| Cấu hình                 | Mô tả                                                                                                          | Giá trị mặc định                                    | Ghi chú                           |
-|-------------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------|----------------------------------|
-| MAX_STORAGE_SIZE_MB     | Xác định giới hạn dung lượng dữ liệu mà Query Store có thể sử dụng trong cơ sở dữ liệu khách hàng                | 100 trước SQL Server 2019 (15.x)<br>1000 từ SQL Server 2019 (15.x) | Áp dụng cho cơ sở dữ liệu mới |
-| INTERVAL_LENGTH_MINUTES | Xác định thời gian mỗi khoảng thời gian trong đó thống kê thời gian chạy của các kế hoạch truy vấn được tổng hợp và lưu trữ. Mỗi kế hoạch truy vấn hoạt động có tối đa một hàng cho một khoảng thời gian được xác định bằng cấu hình này | 60                                                 | Áp dụng cho cơ sở dữ liệu mới |
-| STALE_QUERY_THRESHOLD_DAYS | Chính sách dựa trên thời gian điều khiển thời gian lưu giữ của thống kê thời gian chạy và các truy vấn không hoạt động | 30                                                 | Áp dụng cho cơ sở dữ liệu mới và cơ sở dữ liệu có cài đặt mặc định trước đó (367) |
-| SIZE_BASED_CLEANUP_MODE | Xác định liệu việc làm sạch dữ liệu tự động diễn ra khi kích thước dữ liệu Query Store tiến gần đến giới hạn | AUTO                                               | Áp dụng cho tất cả cơ sở dữ liệu |
-| QUERY_CAPTURE_MODE | Xác định liệu tất cả các truy vấn hay chỉ một phần truy vấn được theo dõi | AUTO                                               | Áp dụng cho tất cả cơ sở dữ liệu |
-| DATA_FLUSH_INTERVAL_SECONDS | Xác định khoảng thời gian tối đa mà các thống kê thời gian chạy đã được ghi nhớ trong bộ nhớ trước khi lưu xuống đĩa | 900                                                | Áp dụng cho cơ sở dữ liệu mới |
+| Cấu hình                    | Mô tả                                                                                                                                                                                                                                    | Giá trị mặc định                                                   | Ghi chú                                                                           |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| MAX_STORAGE_SIZE_MB         | Xác định giới hạn dung lượng dữ liệu mà Query Store có thể sử dụng trong cơ sở dữ liệu khách hàng                                                                                                                                        | 100 trước SQL Server 2019 (15.x)<br>1000 từ SQL Server 2019 (15.x) | Áp dụng cho cơ sở dữ liệu mới                                                     |
+| INTERVAL_LENGTH_MINUTES     | Xác định thời gian mỗi khoảng thời gian trong đó thống kê thời gian chạy của các kế hoạch truy vấn được tổng hợp và lưu trữ. Mỗi kế hoạch truy vấn hoạt động có tối đa một hàng cho một khoảng thời gian được xác định bằng cấu hình này | 60                                                                 | Áp dụng cho cơ sở dữ liệu mới                                                     |
+| STALE_QUERY_THRESHOLD_DAYS  | Chính sách dựa trên thời gian điều khiển thời gian lưu giữ của thống kê thời gian chạy và các truy vấn không hoạt động                                                                                                                   | 30                                                                 | Áp dụng cho cơ sở dữ liệu mới và cơ sở dữ liệu có cài đặt mặc định trước đó (367) |
+| SIZE_BASED_CLEANUP_MODE     | Xác định liệu việc làm sạch dữ liệu tự động diễn ra khi kích thước dữ liệu Query Store tiến gần đến giới hạn                                                                                                                             | AUTO                                                               | Áp dụng cho tất cả cơ sở dữ liệu                                                  |
+| QUERY_CAPTURE_MODE          | Xác định liệu tất cả các truy vấn hay chỉ một phần truy vấn được theo dõi                                                                                                                                                                | AUTO                                                               | Áp dụng cho tất cả cơ sở dữ liệu                                                  |
+| DATA_FLUSH_INTERVAL_SECONDS | Xác định khoảng thời gian tối đa mà các thống kê thời gian chạy đã được ghi nhớ trong bộ nhớ trước khi lưu xuống đĩa                                                                                                                     | 900                                                                | Áp dụng cho cơ sở dữ liệu mới                                                     |
 
 Lưu ý rằng các cấu hình này có thể khác nhau tùy thuộc vào phiên bản và cài đặt cụ thể của SQL Server.
 
@@ -335,8 +323,6 @@ Khái niệm chính trong Stretch Database bao gồm:
 
 Stretch Database là một công cụ hữu ích để quản lý dữ liệu lớn trong SQL Server bằng cách tận dụng điện toán đám mây. Nó giúp mở rộng khả năng lưu trữ và cải thiện hiệu suất truy vấn bằng cách tự động chuyển dữ liệu giữa Local Database và Azure SQL Database.
 
-
-
 ## 💛 Session 11 - Indexes
 
 Xem thêm bài viết: https://www.sqlservertutorial.net/sql-server-indexes/
@@ -349,7 +335,7 @@ Trước khi đi vào từng loại index hãy tạo một table để như sau:
 
 ```sql
 -- Tạo cấu trúc bảng customer_index
-CREATE TABLE dbo.customer_index (
+CREATE TABLE dbo.customers_index (
 	[customer_id] [int]  NOT NULL,
 	[first_name] [nvarchar](255) NOT NULL,
 	[last_name] [nvarchar](255) NOT NULL,
@@ -362,42 +348,41 @@ CREATE TABLE dbo.customer_index (
 	[zip_code] [varchar](5) NULL,
 );
 -- Xõa dữ liệu nếu có
-DELETE FROM dbo.customer_index
+DELETE FROM dbo.customers_index
 -- Đổ dữ liệu từ table customers, sắp xếp theo birthday
-INSERT INTO dbo.customer_index
+INSERT INTO dbo.customers_index
 SELECT [customer_id], [first_name], [last_name], [phone], [email],
        CONVERT(date, [birthday], 103), [street], [city], [state], [zip_code]
 FROM dbo.customers ORDER BY [birthday],[first_name];
 --Check xem có index không
-EXEC sp_helpindex 'customer_index';
+EXEC sp_helpindex 'customers_index';
 -- Xem dữ liệu hiện tại
-SELECT * FROM dbo.customer_index
+SELECT * FROM dbo.customers_index
 ```
 
 ### 💥 Check thời gian thực hiện truy vấn
 
 Trong SQL Server, bạn có thể sử dụng các câu lệnh và chức năng để kiểm tra thời gian thực hiện của một truy vấn ==> Để lựa chọn xem cách nào cho hiệu suất TỐI ƯU HƠN.
 
-
 Dưới đây là một số phương pháp phổ biến để làm điều này:
 
 1. Kiểm tra thời gian và tài nguyên của một truy vấn:
-   
-     ```sql
-      --Để xem thời gian thực hiện truy vấn
-      SET STATISTICS TIME ON;
-      --Để xem tài nguyên thực hiện truy vấn
-      SET STATISTICS IO ON;
-      -- Truy vấn SQL của bạn ở đây
-      -- ....
 
-      --Tắt đi sau khi truy vấn thực hiện
-      SET STATISTICS TIME OFF;
-      SET STATISTICS IO OFF;
-     ```
-   
+   ```sql
+    --Để xem thời gian thực hiện truy vấn
+    SET STATISTICS TIME ON;
+    --Để xem tài nguyên thực hiện truy vấn
+    SET STATISTICS IO ON;
+    -- Truy vấn SQL của bạn ở đây
+    -- ....
+
+    --Tắt đi sau khi truy vấn thực hiện
+    SET STATISTICS TIME OFF;
+    SET STATISTICS IO OFF;
+   ```
 
 2. Sử dụng hàm GETDATE():
+
    - Trước khi thực thi truy vấn, ghi lại thời điểm bắt đầu bằng cách sử dụng hàm GETDATE():
      ```sql
      DECLARE @StartTime DATETIME;
@@ -427,10 +412,9 @@ Dưới đây là một số phương pháp phổ biến để làm điều này
 
 Lưu ý rằng cách thức và chi tiết cụ thể để kiểm tra thời gian thực hiện có thể thay đổi tùy thuộc vào phiên bản SQL Server và cấu hình hệ thống. Vì vậy, hãy kiểm tra tài liệu và tài nguyên thích hợp của Microsoft hoặc phiên bản SQL Server bạn đang sử dụng để biết thêm chi tiết.
 
+### 💥 Cấu trúc B-TREE
 
-### 💥  Cấu trúc B-TREE
-
-Là một cấu trúc dữ liệu được sử dụng để lưu trữ dữ liệu trong cơ sở dữ liệu. 
+Là một cấu trúc dữ liệu được sử dụng để lưu trữ dữ liệu trong cơ sở dữ liệu.
 
 ![b-tree](img/be-tree.png)
 
@@ -439,21 +423,19 @@ Các đặc điểm của B-Tree Index:
 - Dữ liệu index được tổ chức và lưu trữ theo dạng tree, tức là có root, branch, leaf.
 - Giá trị của các node được tổ chức tăng dần từ trái qua phải.
 - B-Tree index được sử dụng trong các biểu thức so sánh dạng: =, >, >=, <, <=, BETWEEN và LIKE. ⇒ Có thể tối ưu tốt cho câu lệnh ORDER BY
--  Khi truy vấn dữ liệu thì CSDL sẽ không scan dữ liệu trên toàn bộ bảng để tìm dữ liệu, việc tìm kiếm trong B-Tree là 1 quá trình đệ quy, bắt đầu từ root node và tìm kiếm tới branch và leaf, đến khi tìm được tất cả dữ liệu – thỏa mãn với điều kiện truy vấn thì mới dùng lại.
-
-
+- Khi truy vấn dữ liệu thì CSDL sẽ không scan dữ liệu trên toàn bộ bảng để tìm dữ liệu, việc tìm kiếm trong B-Tree là 1 quá trình đệ quy, bắt đầu từ root node và tìm kiếm tới branch và leaf, đến khi tìm được tất cả dữ liệu – thỏa mãn với điều kiện truy vấn thì mới dùng lại.
 
 ### 💥 Heap Structures
 
 - Heap là một cấu trúc bảng không có `Clustered index`
 - Các dòng không được sắp xếp theo thứ tự nào cả
 
-
 ==> Dữ liệu mẫu `customers_test` trên chính là cấu trúc Heap. Tập dữ liệu không có thứ tự.
 
 ![heap](img/customer-index.png)
 
 Nhìn vào bảng dữ liệu trong hình dưới đây và bạn hãy trả lời truy vấn "tìm nhân viên có customer_id bằng 5". Bạn sẽ làm thế nào?
+
 - Bạn sẽ phải tìm trong bảng dữ liệu trên: duyệt qua từng dòng và tìm customer_id = 5.
 - Nếu dòng dữ liệu của customer_id = 5 nằm ở vị trí thứ 2 - 3 thì nhanh chóng tìm thấy nó.
 - Nhưng nếu nó nằm ở cuối cùng của bảng dữ liệu thì sao ? Bạn sẽ phải mất một ít thời gian, `chi phí thực hiện` việc tìm kiếm đó.
@@ -473,7 +455,7 @@ Kết quả:
 ![pan 1](img/query-plan-1.png)
 
 - Table Scan: Hành động --> quét toàn bộ table
-- Estimated Opertator Cost: Chi phí thực thi (0.0315382) 
+- Estimated Opertator Cost: Chi phí thực thi (0.0315382)
 - ...Rows to be Read: 1445 dòng
 
 ### 💥 Clustered index
@@ -494,9 +476,8 @@ Cú pháp:
 
 ```sql
 CREATE CLUSTERED INDEX index_name
-ON schema_name.table_name (column_list);  
+ON schema_name.table_name (column_list);
 ```
-
 
 Ví dụ
 
@@ -532,7 +513,7 @@ Xem chiến lược thực thi và phân tích bạn sẽ thấy:
 ![plan 2](img/query-plan-2.png)
 
 - Clustered Index seek: Hành động --> quét chỉ mục
-- Estimated Opertator Cost: Chi phí thực thi (0.003283)  
+- Estimated Opertator Cost: Chi phí thực thi (0.003283)
 - ...Rows to be Read: 1 dòng duy nhất
 
 Tóm lại clustered index trong SQL Server có các đặc điểm sau:
@@ -542,8 +523,7 @@ Tóm lại clustered index trong SQL Server có các đặc điểm sau:
 - Index có level càng cao thì việc tìm kiếm càng tốn thời gian hơn
 - Level của index phụ thuộc vào độ lớn dữ liệu trong bảng và kích thước của index key
 
-
-### 💥  Nonclustered index
+### 💥 Nonclustered index
 
 Trong cơ sở dữ liệu, một "nonclustered index" (chỉ mục không gom cụm) là một loại chỉ mục được tạo ra để cải thiện hiệu suất tìm kiếm và truy xuất dữ liệu trong một bảng. Nonclustered index lưu trữ dữ liệu chỉ mục riêng biệt và không sắp xếp dữ liệu trong bảng dựa trên chỉ mục đó.
 
@@ -577,7 +557,7 @@ Kế hoạch thưc thi:
 Xem chi tiết chiến lược thực thi:
 
 - Clustered Index seek: Hành động --> quét chỉ mục
-- Estimated Opertator Cost: Chi phí thực thi (0.0256122) 
+- Estimated Opertator Cost: Chi phí thực thi (0.0256122)
 - ...Rows to be Read: 1445 dòng
 
 Qua đó thấy chí phí cao hơn, và nó phải tìm tất cả các dòng.
@@ -586,7 +566,7 @@ Vậy thử hỏi bạn có thể tạo thêm một `clustered index` cho cột 
 
 Bạn có thể tối ưu bằng cách tạo `non-clustered index`
 
-- Để có thể sắp xếp `phone`  mà không làm mất đi thứ tự tập dữ liệu theo `customer_id`. SQL Server nhân bản dữ liệu của bảng  thành một tập khác rồi tổ chức sắp xếp index theo `phone` ==> Dung lượng Database sẽ phìn to lên.
+- Để có thể sắp xếp `phone` mà không làm mất đi thứ tự tập dữ liệu theo `customer_id`. SQL Server nhân bản dữ liệu của bảng thành một tập khác rồi tổ chức sắp xếp index theo `phone` ==> Dung lượng Database sẽ phìn to lên.
 - Việc nhân bản này chỉ thực hiện trên các cột được chỉ định trong câu lệnh tạo `non-clustered index`
 
 ```sql
@@ -605,7 +585,7 @@ Kế hoạch thưc thi đã khác, sử dụng NonClustered:
 
 Chi tiết ra:
 
-- Estimated Opertator Cost: Chi phí thực thi (0.00032831) 
+- Estimated Opertator Cost: Chi phí thực thi (0.00032831)
 - ...Rows to be Read: 1 dòng
 
 Ví dụ tiếp: Bạn cần lấy thêm `first_name` như sau thì sao ? Không lẻ lại đi tạo một `nonclustered index` cho trường first_name nữa ? KHÔNG NÊN !!!
@@ -619,17 +599,16 @@ Phân tích chiến lược thực thi khi có thêm `first_name`
 ![plan](img/query-plan.png)
 
 - Đâu tiên: Bạn cần lấy `customer_id`, `phone`, `first_name`. SQL Server sẽ truy cập đến `nonclustered index để` để lấy dữ liệu, nhưng không có cột first_name.
-- Tiếp theo: Lúc này nó dùng `customer_id`  để quay về `clustered index ` lấy thêm cột `first_name` của dòng tương ứng. Hành động này gọi là key lookup và nó tốn chi phí để thực hiện nên tổng chi phí chung của câu truy vấn sẽ tăng lên.
+- Tiếp theo: Lúc này nó dùng `customer_id` để quay về `clustered index ` lấy thêm cột `first_name` của dòng tương ứng. Hành động này gọi là key lookup và nó tốn chi phí để thực hiện nên tổng chi phí chung của câu truy vấn sẽ tăng lên.
 
 Bạn có thể rê chuột lên `Nested Loops` xem kết quản chung sau khi gộp 2 hành đồng lại.
 
-- Estimated Opertator Cost: Chi phí thực thi (0.0065704) 
+- Estimated Opertator Cost: Chi phí thực thi (0.0065704)
 - ...Rows to be Read: 1 dòng
-
 
 Để tiết kiệm được chi phí truy vấn `key lookup` bằng cách sử dụng `covering index`.
 
-### 💥   Covering index
+### 💥 Covering index
 
 Covering index là khi nonclustered index có thể thỏa mãn tất cả các cột cần select của một câu truy vấn.
 
@@ -641,14 +620,14 @@ Chạy lại truy vấn xem chiến lược thực thi
 
 ![plan 5](img/query-plan-5.png)
 
-- Estimated Opertator Cost: Chi phí thực thi (0.0032831) 
+- Estimated Opertator Cost: Chi phí thực thi (0.0032831)
 - ...Rows to be Read: 1 dòng
 
 Việc sử dụng `INCLUDE` cho phép thêm các cột bổ sung vào chỉ mục, mà không ảnh hưởng đến việc sắp xếp hoặc tìm kiếm. Điều này giúp tránh việc phải truy xuất dữ liệu từ bảng gốc khi chỉ cần truy vấn dữ liệu từ chỉ mục, cải thiện hiệu suất truy vấn.
 
 Xem thêm: https://learn.microsoft.com/en-us/sql/relational-databases/indexes/create-indexes-with-included-columns?view=sql-server-ver16
 
-### 💥   Unique index
+### 💥 Unique index
 
 Trong cơ sở dữ liệu, một "unique index" (chỉ mục duy nhất) là một loại chỉ mục được tạo ra để đảm bảo tính duy nhất của các giá trị trong một cột hoặc một nhóm cột trong một bảng dữ liệu. Unique index đảm bảo rằng không có hai bản ghi nào trong cơ sở dữ liệu có cùng giá trị cho cột hoặc nhóm cột được chỉ mục.
 
@@ -678,13 +657,12 @@ Chạy truy vấn xem chiến lược thực thi
 ![plan 6](img/query-plan-6.png)
 
 - Sử dụng hành động `index scan` trên chỉ mục Clustered
-- Estimated Opertator Cost: Chi phí thực thi (0.0256122) 
+- Estimated Opertator Cost: Chi phí thực thi (0.0256122)
 - ...Rows to be Read: 1445 dòng
 
 Ta thấy nó không tận dụng được Clustered index đã đánh trên trường customer_id. Nên phải tìm tất cả các dòng.
 
 Đặc tính email là duy nhất, nên bạn có thể đánh chỉ mục `unique` cho trường email.
-
 
 ```sql
 CREATE UNIQUE INDEX UIX_customers_index_email
@@ -696,9 +674,8 @@ Chạy lại truy vấn xem chiến lược thực thi
 ![plan 7](img/query-plan-7.png)
 
 - Sử dụng hành động `index seek` trên chỉ mục NonClustered
-- Estimated Opertator Cost: Chi phí thực thi (0.003125) 
+- Estimated Opertator Cost: Chi phí thực thi (0.003125)
 - ...Rows to be Read: 1 dòng
-
 
 Trường hợp bạn cần WHERE thêm các trường khác như:
 
@@ -716,8 +693,7 @@ INCLUDE(first_name,last_name);
 
 - `first_name,last_name` là danh sách các cột khác (không phải các cột chỉ mục) mà bạn muốn bao gồm trong chỉ mục để cung cấp các dữ liệu bổ sung cho truy vấn. Các cột này không được sắp xếp và không tham gia vào việc tìm kiếm theo.
 
-
-### 💥  Full-text
+### 💥 Full-text
 
 https://learn.microsoft.com/en-us/sql/relational-databases/search/populate-full-text-indexes?view=sql-server-ver16
 
@@ -735,7 +711,7 @@ Lợi ích chính của full-text search trong SQL Server bao gồm:
 
 Full-text search được sử dụng trong các ứng dụng nhu cầu tìm kiếm văn bản phong phú, như hệ thống blog, hệ thống quản lý nội dung, diễn đàn, trang web thương mại điện tử và các ứng dụng có nhu cầu tìm kiếm dựa trên nội dung văn bản mạnh
 
-### 💥  Columnstore index
+### 💥 Columnstore index
 
 Columnstore index (chỉ mục cột) là một loại chỉ mục trong cơ sở dữ liệu, được thiết kế đặc biệt để tối ưu hóa truy vấn phân tích dữ liệu trong các hệ thống quản lý cơ sở dữ liệu. Columnstore index lưu trữ và quản lý dữ liệu theo cột (columnar storage) thay vì theo hàng như trong chỉ mục truyền thống.
 
@@ -760,11 +736,11 @@ Phân tích kế hoạch thực thi
 
 ![query-plan-columnstore 1](img/query-plan-columnstore-1.png)
 
-- Sử dụng hành động `table scan` 
+- Sử dụng hành động `table scan`
 - Estimated Opertator Cost: Chi phí thực thi 0.0247736
 - ...Rows to be Read: 4723 dòng
 
-Tạo index kết hợp 
+Tạo index kết hợp
 
 ```sql
 CREATE COLUMNSTORE INDEX IX_order_items_productID_quantity_ColumnStore
@@ -775,17 +751,17 @@ Chạy lại truy vấn xem chiến lược thực thi
 
 ![query-plan-columnstore 2](img/query-plan-columnstore-2.png)
 
-- Sử dụng hành động `columnstore index scan` 
+- Sử dụng hành động `columnstore index scan`
 - Estimated Opertator Cost: Chi phí thực thi 0.0036602
 - ...Rows to be Read: 4723 dòng
 
 ```code
 Chênh lệch = |(0.0036602 - 0.0247736) / 0.0247736| * 100
-Chênh lệch ≈ 85.23% 
+Chênh lệch ≈ 85.23%
 ==> Tăng tốc được  ≈ 85.23%
 ```
 
-### 💥   Filtered index
+### 💥 Filtered index
 
 Filtered index trong SQL Server là một loại chỉ mục có điều kiện, chỉ lưu trữ và xử lý dữ liệu cho một phần nhỏ của các hàng trong một bảng dựa trên một điều kiện được xác định trước. Nó cho phép bạn tạo chỉ mục trên một tập hợp con của dữ liệu trong bảng thay vì toàn bộ dữ liệu.
 
@@ -816,7 +792,7 @@ Có một phần nhỏ dữ liệu trong bảng mà thường được truy cậ
 Các truy vấn thường xuyên yêu cầu dữ liệu thỏa mãn một điều kiện cụ thể.
 Các bảng có kích thước lớn và tối ưu hóa hiệu suất truy vấn là yếu tố quan trọng.
 
-### 💥  Spatial index
+### 💥 Spatial index
 
 Spatial index trong SQL Server là một loại chỉ mục được thiết kế đặc biệt để hỗ trợ việc lưu trữ, truy vấn và xử lý dữ liệu không gian (dữ liệu liên quan đến vị trí và hình học). Nó cho phép tối ưu hóa truy vấn dựa trên thông tin không gian, như tìm kiếm các vị trí trong phạm vi, tính toán khoảng cách, xác định tương tác giữa các đối tượng không gian, và nhiều hoạt động không gian khác.
 
@@ -834,7 +810,7 @@ Hỗ trợ các hoạt động không gian phức tạp: Spatial index cho phép
 
 Spatial index được sử dụng trong các ứng dụng liên quan đến dữ liệu không gian như hệ thống thông tin địa lý (GIS), quản lý tài sản, phân tích địa lý, và bất kỳ ứng dụng nào có nhu cầu truy vấn và xử lý dữ liệu không gian.
 
-### 💥   XML index
+### 💥 XML index
 
 https://learn.microsoft.com/en-us/sql/relational-databases/xml/xml-indexes-sql-server?view=sql-server-ver16
 
@@ -857,6 +833,7 @@ XML index được sử dụng trong các ứng dụng liên quan đến dữ li
 Để tạo, xóa và đổi tên index trong SQL Server, bạn có thể sử dụng các câu lệnh SQL sau đây:
 
 1. Tạo index:
+
    - Tạo Clustered Index:
      ```sql
      CREATE CLUSTERED INDEX [IndexName] ON [TableName] ([Column1], [Column2], ...)
@@ -883,6 +860,7 @@ XML index được sử dụng trong các ứng dụng liên quan đến dữ li
      ```
 
 2. Xóa index:
+
    - Xóa index:
      ```sql
      DROP INDEX [IndexName] ON [TableName]
@@ -903,7 +881,6 @@ XML index được sử dụng trong các ứng dụng liên quan đến dữ li
      ```
 
 Lưu ý: Trước khi thực hiện các thay đổi trên index, hãy đảm bảo rằng bạn có quyền thực hiện các câu lệnh CREATE, ALTER và DROP trên cơ sở dữ liệu và bảng tương ứng. Hãy cẩn thận khi xóa hoặc đổi tên index, vì nó có thể ảnh hưởng đến hiệu suất và tính khả dụng của cơ sở dữ liệu.
-
 
 #### 🔹 Lợi ích việc đánh indexs
 
@@ -935,14 +912,12 @@ Mặc dù chỉ mục trong SQL Server mang lại nhiều lợi ích cho hiệu 
 
 Vì vậy, khi sử dụng chỉ mục, cần cân nhắc kỹ lưỡng và thiết kế chỉ mục phù hợp với mục đích và yêu cầu của ứng dụng. Nên xem xét sự cân đối giữa hiệu suất truy vấn và yêu cầu lưu trữ, và đảm bảo rằng việc sử dụng chỉ mục mang lại lợi ích đáng kể cho hệ thống.
 
-
 #### 🔹 Những điều cần nhớ khi tạo index trong SQL
 
 - Tránh đánh chỉ mục những bảng/cột được sử dụng nhiều: Càng đánh chỉ mục nhiều trên bảng, tác động tới hiệu quả chèn, cập nhật, xóa và hợp nhất lệnh càng lớn bởi toàn bộ index phải được chỉnh sửa phù hợp. Điều đó có nghĩa SQL Server phải tách trang, chuyển dữ liệu xung quanh và phải làm việc đó cho toàn bộ index bị ảnh hưởng bởi các lệnh DML.
 - Thu hẹp các khóa index bất cứ khi nào có thể: Liên tục thu hẹp index, chỉ một số cột nếu có thể. Những khóa số chính xác là những khóa index SQL hiệu quả nhất. Những khóa này cần ít dung lượng lưu trữ và chi phí bảo trì hơn.
 - Dùng index được nhóm trên các cột duy nhất - Xem xét các cột là duy nhất hay chứa nhiều giá trị riêng và tránh dùng chúng trên những cột thay đổi thường xuyên.
 - Index không theo nhóm trên cột được tìm kiếm thường xuyên.
-
 
 ## 💛 Nguồn học Thêm
 

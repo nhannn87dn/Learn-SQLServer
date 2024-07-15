@@ -1,17 +1,12 @@
 ﻿-- Tạo view
 
 CREATE VIEW v_getProducts 
-WITH ENCRYPTION
 as SELECT 
- p.product_id,
- p.product_name,
- c.category_name
-FROM dbo.products AS p
-LEFT JOIN dbo.categories AS c ON c.category_id = p.category_id
+ product_id FROM dbo.products
 
 EXEC sp_helptext v_getProducts
 
-EXEC sp_rename 'products.discount', 'discounts', 'COLUMN';
+EXEC sp_rename 'products.model_years', 'model_year', 'COLUMN';
 
 DROP VIEW dbo.v_getProducts
 
