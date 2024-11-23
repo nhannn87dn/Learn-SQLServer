@@ -29,7 +29,7 @@ Viết một trigger trên bảng `bank` để ngăn không cho bất kỳ tài 
 
 ### **Bài 4: Transaction - Rút tiền**
 
-Viết stored procedure để xử lý nghiệp vụ rút tiền từ tài khoản. Yêu cầu:
+Viết transaction để xử lý nghiệp vụ rút tiền từ tài khoản. Yêu cầu:
 - Trừ tiền từ tài khoản rút.
 - Kiểm tra số dư tài khoản đủ trước khi thực hiện.
 - Nếu rút tiền thất bại, không thay đổi dữ liệu.
@@ -47,7 +47,7 @@ Tạo trigger để kiểm tra số lần giao dịch của mỗi tài khoản t
 ### **Bài 6: Transaction & Trigger - Hoàn tiền khi giao dịch thất bại**
 
 Mô phỏng nghiệp vụ hoàn tiền:
-- Viết một stored procedure cho phép chuyển tiền.
+- Viết một transaction cho phép chuyển tiền.
 - Nếu giao dịch thất bại (do lỗi trigger hoặc kiểm tra khác), rollback toàn bộ thay đổi và ghi log giao dịch thất bại.
 
 ---
@@ -62,7 +62,7 @@ Tạo trigger để kiểm tra số dư trong tài khoản sau khi giao dịch. 
 
 ### **Bài 8: Transaction - Giao dịch hàng loạt**
 
-Viết một stored procedure để thực hiện nhiều giao dịch chuyển tiền từ danh sách tài khoản (danh sách này được truyền vào dạng bảng). Yêu cầu:
+Viết một transaction để thực hiện nhiều giao dịch chuyển tiền từ danh sách tài khoản (danh sách này được truyền vào dạng bảng). Yêu cầu:
 - Sử dụng transaction để đảm bảo tính toàn vẹn dữ liệu.
 - Nếu bất kỳ giao dịch nào trong danh sách thất bại, rollback toàn bộ giao dịch.
 
