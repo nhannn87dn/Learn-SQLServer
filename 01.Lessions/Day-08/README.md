@@ -987,11 +987,10 @@ ON [object_name | DATABASE | ALL SERVER]
 
 ```
 
-Ví dụ:
+Vô hiệu hóa một trigger trên một table cụ thể
 
 ```sql
-DISABLE TRIGGER dbo.trg_customers_LogAlterTable
-ON dbo.customers;
+DISABLE TRIGGER tigger_name ON table_name;
 ```
 
 Vô hiệu hóa tất cả trigger trên một table
@@ -999,6 +998,11 @@ Vô hiệu hóa tất cả trigger trên một table
 ```sql
 DISABLE TRIGGER ALL ON table_name;
 ```
+
+Vô hiệu hóa một trigger trên một Databse
+
+```sql
+DISABLE TRIGGER trigger_name ON DATABASE;
 
 Vô hiệu hóa tất cả trigger trên một Databse
 
