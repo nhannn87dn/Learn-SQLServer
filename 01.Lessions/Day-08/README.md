@@ -1003,6 +1003,7 @@ Vô hiệu hóa một trigger trên một Databse
 
 ```sql
 DISABLE TRIGGER trigger_name ON DATABASE;
+```
 
 Vô hiệu hóa tất cả trigger trên một Databse
 
