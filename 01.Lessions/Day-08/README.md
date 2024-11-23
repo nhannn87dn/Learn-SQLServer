@@ -928,6 +928,144 @@ AS {sql_statement}
 
 ```
 
+Ví dụ:
+
+**Cấu trúc bảng `bank`:**
+
+```sql
+CREATE TABLE bank (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    name NVARCHAR(50),
+    balance DECIMAL(10, 2)
+);
+
+CREATE TABLE bank_log (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    note NVARCHAR(500),
+    created_at DATETIME DEFAULT GETDATE()
+);
+```
+
+---
+
+**Trigger minh họa:**
+
+```sql
+CREATE TRIGGER trg_log_balance_changes
+ON bank
+AFTER UPDATE
+AS
+BEGIN
+    -- Ghi log cho các thay đổi liên quan đến số dư
+    INSERT INTO bank_log (note)
+    SELECT 
+        CONCAT(
+            'Account ID: ', INSERTED.id,
+            ', Old Balance: ', DELETED.balance,
+            ', New Balance: ', INSERTED.balance,
+            ', Name: ', INSERTED.name
+        )
+    FROM INSERTED
+    INNER JOIN DELETED
+    ON INSERTED.id = DELETED.id
+    WHERE INSERTED.balance <> DELETED.balance; -- Chỉ log nếu số dư thay đổi
+END;
+```
+
+---
+
+**Giải thích:**
+
+1. **`INSERTED`**:
+   - Chứa bản ghi mới (sau khi cập nhật).
+   - Phản ánh trạng thái hiện tại của các hàng được cập nhật.
+
+2. **`DELETED`**:
+   - Chứa bản ghi cũ (trước khi cập nhật).
+   - Phản ánh trạng thái trước khi các hàng được cập nhật.
+
+3. **Trigger hoạt động**:
+   - Khi thực hiện lệnh `UPDATE`, SQL Server tạo hai bảng ảo là `INSERTED` và `DELETED` để lưu trữ các giá trị mới và cũ tương ứng.
+
+---
+
+**Ví dụ minh họa:**
+
+**1. Thêm dữ liệu ban đầu:**
+
+```sql
+INSERT INTO bank (name, balance)
+VALUES ('Alice', 500.00),
+       ('Bob', 1000.00);
+```
+
+**2. Cập nhật số dư tài khoản:**
+
+```sql
+UPDATE bank
+SET balance = 800.00
+WHERE id = 1;
+```
+
+**3. Log được ghi trong bảng `bank_log`:**
+
+```sql
+SELECT * FROM bank_log;
+```
+
+**Kết quả:**
+
+```
+id | note                                                                | created_at
+1  | Account ID: 1, Old Balance: 500.00, New Balance: 800.00, Name: Alice | 2024-11-23 10:00:00
+```
+
+---
+
+### **Cách kiểm tra `INSERTED` và `DELETED`:**
+
+Để dễ hiểu hơn, bạn có thể tạm thời xem nội dung của `INSERTED` và `DELETED` bằng cách sử dụng:
+
+```sql
+SELECT * FROM INSERTED;
+SELECT * FROM DELETED;
+```
+
+Thêm dòng debug tạm thời vào trigger như sau:
+
+```sql
+CREATE TRIGGER trg_debug_inserted_deleted
+ON bank
+AFTER UPDATE
+AS
+BEGIN
+    -- Hiển thị giá trị mới (INSERTED)
+    SELECT * FROM INSERTED;
+
+    -- Hiển thị giá trị cũ (DELETED)
+    SELECT * FROM DELETED;
+
+    -- Log ví dụ
+    INSERT INTO bank_log (note)
+    SELECT 
+        CONCAT('Debug - New Balance: ', INSERTED.balance, ', Old Balance: ', DELETED.balance)
+    FROM INSERTED
+    INNER JOIN DELETED
+    ON INSERTED.id = DELETED.id;
+END;
+```
+
+Khi thực hiện `UPDATE`, nội dung của `INSERTED` và `DELETED` sẽ được hiển thị. 
+
+---
+
+**Tóm lại:**
+- **`INSERTED`**: Chứa giá trị mới (sau `UPDATE`).
+- **`DELETED`**: Chứa giá trị cũ (trước `UPDATE`). 
+- Chúng giúp dễ dàng so sánh thay đổi trước và sau khi thực hiện cập nhật.
+
+---
+
 Ví dụ: Tạo một trigger để ngăn chặn việc xóa bảng customers
 
 ```sql
