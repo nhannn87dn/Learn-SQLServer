@@ -396,7 +396,12 @@ EXECUTE usp_ProductList
 EXEC usp_ProductList
 ```
 
-#### 🔹 Tạo Store có tham số đầu vào
+#### 🔹 STORE return về một hoặc nhiều dòng
+
+Bằng cách sử dụng câu lệch SELECT trong PROC thì cho kết quả dữ liệu 1 hoặc nhiều dòng như một `table-values`
+
+
+#### 🔹 Store có tham số đầu vào
 
 Ví dụ: Lấy danh sách sản phẩm có model_year > 2018
 
@@ -428,7 +433,82 @@ END;
 EXEC uspFindProductsByModelYear 2018;
 ```
 
-#### 🔹 Tạo Store có tham số OUTPUT
+Trong ví dụ trên: Bạn có thể sử dụng TRY CATCH để bắt lỗi trong PROC.
+
+
+Hoặc ví dụ Update với Store
+
+
+```sql
+CREATE PROC udp_updateOrderStatusById(
+    @OrderID INT,
+    @OrderStatus TINYINT
+)
+AS
+BEGIN
+    -- Cập nhật dữ liệu
+    UPDATE dbo.orders 
+    SET order_status = @OrderStatus 
+    WHERE order_id = @OrderID;
+
+    -- Kiểm tra kết quả và trả về trạng thái
+    -- @@ROWCOUNT = số dòng bị ảnh hưởng bởi câu lệnh
+    IF @@ROWCOUNT > 0
+    BEGIN
+        SELECT 'Success' AS Status, 'Order updated successfully' AS Message;
+    END
+    ELSE
+    BEGIN
+        SELECT 'Error' AS Status, 'No matching order found' AS Message;
+    END
+END
+
+--Thực thi
+EXEC udp_updateOrderStatusById @OrderID = 999, @OrderStatus = 2;
+```
+
+kết quả trả ra:
+
+```txt
+Status   | Message
+---------|------------------------
+Error    | No matching order found
+```
+
+Hoặc ví dụ khác:
+
+Tìm đơn hàng theo ID và trả về dữ liệu nếu có. Còn không thấy thì trả về một thông tin cho người dùng biết là không tìm thấy.
+
+```sql
+CREATE PROCEDURE GetOrderByID
+    @OrderID INT
+AS
+BEGIN
+    -- Kiểm tra nếu đơn hàng tồn tại
+    IF EXISTS (SELECT 1 FROM orders WHERE order_id = @OrderID)
+    BEGIN
+        -- Lấy thông tin đơn hàng
+        SELECT 
+            order_id AS OrderID,
+            customer_id AS CustomerID,
+            order_date AS OrderDate,
+            order_status AS OrderStatus,
+            total_amount AS TotalAmount
+        FROM orders
+        WHERE order_id = @OrderID;
+    END
+    ELSE
+    BEGIN
+        -- Trả về thông báo lỗi
+        SELECT 
+            'Error' AS Status,
+            'Order not found' AS Message;
+    END
+END
+
+```
+
+#### 🔹 Store có tham số OUTPUT
 
 Ví dụ: Lấy danh sách đơn hàng bán ra từ ngày đến ngày.
 
@@ -574,6 +654,25 @@ Trong đó, `12345` là ID của đơn hàng bạn muốn kiểm tra. Giá trị
 Lưu ý rằng, một stored procedure chỉ có thể trả về một giá trị duy nhất và kiểu dữ liệu của giá trị trả về phải là `INT`. Nếu bạn muốn trả về nhiều giá trị hoặc các kiểu dữ liệu khác, bạn nên sử dụng tham số OUTPUT.
 
 Xem thêm: https://learn.microsoft.com/vi-vn/sql/relational-databases/stored-procedures/return-data-from-a-stored-procedure?view=sql-server-ver16
+
+
+
+#### 🔹 STORE không trả về gì
+
+Nếu Stored Procedure không chứa bất kỳ câu lệnh SELECT, OUTPUT, hoặc RETURN, thì nó sẽ không trả về dữ liệu.
+
+Ví dụ: Proc sau chỉ thực hiện Update dữ liệu
+
+```sql
+CREATE PROC udp_updateOrderStatusById(
+    @OrderID INT,
+    @OrderStatus TINYINT
+)
+AS
+BEGIN
+    UPDATE dbo.orders SET order_status = @OrderStatus WHERE order_id =  @OrderID
+END
+```
 
 ---
 

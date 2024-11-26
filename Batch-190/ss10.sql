@@ -106,7 +106,7 @@ EXEC udp_getProductInfo -- thực thi proc = gọi hàm
 SELECT *
 FROM dbo.products WHERE model_year = 2025
 
--- =Hàm có tham số, nhưng ko return
+-- =Hàm có tham số, return về nhiều dòng
 CREATE PROC udp_getProductByModelYear(
 	@ModelYear SMALLINT
 )
