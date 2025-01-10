@@ -56,3 +56,9 @@ Quanlity TINYINT NOT NULL, -- Số lượng phòng được đặt
 Price DECIMAL(18,2) NOT NULL,
 Discount DECIMAL(4,2) NOT NULL,
 )
+
+CREATE TABLE dbo.categories(
+category_id INT NOT NULL,
+category_name NVARCHAR(50) NOT NULL,
+description NVARCHAR(500) NULL
+)
