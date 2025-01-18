@@ -1066,23 +1066,32 @@ Khi thực hiện `UPDATE`, nội dung của `INSERTED` và `DELETED` sẽ đư�
 
 ---
 
-Ví dụ: Tạo một trigger để ngăn chặn việc xóa bảng customers
+Ví dụ: Tạo một trigger để ngăn chặn việc xóa VÀ sửa bảng basket_a
 
 ```sql
-CREATE TRIGGER trg_customers_Prevent_DropTable
+CREATE TRIGGER trg_prevent_table_modifications
 ON DATABASE
-FOR DROP_TABLE
+FOR DROP_TABLE, ALTER_TABLE
 AS
 BEGIN
-    IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[customers]') AND type in (N'U'))
+    DECLARE @EventData XML = EVENTDATA()
+    DECLARE @ObjectName NVARCHAR(MAX)
+
+    -- Lấy tên bảng từ EVENTDATA
+    SET @ObjectName = @EventData.value('(/EVENT_INSTANCE/ObjectName)[1]', 'NVARCHAR(MAX)')
+
+    -- Kiểm tra nếu tên bảng là bảng cụ thể cần bảo vệ
+    IF @ObjectName = 'basket_a'
     BEGIN
-        PRINT 'Cannot drop the table: Customers.'
+        RAISERROR ('Không được phép xóa hoặc sửa đổi bảng basket_a.', 16, 1)
         ROLLBACK
     END
-END;
+END
+-- Thực hiện lệnh thì báo lỗi
+DROP table basket_a
 ```
 
-Ví dụ 2: Tạo một trigger để ghi nhật ký sửa đổi cấu trúc bảng customers
+Ví dụ 2: Tạo một trigger để ghi nhật ký sửa đổi cấu trúc bảng basket_a
 
 ```sql
 -- Tạo table logs trước
@@ -1096,17 +1105,31 @@ CREATE TABLE dbo.logs (
 );
 
 -- Thêm trigger
-CREATE TRIGGER trg_customers_LogAlterTable
+CREATE TRIGGER trg_prevent_table_modifications
 ON DATABASE
-FOR ALTER_TABLE
+FOR DROP_TABLE, ALTER_TABLE
 AS
 BEGIN
-    IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[customers]') AND type in (N'U'))
+    DECLARE @EventData XML = EVENTDATA()
+    DECLARE @ObjectName NVARCHAR(MAX)
+
+    -- Lấy tên bảng từ EVENTDATA
+    SET @ObjectName = @EventData.value('(/EVENT_INSTANCE/ObjectName)[1]', 'NVARCHAR(MAX)')
+
+    -- Kiểm tra nếu tên bảng là bảng cụ thể cần bảo vệ
+    IF @ObjectName = 'basket_a'
     BEGIN
-        INSERT INTO dbo.logs ([Date], [User], [Host], [Action], [Table])
-        SELECT GETDATE(), USER_NAME(), HOST_NAME(), 'ALTER TABLE', 'customers'
+        RAISERROR ('Không được phép xóa hoặc sửa đổi bảng basket_a.', 16, 1);
+
+        BEGIN
+            INSERT INTO dbo.logs ([Date], [User], [Host], [Action], [Table])
+            SELECT GETDATE(), USER_NAME(), HOST_NAME(), 'DROP_TABLE OR ALTER_TABLE', 'basket_a'
+        END
+        
+        ROLLBACK;
     END
 END
+
 ```
 
 ---
