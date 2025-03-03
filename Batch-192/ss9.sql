@@ -79,3 +79,115 @@ GROUP BY
 HAVING SUM(quantity * price) > 11000
 )
 )
+
+-- Ví dụ: Lấy thông tin khách hàng, có đơn hàng mua vào năm 2017.
+
+
+SELECT
+    c.*
+FROM
+    dbo.customers c
+WHERE
+    EXISTS (
+        -- Đi tìm những khách hàng mua hàng năm 2017
+        SELECT
+            customer_id
+        FROM
+            dbo.orders o
+        WHERE
+            o.customer_id = c.customer_id
+        AND YEAR (order_date) = 2017
+    )
+ORDER BY
+    first_name,
+    last_name;
+
+
+-- JOINs
+
+--Tạo bảng a
+CREATE TABLE basket_a (
+    a INT PRIMARY KEY,
+    fruit_a VARCHAR (50) NOT NULL
+);
+--Tạo bảng b
+CREATE TABLE basket_b (
+    b INT PRIMARY KEY,
+    fruit_b VARCHAR (50) NOT NULL
+);
+--Chèn dữ liệu vào bảng a
+INSERT INTO basket_a (a, fruit_a)
+VALUES
+    (1, 'Apple'),
+    (2, 'Orange'),
+    (3, 'Banana'),
+    (4, 'Cucumber');
+--Chèn dữ liệu vào bảng b
+INSERT INTO basket_b (b, fruit_b)
+VALUES
+    (1, 'Orange'),
+    (2, 'Apple'),
+    (3, 'Watermelon'),
+    (4, 'Pear');
+
+SELECT * FROM basket_a
+SELECT * FROM basket_b
+
+SELECT
+    a,
+    fruit_a,
+    b,
+    fruit_b
+FROM
+    basket_a
+INNER JOIN basket_b
+    ON fruit_a = fruit_b;
+
+--Áp dụng thực tế: Liệt danh sách thông tin chi tiết đơn hàng kèm tổng tiền của mỗi đơn
+SELECT * FROM orders
+SELECT
+	o.order_id,
+	o.order_date,
+	o.shipping_address,
+	SUM(oi.quantity * oi.price) as totalAmount
+FROM order_items AS oi
+INNER JOIN orders AS o ON o.order_id = oi.order_id
+GROUP BY
+	o.order_id,
+	o.order_date,
+	o.shipping_address
+ORDER BY o.order_id
+
+-- Muốn lấy thêm tên danh mục vào
+SELECT 
+	p.*,
+	c.category_name,
+	c.description AS category_description,
+	c.category_id
+FROM products AS p
+INNER JOIN categories AS c ON c.category_id = p.category_id
+
+
+SELECT 
+	p.*,
+	c.category_name,
+	c.description AS category_description
+FROM products AS p
+LEFT JOIN categories AS c ON c.category_id = p.category_id
+
+SELECT * FROM products
+
+SELECT * FROM categories
+
+UPDATE products SET category_id = 8 WHERE product_id = 321
+
+SELECT
+    a,
+    fruit_a,
+    b,
+    fruit_b
+FROM
+    basket_a
+LEFT JOIN basket_b
+   ON fruit_a = fruit_b;
+
