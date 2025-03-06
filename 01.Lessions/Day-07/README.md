@@ -237,14 +237,14 @@ BREAK được sử dụng để kết thúc một khối lệnh hoặc vòng l�
 
 
 ```sql
-DECLARE @counter INT = 0;
+DECLARE @b INT = 0;
 
-WHILE @counter <= 5
+WHILE @b <= 5
 BEGIN
-    SET @counter = @counter + 1;
-    IF @counter = 4
+    SET @b = @b + 1;
+    IF @b = 4
         BREAK; -- Bỏ qua những lệnh phía sau nó
-    PRINT @counter;
+    PRINT @b;
 END
 
 ```
@@ -256,14 +256,14 @@ Xem thêm: https://learn.microsoft.com/en-us/sql/t-sql/language-elements/break-t
 CONTINUE được sử dụng để bỏ qua phần còn lại của vòng lặp hiện tại và chuyển đến lần lặp tiếp theo. Khi lệnh CONTINUE được thực thi, các lệnh sau nó trong vòng lặp sẽ bị bỏ qua và chương trình sẽ chuyển đến lần lặp tiếp theo của vòng lặp.
 
 ```sql
-DECLARE @counter INT = 0;
+DECLARE @c INT = 0;
 
-WHILE @counter < 5
+WHILE @c < 5
 BEGIN
-    SET @counter = @counter + 1;
-    IF @counter = 3
+    SET @c = @c + 1;
+    IF @c = 3
         CONTINUE; --Tiếp tục vòng lặp, bỏ qua câu lệnh sau nó
-    PRINT @counter;
+    PRINT @c;
 END
 ```
 
