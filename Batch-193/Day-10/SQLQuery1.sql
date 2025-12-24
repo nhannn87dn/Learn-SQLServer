@@ -12,23 +12,53 @@ INSERT INTO [dbo].[tbl_Color]
            ('Green') --
 GO
 
+/* JSON Format
+user_profile = '{
+	"id": 1,
+	"name": "Nhan",
+	relations: {
+		parents: 
+		anh c
+	}
+}'
+-- Khi nào thì dùng JSON ?
++ Khi cần lưu trữ nhiều thông tin mà không cần truy vấn WHERE
+*/
+
 SELECT
     O.*,
     (SELECT * FROM customers AS C WHERE O.customer_id = C.customer_id FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS customer,
     (SELECT * FROM staffs AS S WHERE O.staff_id = S.staff_id FOR JSON PATH, WITHOUT_ARRAY_WRAPPER) AS staffs
 FROM orders AS O
 
-CREATE TABLE People (
+DECLARE @MyJSON VARCHAR(255) = '{"name": "John", "age": 30}';
+
+SELECT JSON_VALUE(@MyJSON, '$.name') AS name
+
+SELECT JSON_QUERY('{"name": "John", "age": 30, "address": {"street": "123 Main St.", "city": "New York"}}', '$.address') AS address
+
+SELECT JSON_MODIFY('{"name": "John", "age": 30}', '$.name', 'Jane') AS name
+
+SELECT ISJSON('{"name": "John", "age": 30}') AS is_json
+
+SELECT * FROM OPENJSON('{"name": "John", "age": 30}')
+
+/*
+user_info = {
+	id: 1,
+	first_name: "abc"
+	age: 1234,
+
+}
+
+*/
+
+  CREATE TABLE People (
       ID INT PRIMARY KEY,
       Info NVARCHAR(MAX)
   )
 
-SELECT JSON_VALUE('{"name": "John", "age": 30}', '$.name') AS name
-
-SELECT JSON_QUERY('{"name": "John", "age": 30, "address": {"street": "123 Main St.", "city": "New York"}}', '$.address') AS address
-
-
-DECLARE @info NVARCHAR(MAX)
+  DECLARE @info NVARCHAR(MAX)
   SET @info = N'{
     "firstName": "Nguyễn",
     "lastName": "Thảo",
@@ -44,29 +74,26 @@ DECLARE @info NVARCHAR(MAX)
       {"type": "fax","number": "646 555-4567"}
     ]
   }'
-  INSERT INTO People (ID,Info) VALUES (1,@info)
+  INSERT INTO People (ID, Info) VALUES (1, @info)
 
-SELECT * FROM People
-
-SELECT 
-  JSON_VALUE(Info, '$.address.StreetAddress') AS Street
-FROM People
-WHERE ISJSON(Info) > 0
-
-UPDATE People
-SET Info = JSON_MODIFY(Info, '$.age', 36)
-WHERE ID = 1 AND ISJSON(Info) > 0
+  SELECT * FROM People
 
 
-SELECT 
+  SELECT
+  JSON_VALUE(Info, '$.address.StreetAddress') AS Street,
   JSON_VALUE(Info, '$.age') AS Age
 FROM People
 WHERE ISJSON(Info) > 0
 
-SELECT * from dbo.customers
 
-CREATE TABLE dbo.customer_index (
-	[customer_id] [int]  NOT NULL,
+UPDATE People
+SET Info = JSON_MODIFY(Info, '$.age', 36)
+WHERE ID = 1
+
+
+-- Tạo cấu trúc bảng customer_index
+CREATE TABLE dbo.customers_index (
+	[customer_id] [int]  NOT NULL PRIMARY KEY,
 	[first_name] [nvarchar](255) NOT NULL,
 	[last_name] [nvarchar](255) NOT NULL,
 	[phone] [varchar](25) NOT NULL,
@@ -77,49 +104,36 @@ CREATE TABLE dbo.customer_index (
 	[state] [nvarchar](50) NOT NULL,
 	[zip_code] [varchar](5) NULL,
 );
-
-INSERT INTO dbo.customer_index
+-- Xõa dữ liệu nếu có
+DELETE FROM dbo.customers_index
+-- Đổ dữ liệu từ table customers, sắp xếp theo birthday
+INSERT INTO dbo.customers_index
 SELECT [customer_id], [first_name], [last_name], [phone], [email],
        CONVERT(date, [birthday], 103), [street], [city], [state], [zip_code]
 FROM dbo.customers ORDER BY [birthday],[first_name];
-
-
-DELETE FROM dbo.customer_index
-
-SELECT * FROM dbo.customer_index
-
 --Check xem có index không
-EXEC sp_helpindex 'customer_index';
+EXEC sp_helpindex 'customers_index';
+-- Xem dữ liệu hiện tại
+SELECT * FROM dbo.customers_index
 
---Để xem thời gian thực hiện truy vấn
- SET STATISTICS TIME ON;
- --Để xem tài nguyên thực hiện truy vấn
- SET STATISTICS IO ON;
- -- Truy vấn SQL của bạn ở đây
 
-SELECT order_id FROM dbo.orders WHERE order_id = 5
+SELECT customer_id FROM dbo.customers_index WHERE customer_id = 5
+--	read 1445  --- 1
+--  table scan -- index seed
+--	cost: 0.0315382 -- 0.0032831
 
---Tắt đi sau khi truy vấn thực hiện
- SET STATISTICS TIME OFF;
- SET STATISTICS IO OFF;
-
- --0.0298702
- --rows 1445
-SELECT customer_id FROM dbo.customer_index WHERE customer_id = 5
-
+---Clustered index
 --Tạo clustered index
 CREATE CLUSTERED INDEX CIX_customers_index_id
-ON dbo.customer_index (customer_id ASC);
---0.0017465
---1445
-
-SELECT customer_id, phone FROM dbo.customer_index WHERE phone = '0968411372'
-
-CREATE UNIQUE NONCLUSTERED INDEX UIX_customer_index_phone ON customer_index (phone)
-
-SELECT customer_id, phone, first_name FROM dbo.customer_index WHERE phone = '0968411372'
+ON customers_index (customer_id ASC);
 
 
-CREATE UNIQUE NONCLUSTERED INDEX UIX_customer_index_phoneinclu 
-ON customer_index (phone)
-INCLUDE(first_name,last_name);
+SELECT customer_id, phone FROM dbo.customers_index WHERE phone = '0968411372'
+
+CREATE UNIQUE NONCLUSTERED INDEX UIX_customer_index_phone 
+	ON customers_index (phone)
+	INCLUDE(first_name)
+
+
+SELECT customer_id, phone, first_name, email FROM dbo.customers_index WHERE phone = '0968411372'
+
